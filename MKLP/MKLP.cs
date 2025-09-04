@@ -27,6 +27,7 @@ using System.Diagnostics;
 using System.IO.Streams;
 using System.Linq;
 using System.Net;
+using System.Reflection;
 using System.Reflection.PortableExecutable;
 using System.Text.RegularExpressions;
 using System.Threading.Channels;
@@ -106,6 +107,7 @@ namespace MKLP
 
             //=====================Player===================
             GetDataHandlers.PlayerUpdate += OnPlayerUpdate;
+            GetDataHandlers.PlayerUpdate += BossManager.Hooks_OnPlayerUpdate;
 
             //GetDataHandlers.player
 
@@ -145,7 +147,7 @@ namespace MKLP
 
             //GetDataHandlers.ItemDrop
 
-            ServerApi.Hooks.NpcSpawn.Register(this, OnNPCSpawn);
+            ServerApi.Hooks.NpcSpawn.Register(this, BossManager.Hooks_OnNPCSpawn);
 
             ServerApi.Hooks.NpcKilled.Register(this, OnNPCKilled);
 
@@ -161,6 +163,7 @@ namespace MKLP
             //ServerApi.Hooks.GameUpdate.Register(this, OnUpdate);
 
             ServerApi.Hooks.ServerBroadcast.Register(this, OnServerBroadcast);
+            ServerApi.Hooks.ServerBroadcast.Register(this, BossManager.Hooks_OnServerBroadcast);
 
             ServerApi.Hooks.WorldSave.Register(this, OnWorldSave);
 
@@ -191,6 +194,7 @@ namespace MKLP
             {
                 //=====================Player===================
                 GetDataHandlers.PlayerUpdate -= OnPlayerUpdate;
+                GetDataHandlers.PlayerUpdate -= BossManager.Hooks_OnPlayerUpdate;
 
                 ServerApi.Hooks.NetGreetPlayer.Deregister(this, OnNetGreetPlayer);
 
@@ -226,7 +230,7 @@ namespace MKLP
 
                 GetDataHandlers.HealOtherPlayer -= OnHealOtherPlayer;
 
-                ServerApi.Hooks.NpcSpawn.Deregister(this, OnNPCSpawn);
+                ServerApi.Hooks.NpcSpawn.Deregister(this, BossManager.Hooks_OnNPCSpawn);
 
                 ServerApi.Hooks.NpcKilled.Deregister(this, OnNPCKilled);
 
@@ -244,6 +248,7 @@ namespace MKLP
                 //ServerApi.Hooks.GameUpdate.Deregister(this, OnUpdate);
 
                 ServerApi.Hooks.ServerBroadcast.Deregister(this, OnServerBroadcast);
+                ServerApi.Hooks.ServerBroadcast.Deregister(this, BossManager.Hooks_OnServerBroadcast);
 
                 ServerApi.Hooks.WorldSave.Deregister(this, OnWorldSave);
 
@@ -616,6 +621,7 @@ namespace MKLP
             }
             #endregion
 
+
         }
 
         #endregion
@@ -624,6 +630,19 @@ namespace MKLP
 
         private void OnGameUpdate(EventArgs args)
         {
+
+            if ((DateTime.UtcNow - checklatency_interval).TotalSeconds >= 5)
+            {
+                checklatency_interval = DateTime.UtcNow;
+                foreach (TSPlayer player in TShock.Players)
+                {
+                    if (player == null) continue;
+                    DBManager.CheckPlayerMute(player, true);
+                    player.SetData("MKLP_StartGetLatency", DateTime.UtcNow);
+                    NetMessage.SendData((int)PacketTypes.ItemOwner, player.Index, -1, null, 0, player.Index);
+                }
+            }
+
             if (!(bool)Config.Main.Use_OnUpdate_Func) return;
             
             int maxvalue = 10;
@@ -647,18 +666,6 @@ namespace MKLP
                         Main.item[i].active = false;
                         TSPlayer.All.SendData(PacketTypes.ItemDrop, "", i);
                     }
-                }
-            }
-
-            if ((DateTime.UtcNow - checklatency_interval).TotalSeconds >= 5)
-            {
-                checklatency_interval = DateTime.UtcNow;
-                foreach (TSPlayer player in TShock.Players)
-                {
-                    if (player == null) continue;
-                    DBManager.CheckPlayerMute(player, true);
-                    player.SetData("MKLP_StartGetLatency", DateTime.UtcNow);
-                    NetMessage.SendData((int)PacketTypes.ItemOwner, player.Index, -1, null, 0, player.Index);
                 }
             }
 
@@ -980,9 +987,11 @@ namespace MKLP
                     player.Disconnect(GetText("Your name contains Symbols and is not allowed on this server."));
                     return;
                 }
-                if (IsIllegalName(player.Name) && !(bool)Config.Main.Allow_PlayerName_InappropriateWords)
+
+                string[] bannedwords;
+                if (BannedWordChecker.ISBannedWord(player.Name, out bannedwords) && !(bool)Config.Main.Allow_PlayerName_On_BannedWords)
                 {
-                    player.Disconnect(GetText("Your name contains inappropriate language and is not allowed on this server."));
+                    player.Disconnect(GetText("Your name contains \"" + string.Join(',', bannedwords) + "\" and is not allowed on this server."));
                     return;
                 }
                 #endregion
@@ -1031,6 +1040,7 @@ namespace MKLP
                             {
                                 message = message.Replace("%matchtype%", "UUID & IP");
                                 message = message.Replace("%accountname%", get.Name);
+                                message = message.Replace("%existaccountnames%", string.Join(", ", getuuidmatch.Select(guuim => guuim.Name)));
                                 player.Disconnect(message);
                                 return;
                             }
@@ -1040,6 +1050,7 @@ namespace MKLP
                     {
                         message = message.Replace("%matchtype%", "UUID");
                         message = message.Replace("%accountname%", getaccountname);
+                        message = message.Replace("%existaccountnames%", string.Join(", ", getuuidmatch.Select(guuim => guuim.Name)));
                         player.Disconnect(message);
                         return;
                     }
@@ -1134,29 +1145,6 @@ namespace MKLP
                     Name.Replace($"{remove}", "");
                 }
                 return Regex.IsMatch(Name, @"^[A-Za-z0-9\s@]*$");
-            }
-
-            bool IsIllegalName(string Name)
-            {
-                Regex[] list =
-                {
-                    new Regex("fuck", RegexOptions.IgnoreCase | RegexOptions.Singleline | RegexOptions.Multiline),
-                    new Regex("shit", RegexOptions.IgnoreCase | RegexOptions.Singleline | RegexOptions.Multiline),
-                    new Regex("bitch", RegexOptions.IgnoreCase | RegexOptions.Singleline | RegexOptions.Multiline),
-                    new Regex("nigga", RegexOptions.IgnoreCase | RegexOptions.Singleline | RegexOptions.Multiline),
-                    new Regex("nigger", RegexOptions.IgnoreCase | RegexOptions.Singleline | RegexOptions.Multiline),
-                    new Regex("cum", RegexOptions.IgnoreCase | RegexOptions.Singleline | RegexOptions.Multiline),
-                    new Regex("dick", RegexOptions.IgnoreCase | RegexOptions.Singleline | RegexOptions.Multiline)
-                };
-
-                foreach (Regex check in list)
-                {
-                    if (check.IsMatch(Name))
-                    {
-                        return true;
-                    }
-                }
-                return false;
             }
             #endregion
         }
@@ -1286,6 +1274,7 @@ namespace MKLP
                 this.Since = Since;
             }
         }
+        //private void OnPlayerChat(PlayerChatEventArgs args)
         private async void OnChatReceived(ServerChatEventArgs args)
         {
             #region code
@@ -1294,15 +1283,31 @@ namespace MKLP
 
             TSPlayer player = TShock.Players[args.Who];
 
-            foreach (string banned in Config.Main.ChatMod.Ban_MessageContains)
+            string text = args.Text;
+
+            if (text.StartsWith(Commands.Specifier) && text != Commands.Specifier) return;
+            if (text.StartsWith(Commands.SilentSpecifier) && text != Commands.SilentSpecifier) return;
+
+            string CensorText;
+            if (BannedWordChecker.ISBannedWord(text, out CensorText))
             {
-                if (args.Text.ToLower().Contains(banned.ToLower()))
+                if ((bool)Config.Main.ChatMod.CensorInsteadOfBlock)
+                {
+                    text = CensorText;
+                }
+                else
                 {
                     player.SendErrorMessage(GetText("You can not send that message!"));
                     args.Handled = true;
                     return;
                 }
             }
+
+            // Forcefully change the Text property
+            PropertyInfo? propertyInfo = args.GetType().GetProperty("Text");
+            propertyInfo?.SetValue(args, text);
+
+
             if (args.Text.Length >= (int)Config.Main.ChatMod.Maximum__MessageLength_NoSpace && !args.Text.Contains(" "))
             {
                 player.SendErrorMessage(GetText("You can not send that message!"));
@@ -2400,437 +2405,6 @@ namespace MKLP
             #endregion
         }
 
-        private async void OnNPCSpawn(NpcSpawnEventArgs args)
-        {
-            #region code
-
-            if (!(bool)Config.BossManager.UsingBossManager) return;
-
-            int[] BossIDs =
-            {
-                50, // King Slime
-			    4, // Eye of Cthulu			
-			    222, // Queen Bee
-			    13, // Eater of Worlds	
-			    266, // Brain of Cthulu
-			    35, // Skeletron
-			    668, // Deerclops
-			    113, // Wall of Flesh
-			    657, // Queen Slime
-			    125, // Retinazer
-			    127, // Skeletron Prime	
-			    134, // The Destroyer
-			    262, // Plantera
-			    245, // Golem
-			    636, // Empress Of Light
-			    370, // Duke Fishron
-			    439, // Lunatic Cultist
-			    396, // Moon Lord
-            };
-
-            if (!BossIDs.Contains(Main.npc[args.NpcId].type)) return;
-
-            for (int i = 0; i < Main.maxNPCs; i++)
-            {
-                NPC npc = Main.npc[i];
-
-                if ((bool)Config.BossManager.PreventIllegalBoss)
-                {
-                    if (!Main.hardMode && (
-                        npc.type == NPCID.QueenSlimeBoss ||
-                        npc.type == NPCID.TheDestroyer ||
-                        npc.type == NPCID.Retinazer ||
-                        npc.type == NPCID.Spazmatism ||
-                        npc.type == NPCID.SkeletronPrime ||
-                        npc.type == NPCID.DukeFishron))
-                    {
-                        DespawnNPC();
-                    }
-
-                    if (!NPC.downedMechBoss1 && !NPC.downedMechBoss2 && !NPC.downedMechBoss3 && (npc.type == NPCID.Plantera))
-                    {
-                        DespawnNPC();
-                    }
-                    if (!NPC.downedPlantBoss && (npc.type == NPCID.HallowBoss || npc.type == NPCID.EmpressButterfly || npc.type == NPCID.Golem))
-                    {
-                        DespawnNPC();
-                    }
-                    if (!NPC.downedGolemBoss && (npc.type == NPCID.CultistBoss || npc.type == NPCID.MoonLordCore))
-                    {
-                        DespawnNPC();
-                    }
-                }
-
-
-                if (!NPC.downedSlimeKing && npc.type == NPCID.KingSlime) // King Slime
-                {
-                    if (!(bool)Config.BossManager.AllowKingSlime)
-                    {
-                        DespawnNPC();
-                        TShock.Utils.Broadcast(GetText("King Slime isn't allowed yet!"), Color.MediumPurple);
-                    }
-                    if (TShock.Utils.GetActivePlayerCount() < (int)Config.BossManager.KingSlime_RequiredPlayersforBoss)
-                    {
-                        DespawnNPC();
-                        TShock.Utils.Broadcast(GetText("There aren't enough players to fight King Slime!") +
-                            GetText($"\nPlayers Needed: {(int)Config.BossManager.KingSlime_RequiredPlayersforBoss}"), Color.MediumPurple);
-                    }
-                }
-
-                if (!NPC.downedBoss1 && npc.type == NPCID.EyeofCthulhu) // Eye of Cthulhu
-                {
-                    if (!(bool)Config.BossManager.AllowEyeOfCthulhu)
-                    {
-                        DespawnNPC();
-                        TShock.Utils.Broadcast(GetText("Eye of Cthulhu isn't allowed yet!"), Color.MediumPurple);
-                    }
-                    if (TShock.Utils.GetActivePlayerCount() < (int)Config.BossManager.EyeOfCthulhu_RequiredPlayersforBoss)
-                    {
-                        DespawnNPC();
-                        TShock.Utils.Broadcast(GetText("There aren't enough players to fight Eye of Cthulhu!") +
-                            GetText($"\nPlayers Needed: {(int)Config.BossManager.EyeOfCthulhu_RequiredPlayersforBoss}"), Color.MediumPurple);
-                    }
-                }
-
-                if (!NPC.downedBoss2 && (npc.type is NPCID.EaterofWorldsHead or NPCID.EaterofWorldsBody or NPCID.EaterofWorldsTail)) // Eater of Worlds
-                {
-                    if (!(bool)Config.BossManager.AllowEaterOfWorlds)
-                    {
-                        DespawnNPC();
-                        TShock.Utils.Broadcast(GetText("Eater of Worlds isn't allowed yet!"), Color.MediumPurple);
-                    }
-                    if (TShock.Utils.GetActivePlayerCount() < (int)Config.BossManager.EaterOfWorlds_RequiredPlayersforBoss)
-                    {
-                        DespawnNPC();
-                        TShock.Utils.Broadcast(GetText("There aren't enough players to fight Eater of Worlds!") +
-                            GetText($"\nPlayers Needed: {(int)Config.BossManager.EaterOfWorlds_RequiredPlayersforBoss}"), Color.MediumPurple);
-                    }
-                }
-
-                if (!NPC.downedBoss2 && npc.type == NPCID.BrainofCthulhu) // Brain of Cthulhu
-                {
-                    if (!(bool)Config.BossManager.AllowBrainOfCthulhu)
-                    {
-                        DespawnNPC();
-                        TShock.Utils.Broadcast(GetText("Brain of Cthulhu isn't allowed yet!"), Color.MediumPurple);
-                    }
-                    if (TShock.Utils.GetActivePlayerCount() < (int)Config.BossManager.BrainOfCthulhu_RequiredPlayersforBoss)
-                    {
-                        DespawnNPC();
-                        TShock.Utils.Broadcast(GetText("There aren't enough players to fight Brain of Cthulhu!") +
-                            GetText($"\nPlayers Needed: {(int)Config.BossManager.BrainOfCthulhu_RequiredPlayersforBoss}"), Color.MediumPurple);
-                    }
-                }
-
-                if (!NPC.downedQueenBee && npc.type == NPCID.QueenBee) // Queen Bee
-                {
-                    if (!(bool)Config.BossManager.AllowQueenBee)
-                    {
-                        DespawnNPC();
-                        TShock.Utils.Broadcast(GetText("Queen Bee isn't allowed yet!"), Color.MediumPurple);
-                    }
-                    if (TShock.Utils.GetActivePlayerCount() < (int)Config.BossManager.QueenBee_RequiredPlayersforBoss)
-                    {
-                        DespawnNPC();
-                        TShock.Utils.Broadcast(GetText("There aren't enough players to fight Queen Bee!") +
-                            GetText($"\nPlayers Needed: {(int)Config.BossManager.QueenBee_RequiredPlayersforBoss}"), Color.MediumPurple);
-                    }
-                }
-
-                if (!NPC.downedBoss3 && npc.type == NPCID.SkeletronHead) // Skeletron
-                {
-                    if (!(bool)Config.BossManager.AllowSkeletron)
-                    {
-                        DespawnNPC();
-                        TShock.Utils.Broadcast(GetText("Skeletron isn't allowed yet!"), Color.MediumPurple);
-                    }
-                    if (TShock.Utils.GetActivePlayerCount() < (int)Config.BossManager.Skeletron_RequiredPlayersforBoss)
-                    {
-                        DespawnNPC();
-                        TShock.Utils.Broadcast(GetText("There aren't enough players to fight Skeletron!") +
-                            GetText($"\nPlayers Needed: {(int)Config.BossManager.Skeletron_RequiredPlayersforBoss}"), Color.MediumPurple);
-                    }
-                }
-
-                if (!NPC.downedDeerclops && npc.type == NPCID.Deerclops) // Deerclops
-                {
-                    if (!(bool)Config.BossManager.AllowDeerclops)
-                    {
-                        DespawnNPC();
-                        TShock.Utils.Broadcast(GetText("Deerclops isn't allowed yet!"), Color.MediumPurple);
-                    }
-                    if (TShock.Utils.GetActivePlayerCount() < (int)Config.BossManager.Deerclops_RequiredPlayersforBoss)
-                    {
-                        DespawnNPC();
-                        TShock.Utils.Broadcast(GetText("There aren't enough players to fight Deerclops!") +
-                            GetText($"\nPlayers Needed: {(int)Config.BossManager.Deerclops_RequiredPlayersforBoss}"), Color.MediumPurple);
-                    }
-                }
-
-                if (!Main.hardMode && npc.type == NPCID.WallofFlesh) // Wall of Flesh
-                {
-                    if (!(bool)Config.BossManager.AllowWallOfFlesh)
-                    {
-                        DespawnNPC();
-                        TShock.Utils.Broadcast(GetText("Wall of Flesh isn't allowed yet!"), Color.MediumPurple);
-                    }
-                    if (TShock.Utils.GetActivePlayerCount() < (int)Config.BossManager.WallOfFlesh_RequiredPlayersforBoss)
-                    {
-                        DespawnNPC();
-                        TShock.Utils.Broadcast(GetText("There aren't enough players to fight Wall of Flesh!") +
-                            GetText($"\nPlayers Needed: {(int)Config.BossManager.WallOfFlesh_RequiredPlayersforBoss}"), Color.MediumPurple);
-                    }
-                }
-
-                if (!NPC.downedQueenSlime && npc.type == NPCID.QueenSlimeBoss) // Queen Slime
-                {
-                    if (!(bool)Config.BossManager.AllowQueenSlime)
-                    {
-                        DespawnNPC();
-                        TShock.Utils.Broadcast(GetText("Queen Slime isn't allowed yet!"), Color.MediumPurple);
-                    }
-                    if (TShock.Utils.GetActivePlayerCount() < (int)Config.BossManager.QueenSlime_RequiredPlayersforBoss)
-                    {
-                        DespawnNPC();
-                        TShock.Utils.Broadcast(GetText("There aren't enough players to fight Queen Slime!") +
-                            GetText($"\nPlayers Needed: {(int)Config.BossManager.QueenSlime_RequiredPlayersforBoss}"), Color.MediumPurple);
-                    }
-                }
-
-                if (Main.zenithWorld)
-                {
-                    int[] MechdusaIDs = { NPCID.Retinazer, NPCID.Spazmatism, NPCID.Probe, NPCID.TheDestroyer, NPCID.TheDestroyerBody, NPCID.TheDestroyerTail, NPCID.SkeletronPrime, NPCID.PrimeCannon, NPCID.PrimeLaser, NPCID.PrimeSaw, NPCID.PrimeVice };
-                    if ((!NPC.downedMechBoss1 || !NPC.downedMechBoss2 || !NPC.downedMechBoss1) &&
-                        (npc.type == NPCID.Retinazer || npc.type == NPCID.Spazmatism || (npc.type == NPCID.TheDestroyer || npc.type == NPCID.TheDestroyerBody || npc.type == NPCID.TheDestroyerTail) || npc.type == NPCID.SkeletronPrime)
-                         //&& NPC_Is_Active(new int[] { NPCID.Retinazer, NPCID.Spazmatism, NPCID.Probe, NPCID.TheDestroyer, NPCID.TheDestroyerBody, NPCID.TheDestroyerTail, NPCID.SkeletronPrime, NPCID.PrimeCannon, NPCID.PrimeLaser, NPCID.PrimeSaw, NPCID.PrimeVice })
-                         )
-                    {
-                        await Task.Run(async () => {
-                            if (!NPC_Is_Active(MechdusaIDs))
-                            {
-                                await Task.Delay(800);
-                                if (!(bool)Config.BossManager.AllowMechdusa)
-                                {
-                                    DespawnNPC();
-                                    DespawnNPCs(MechdusaIDs);
-                                }
-                                if (TShock.Utils.GetActivePlayerCount() < (int)Config.BossManager.Mechdusa_RequiredPlayersforBoss)
-                                {
-                                    DespawnNPC();
-                                    DespawnNPCs(MechdusaIDs);
-                                }
-                            }
-                            else
-                            {
-                                if (!(bool)Config.BossManager.AllowMechdusa)
-                                {
-                                    DespawnNPC();
-                                    DespawnNPCs(MechdusaIDs);
-                                    TShock.Utils.Broadcast(GetText("Mechdusa isn't allowed yet!"), Color.MediumPurple);
-                                }
-                                if (TShock.Utils.GetActivePlayerCount() < (int)Config.BossManager.Mechdusa_RequiredPlayersforBoss)
-                                {
-                                    DespawnNPC();
-                                    DespawnNPCs(MechdusaIDs);
-                                    TShock.Utils.Broadcast(GetText("There aren't enough players to fight Mechdusa!") +
-                                    GetText($"\nPlayers Needed: {(int)Config.BossManager.Mechdusa_RequiredPlayersforBoss}"), Color.MediumPurple);
-                                }
-                            }
-                        });
-                        
-                    }
-                }
-                else
-                {
-                    if (!NPC.downedMechBoss2 && (npc.type == NPCID.Retinazer || npc.type == NPCID.Spazmatism)) // The Twins
-                    {
-                        if (!(bool)Config.BossManager.AllowTheTwins)
-                        {
-                            DespawnNPC();
-                            TShock.Utils.Broadcast(GetText("The Twins isn't allowed yet!"), Color.MediumPurple);
-                        }
-                        if (TShock.Utils.GetActivePlayerCount() < (int)Config.BossManager.TheTwins_RequiredPlayersforBoss)
-                        {
-                            DespawnNPC();
-                            TShock.Utils.Broadcast(GetText("There aren't enough players to fight The Twins!") +
-                            GetText($"\nPlayers Needed: {(int)Config.BossManager.TheTwins_RequiredPlayersforBoss}"), Color.MediumPurple);
-                        }
-                    }
-
-                    if (!NPC.downedMechBoss1 && (npc.type == NPCID.TheDestroyer || npc.type == NPCID.TheDestroyerBody || npc.type == NPCID.TheDestroyerTail)) // The Destroyer
-                    {
-                        if (!(bool)Config.BossManager.AllowTheDestroyer)
-                        {
-                            DespawnNPC();
-                            TShock.Utils.Broadcast(GetText("The Destroyer isn't allowed yet!"), Color.MediumPurple);
-                        }
-                        if (TShock.Utils.GetActivePlayerCount() < (int)Config.BossManager.TheDestroyer_RequiredPlayersforBoss)
-                        {
-                            DespawnNPC();
-                            TShock.Utils.Broadcast(GetText("There aren't enough players to fight The Destroyer!") +
-                            GetText($"\nPlayers Needed: {(int)Config.BossManager.TheDestroyer_RequiredPlayersforBoss}"), Color.MediumPurple);
-                        }
-                    }
-
-                    if (!NPC.downedMechBoss3 && npc.type == NPCID.SkeletronPrime) // Skeletron Prime
-                    {
-                        if (!(bool)Config.BossManager.AllowSkeletronPrime)
-                        {
-                            DespawnNPC();
-                            TShock.Utils.Broadcast(GetText("Skeletron Prime isn't allowed yet!"), Color.MediumPurple);
-                        }
-                        if (TShock.Utils.GetActivePlayerCount() < (int)Config.BossManager.SkeletronPrime_RequiredPlayersforBoss)
-                        {
-                            DespawnNPC();
-                            TShock.Utils.Broadcast(GetText("There aren't enough players to fight Skeletron Prime!") +
-                            GetText($"\nPlayers Needed: {(int)Config.BossManager.SkeletronPrime_RequiredPlayersforBoss}"), Color.MediumPurple);
-                        }
-                    }
-                }
-
-
-
-                if (!NPC.downedPlantBoss && npc.type == NPCID.Plantera) // Plantera
-                {
-                    if (!(bool)Config.BossManager.AllowPlantera)
-                    {
-                        DespawnNPC();
-                        TShock.Utils.Broadcast(GetText("Plantera isn't allowed yet!"), Color.MediumPurple);
-                    }
-                    if (TShock.Utils.GetActivePlayerCount() < (int)Config.BossManager.Plantera_RequiredPlayersforBoss)
-                    {
-                        DespawnNPC();
-                        TShock.Utils.Broadcast(GetText("There aren't enough players to fight Plantera!") +
-                            GetText($"\nPlayers Needed: {(int)Config.BossManager.Plantera_RequiredPlayersforBoss}"), Color.MediumPurple);
-                    }
-                }
-
-                if (!NPC.downedGolemBoss && npc.type == NPCID.Golem) // Golem
-                {
-                    if (!(bool)Config.BossManager.AllowGolem)
-                    {
-                        DespawnNPC();
-                        TShock.Utils.Broadcast(GetText("Golem isn't allowed yet!"), Color.MediumPurple);
-                    }
-                    if (TShock.Utils.GetActivePlayerCount() < (int)Config.BossManager.Golem_RequiredPlayersforBoss)
-                    {
-                        DespawnNPC();
-                        TShock.Utils.Broadcast(GetText("There aren't enough players to fight Golem!") +
-                            GetText($"\nPlayers Needed: {(int)Config.BossManager.Golem_RequiredPlayersforBoss}"), Color.MediumPurple);
-                    }
-                }
-
-                if (!NPC.downedFishron && npc.type == NPCID.DukeFishron) // Duke Fishron
-                {
-                    if (!(bool)Config.BossManager.AllowDukeFishron)
-                    {
-                        DespawnNPC();
-                        TShock.Utils.Broadcast(GetText("Duke Fishron isn't allowed yet!"), Color.MediumPurple);
-                    }
-                    if (TShock.Utils.GetActivePlayerCount() < (int)Config.BossManager.DukeFishron_RequiredPlayersforBoss)
-                    {
-                        DespawnNPC();
-                        TShock.Utils.Broadcast(GetText("There aren't enough players to fight Duke Fishron!") +
-                            GetText($"\nPlayers Needed: {(int)Config.BossManager.DukeFishron_RequiredPlayersforBoss}"), Color.MediumPurple);
-                    }
-                }
-
-                if (!NPC.downedEmpressOfLight && npc.type == NPCID.HallowBoss) // Empress of Light
-                {
-                    if (!(bool)Config.BossManager.AllowEmpressOfLight)
-                    {
-                        DespawnNPC();
-                        TShock.Utils.Broadcast(GetText("Empress of Light isn't allowed yet!"), Color.MediumPurple);
-                    }
-                    if (TShock.Utils.GetActivePlayerCount() < (int)Config.BossManager.EmpressOfLight_RequiredPlayersforBoss)
-                    {
-                        DespawnNPC();
-                        TShock.Utils.Broadcast(GetText("There aren't enough players to fight Empress of Light!") +
-                            GetText($"\nPlayers Needed: {(int)Config.BossManager.EmpressOfLight_RequiredPlayersforBoss}"), Color.MediumPurple);
-                    }
-                }
-
-                if (!NPC.downedAncientCultist && npc.type == NPCID.CultistBoss) // Lunatic Cultist
-                {
-                    if (!(bool)Config.BossManager.AllowLunaticCultist)
-                    {
-                        DespawnNPC();
-                        TShock.Utils.Broadcast(GetText("Lunatic Cultist isn't allowed yet!"), Color.MediumPurple);
-                    }
-                    if (TShock.Utils.GetActivePlayerCount() < (int)Config.BossManager.LunaticCultist_RequiredPlayersforBoss)
-                    {
-                        DespawnNPC();
-                        TShock.Utils.Broadcast(GetText("There aren't enough players to fight Lunatic Cultist!") +
-                            GetText($"\nPlayers Needed: {(int)Config.BossManager.LunaticCultist_RequiredPlayersforBoss}"), Color.MediumPurple);
-                    }
-                }
-
-                if (!NPC.downedMoonlord && npc.type == NPCID.MoonLordCore) // Moon Lord
-                {
-                    if (!(bool)Config.BossManager.AllowMoonLord)
-                    {
-                        DespawnNPC();
-                        TShock.Utils.Broadcast(GetText("Moon Lord isn't allowed yet!"), Color.MediumPurple);
-                    }
-                    if (TShock.Utils.GetActivePlayerCount() < (int)Config.BossManager.MoonLord_RequiredPlayersforBoss)
-                    {
-                        DespawnNPC();
-                        TShock.Utils.Broadcast(GetText("There aren't enough players to fight Moon Lord!") +
-                            GetText($"\nPlayers Needed: {(int)Config.BossManager.MoonLord_RequiredPlayersforBoss}"), Color.MediumPurple);
-                    }
-                }
-
-                void DespawnNPC()
-                {
-                    args.Handled = true;
-                    Main.npc[i].active = false;
-                    Main.npc[i].type = 0;
-                    TSPlayer.All.SendData(PacketTypes.NpcUpdate, "", i);
-                }
-            }
-
-            bool DespawnNPCs(int[] npcIDs)
-            {
-                int NPCDel = 0;
-
-                for (int i = 0; i < Main.npc.Length; i++)
-                {
-                    if (Main.npc[i] == null) continue;
-                    if (!Main.npc[i].active) continue;
-                    if (npcIDs.Contains(Main.npc[i].type))
-                    {
-                        Main.npc[i].active = false;
-                        Main.npc[i].type = 0;
-                        TSPlayer.All.SendData(PacketTypes.NpcUpdate, "", i);
-                        NPCDel++;
-                    }
-                }
-
-                return NPCDel > 0;
-            }
-
-            bool NPC_Is_Active(int[] npcIDs)
-            {
-                List<int> result = new();
-                foreach (int get in npcIDs)
-                {
-                    result.Add(get);
-                }
-
-                foreach (var gnpc in Main.npc)
-                {
-                    if (gnpc == null) continue;
-                    if (!gnpc.active) continue;
-                    if (result.Contains(gnpc.type))
-                    {
-                        result.Remove(gnpc.type);
-                    }
-                }
-
-                return result.Count > 0;
-            }
-            #endregion
-        }
 
         static bool OnCheckIllegal = false;
         private void OnNPCKilled(NpcKilledEventArgs args)
@@ -2860,7 +2434,7 @@ namespace MKLP
 		    };
 
             //if (args.npc.boss)
-            if (!BossIDs.Contains(args.npc.type))
+            if (BossIDs.Contains(args.npc.type))
             {
                 IllegalItemProgression = SurvivalManager.GetIllegalItem();
 
@@ -3305,7 +2879,7 @@ namespace MKLP
             #endregion
         }
 
-        #region later
+        #region ///
         /*
         public struct GetPlayerIG
         {

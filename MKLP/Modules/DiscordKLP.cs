@@ -44,7 +44,7 @@ namespace MKLP.Modules
             {
                 LogLevel = LogSeverity.Info,
                 AlwaysDownloadUsers = true,
-                GatewayIntents = GatewayIntents.Guilds | GatewayIntents.GuildMessages | GatewayIntents.MessageContent,
+                GatewayIntents = GatewayIntents.Guilds | GatewayIntents.GuildMessages | GatewayIntents.MessageContent | GatewayIntents.GuildMembers,
             });
 
             _client.Log += Log;
@@ -1643,30 +1643,31 @@ namespace MKLP.Modules
                                                     await message.RespondAsync("You do not have permission to Enable a player!", ephemeral: true);
                                                     return;
                                                 }
-                                                TSPlayer? targetplayer = null;
-                                                foreach (TSPlayer player in TShock.Players)
-                                                {
-                                                    if (player == null || !player.Active) continue;
+                                                string dummy1;
+                                                IEnumerable<string> dummy2;
 
-                                                    if (player.Account.Name == message.Data.CustomId.Split(S_)[4])
-                                                    {
-                                                        targetplayer = player;
-                                                    }
-                                                }
-
-                                                if (targetplayer == null)
+                                                switch (ManagePlayer.UnDisablePlayer(message.Data.CustomId.Split(S_)[4], AccountHasPermission(executer, MKLP.Config.Permissions.CMD_OfflineEnable), true, out dummy1, out dummy2, executer.Name))
                                                 {
-                                                    await message.RespondAsync($"Player **{message.Data.CustomId.Split(S_)[4]}** is offline", ephemeral: true);
-                                                    return;
-                                                }
-
-                                                if (ManagePlayer.UnDisablePlayer(targetplayer.Name, AccountHasPermission(executer, MKLP.Config.Permissions.CMD_OfflineEnable), true, executer.Name))
-                                                {
-                                                    await message.RespondAsync($"Successfully Enable **{message.Data.CustomId.Split(S_)[4]}**", ephemeral: true);
-                                                }
-                                                else
-                                                {
-                                                    await message.RespondAsync($"Player **{message.Data.CustomId.Split(S_)[4]}** isn't disabled", ephemeral: true);
+                                                    case ManagePlayer.DisableResult.AlreadyEnabled:
+                                                        {
+                                                            await message.RespondAsync($"Player **{message.Data.CustomId.Split(S_)[4]}** isn't disabled", ephemeral: true);
+                                                            break;
+                                                        }
+                                                    case ManagePlayer.DisableResult.SuccessOffline:
+                                                        {
+                                                            await message.RespondAsync($"(Offline) Successfully Enable **{message.Data.CustomId.Split(S_)[4]}**", ephemeral: true);
+                                                            break;
+                                                        }
+                                                    case ManagePlayer.DisableResult.Success:
+                                                        {
+                                                            await message.RespondAsync($"Successfully Enable **{message.Data.CustomId.Split(S_)[4]}**", ephemeral: true);
+                                                            break;
+                                                        }
+                                                    default:
+                                                        {
+                                                            await message.RespondAsync($"something went wrong...", ephemeral: true);
+                                                            break;
+                                                        }
                                                 }
 
                                                 return;
