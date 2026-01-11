@@ -8,12 +8,13 @@ using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
 using TShockAPI;
 using BanGuard;
+using BanGuard.Models;
 
 namespace MKLP.Functions
 {
     public class BanGuardAPI
     {
-        public static async Task<bool?> CheckPlayerBan(string uuid, string playerName, string playerIP)
+        public static async Task<PlayerBan?> CheckPlayerBan(string uuid, string playerName, string playerIP)
         {
             if (MKLP.HasBanGuardPlugin && (bool)MKLP.Config.Main.UsingBanGuardPlugin)
             {
@@ -22,35 +23,35 @@ namespace MKLP.Functions
             return null;
         }
 
-        public static async Task<int?> GenerateNewConnection(string uuid, string playerName)
+        public static async Task<APIResponse<ConnectionCode>> GenerateNewConnection(string uuid)
         {
             if (MKLP.HasBanGuardPlugin && (bool)MKLP.Config.Main.UsingBanGuardPlugin)
             {
-                return await Plugin_GenerateNewConnection(uuid, playerName);
+                return await Plugin_GenerateNewConnection(uuid);
             }
             return null;
         }
 
-        public static async Task<bool> BanPlayer(string uuid, string category, string ip)
+        public static async Task<APIResponse<bool>> BanPlayer(string uuid, string category, string ip)
         {
             if (MKLP.HasBanGuardPlugin && (bool)MKLP.Config.Main.UsingBanGuardPlugin)
             {
                 return await Plugin_BanPlayer(uuid, category, ip);
             }
-            return false;
+            return new APIResponse<bool>(success: false, data: false, "");
         }
 
-        public static async Task<bool?> Plugin_CheckPlayerBan(string uuid, string playerName, string playerIP)
+        public static async Task<PlayerBan?> Plugin_CheckPlayerBan(string uuid, string playerName, string playerIP)
         {
             return await BanGuard.APIService.CheckPlayerBan(uuid, playerName, playerIP);
         }
 
-        public static async Task<int?> Plugin_GenerateNewConnection(string uuid, string playerName)
+        public static async Task<APIResponse<ConnectionCode>> Plugin_GenerateNewConnection(string uuid)
         {
-            return await BanGuard.APIService.GenerateNewConnection(uuid, playerName);
+            return await BanGuard.APIService.GenerateNewConnection(uuid);
         }
 
-        public static async Task<bool> Plugin_BanPlayer(string uuid, string category, string ip)
+        public static async Task<APIResponse<bool>> Plugin_BanPlayer(string uuid, string category, string ip)
         {
             return await BanGuard.APIService.BanPlayer(uuid, category, ip);
         }

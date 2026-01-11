@@ -632,7 +632,7 @@ namespace MKLP.Modules
                 }
                 else
                 {
-                    MKLP.SendStaffMessage(MKLP.GetText("{1} was disabled for: {1}", player.Name, Reason), Microsoft.Xna.Framework.Color.DarkRed);
+                    MKLP.SendStaffMessage(MKLP.GetText("{0} was disabled for: {1}", player.Name, Reason), Microsoft.Xna.Framework.Color.DarkRed);
                 }
 
 
@@ -642,8 +642,23 @@ namespace MKLP.Modules
 
         }
 
-        public static bool UnDisablePlayer(string playername, bool UsingOffline, bool specificName, string executername = "Unknown")
+        public enum DisableResult
         {
+            Success,
+            SuccessOffline,
+            AlreadyDisabled,
+            AlreadyEnabled,
+            OfflinePermission,
+            MultiplePlayerMatch,
+            NotFoundOffline
+        }
+        public static DisableResult UnDisablePlayer(string playername, bool UsingOffline, bool specificName, out string TargetPlayerName, out IEnumerable<string> Mplayermatch, string executername = "Unknown")
+        {
+            TargetPlayerName = "";
+            Mplayermatch = new string[] { };
+
+            var getplayers = TSPlayer.FindByNameOrID(playername);
+
             if (specificName)
             {
                 foreach (var player in TShock.Players)
@@ -660,16 +675,22 @@ namespace MKLP.Modules
 
                     MKLP.Discordklp.KLPBotSendMessageMainLog(MKLP.GetText("Player **{0}** was Enabled by **{1}**", player.Name, executername));
 
-                    return true;
+                    MKLP.DisabledKey.Remove(player.Name);
+
+                    TargetPlayerName = player.Name;
+                    return DisableResult.Success;
                 }
-            } else
+            } else if (getplayers.Count != 0)
             {
-                var getplayers = TSPlayer.FindByNameOrID(playername);
-                if (getplayers.Count != 1) return false;
+                if (getplayers.Count != 1)
+                {
+                    Mplayermatch = getplayers.Select(p => p.Name);
+                    return DisableResult.MultiplePlayerMatch;
+                }
 
                 TSPlayer player = getplayers[0];
 
-                if (!PlayerIsDisable(player.Name, player.IP, player.UUID)) return false;
+                if (!PlayerIsDisable(player.Name, player.IP, player.UUID)) return DisableResult.AlreadyEnabled;
 
                 player.SetData("MKLP_IsDisabled", false);
 
@@ -679,15 +700,24 @@ namespace MKLP.Modules
 
                 MKLP.Discordklp.KLPBotSendMessageMainLog(MKLP.GetText("Player **{0}** was Enabled by **{1}**", player.Name, executername));
 
-                return true;
-            }
-            if (!UsingOffline) return false;
+                MKLP.DisabledKey.Remove(player.Name);
 
-            if (!PlayerIsDisable(playername, "", "")) return false;
+                TargetPlayerName = player.Name;
+                return DisableResult.Success;
+            }
+
+            if (!PlayerIsDisable(playername, "", "")) return DisableResult.NotFoundOffline;
+
+            if (!UsingOffline) return DisableResult.OfflinePermission;
 
             MKLP.DisabledKey.Remove(playername);
 
-            return true;
+            MKLP.SendStaffMessage(MKLP.GetText("[Offline] {0} was enable by {1}", playername, executername), Microsoft.Xna.Framework.Color.DarkRed);
+
+            MKLP.Discordklp.KLPBotSendMessageMainLog(MKLP.GetText("[Offline] Player **{0}** was Enabled by **{1}**", playername, executername));
+
+            TargetPlayerName = playername;
+            return DisableResult.SuccessOffline;
         }
 
         #endregion

@@ -1,4 +1,5 @@
 ﻿using IL.Terraria;
+using MKLP.Functions;
 using Newtonsoft.Json;
 using Steamworks;
 using System;
@@ -188,14 +189,15 @@ namespace MKLP
             public byte? Maximum_CharacterName = 255;
             public string[] Ban_NameContains = { "fuck", "卍" };
             public string[] IllegalNames = { "ServerConsole", "Server" };
+            public bool? Allow_PlayerName_On_BannedWords = false;
             public bool? Allow_PlayerName_Symbols = true;
             public char[] WhiteList_PlayerName_Symbols = { '[', ':', ']' };
-            public bool? Allow_PlayerName_InappropriateWords = false;
             public string S_1 = "▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬";
             public string HelpText_0a = "■▶▶▶▶ Reason_User_JoinMatchUUID ◀◀◀◀■";
             public string HelpText_Space3 = " ";
             public string HelpText_0b = "- %matchtype% : Shows if IP or UUID is matched";
             public string HelpText_0c = "- %accountname% : Shows what accountname was match";
+            public string HelpText_0d = "- %existaccountnames% : Shows accountnames that already registered and match";
             public string HelpText_Space4 = " ";
             public string HelpText_Space5 = " ";
             public bool? Target_UserMatchUUIDAndIP = false;
@@ -208,22 +210,24 @@ namespace MKLP
             public bool? Replace_Who_TShockCommand = true;
             public bool? Replace_AccountInfo_TShockCommand = true;
             public string S_3 = "▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬";
+            public bool? Simplified_DefeatedBossEventList = true;
+            public string S_4 = "▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬";
             public bool? Prevent_Place_BastStatueNearDoor = true;
             public bool? Prevent_IllegalWire_Progression = false;
             public bool? ReceivedWarning_WirePlaceUnderground = false;
-            public string S_4 = "▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬";
-            public bool? Allow_Players_StackSameAccessory = false;
             public string S_5 = "▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬";
-            public bool? Allow_Players_MultipleFishingBobber = false;
+            public bool? Allow_Players_StackSameAccessory = false;
             public string S_6 = "▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬";
-            public int? Ignore_Value_ClearLag = 12000;
+            public bool? Allow_Players_MultipleFishingBobber = false;
             public string S_7 = "▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬";
+            public int? Ignore_Value_ClearLag = 12000;
+            public string S_8 = "▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬";
             public bool? Use_VanishCMD_TPlayer_Active_Var = false;
             public bool? Use_OnUpdate_Func = true;
             public bool? DetectAllPlayerInv = false;
-            public string S_8 = "▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬";
-            public bool? UsingBanGuardPlugin = false;
             public string S_9 = "▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬";
+            public bool? UsingBanGuardPlugin = false;
+            public string S_10 = "▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬";
             public CONFIG_CHATMODERATION ChatMod = new();
             public CONFIG_DISABLENODE DisableNode = new();
             public CONFIG_PROGRESSION Progression = new();
@@ -248,6 +252,7 @@ namespace MKLP
                 S_7 = getdefault.S_7;
                 S_8 = getdefault.S_8;
                 S_9 = getdefault.S_9;
+                S_10 = getdefault.S_10;
 
                 HelpText_Space1 = getdefault.HelpText_Space1;
                 HelpText_Space2 = getdefault.HelpText_Space2;
@@ -263,14 +268,15 @@ namespace MKLP
                 if (Minimum_CharacterName == null) Minimum_CharacterName = getdefault.Minimum_CharacterName;
                 if (Maximum_CharacterName == null) Maximum_CharacterName = getdefault.Maximum_CharacterName;
                 if (IllegalNames == null) IllegalNames = getdefault.IllegalNames;
+                if (Allow_PlayerName_On_BannedWords == null) Allow_PlayerName_On_BannedWords = getdefault.Allow_PlayerName_On_BannedWords;
                 if (Allow_PlayerName_Symbols == null) Allow_PlayerName_Symbols = getdefault.Allow_PlayerName_Symbols;
                 if (WhiteList_PlayerName_Symbols == null) WhiteList_PlayerName_Symbols = getdefault.WhiteList_PlayerName_Symbols;
-                if (Allow_PlayerName_InappropriateWords == null) Allow_PlayerName_InappropriateWords = getdefault.Allow_PlayerName_InappropriateWords;
 
 
                 HelpText_0a = getdefault.HelpText_0a;
                 HelpText_0b = getdefault.HelpText_0b;
-                HelpText_0b = getdefault.HelpText_0b;
+                HelpText_0c = getdefault.HelpText_0c;
+                HelpText_0d = getdefault.HelpText_0d;
                 if (Target_UserMatchUUIDAndIP == null) Target_UserMatchUUIDAndIP = getdefault.Target_UserMatchUUIDAndIP;
                 if (Allow_User_JoinMatchUUID == null) Allow_User_JoinMatchUUID = getdefault.Allow_User_JoinMatchUUID;
                 if (Reason_User_JoinMatchUUID == null) Reason_User_JoinMatchUUID = getdefault.Reason_User_JoinMatchUUID;
@@ -281,6 +287,9 @@ namespace MKLP
                 if (Replace_Mute_TShockCommand == null) Replace_Mute_TShockCommand = getdefault.Replace_Mute_TShockCommand;
                 if (Replace_Who_TShockCommand == null) Replace_Who_TShockCommand = getdefault.Replace_Who_TShockCommand;
                 if (Replace_AccountInfo_TShockCommand == null) Replace_AccountInfo_TShockCommand = getdefault.Replace_AccountInfo_TShockCommand;
+
+
+                if (Simplified_DefeatedBossEventList == null) Simplified_DefeatedBossEventList = getdefault.Simplified_DefeatedBossEventList;
 
 
                 if (Prevent_Place_BastStatueNearDoor == null) Prevent_Place_BastStatueNearDoor = getdefault.Prevent_Place_BastStatueNearDoor;
@@ -332,29 +341,71 @@ namespace MKLP
         #endregion
 
         #region [ CHATMODERATION ]
+
+        public struct BannedWordValue
+        {
+            public string Word;
+            public BannedWordChecker.Detection BannedWordDetectionRange;
+            public bool MustBeSeperated;
+
+            public BannedWordValue(string Word, BannedWordChecker.Detection BannedWordDetectionRange, bool MustBeSeperated)
+            {
+                this.Word = Word;
+                this.BannedWordDetectionRange = BannedWordDetectionRange;
+                this.MustBeSeperated = MustBeSeperated;
+            }
+        }
+
         public class CONFIG_CHATMODERATION
         {
             public bool? Using_Chat_AutoMod = true;
 
-            public string[] Ban_MessageContains = { "nigga", "卍" };
-
+            public string S_1 = "▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬";
+            public string HelpText_0a = "■▶▶▶▶ Banned Word Detection Range ◀◀◀◀■";
+            public string HelpText_Space1 = " ";
+            public string HelpText_0b = "[ 0 ] NA";
+            public string HelpText_Space2 = " ";
+            public string HelpText_0c = "[ 1 ] VeryLow";
+            public string HelpText_Space3 = " ";
+            public string HelpText_0d = "[ 2 ] Low";
+            public string HelpText_Space4 = " ";
+            public string HelpText_0e = "[ 3 ] Moderate (default)";
+            public string HelpText_Space5 = " ";
+            public string HelpText_0f = "[ 4 ] High";
+            public string HelpText_Space6 = " ";
+            public string HelpText_0g = "[ 5 ] VeryHigh";
+            public string HelpText_Space7 = " ";
+            public string HelpText_Space8 = " ";
+            public BannedWordValue[] Ban_MessageContains =
+            {
+                new BannedWordValue("fuck", BannedWordChecker.Detection.Moderate, false),
+                new BannedWordValue("shit", BannedWordChecker.Detection.Moderate, false),
+                new BannedWordValue("bitch", BannedWordChecker.Detection.Moderate, false),
+                new BannedWordValue("cum", BannedWordChecker.Detection.Moderate, true),
+                new BannedWordValue("ass", BannedWordChecker.Detection.Moderate, true),
+                new BannedWordValue("nigga", BannedWordChecker.Detection.High, false),
+                new BannedWordValue("卍", BannedWordChecker.Detection.Low, false) 
+            };
+            public bool? CensorInsteadOfBlock = false;
+            public char? Censor_Character = '*';
+            public string S_2 = "▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬";
             public int? Maximum_Spammed_MessageLength_NoSpace = 10;
             public int? Maximum_Spammed_MessageLength_WithSpace = 25;
             public int? Threshold_Spammed_MessageLength_NoSpace = 4;
             public int? Threshold_Spammed_MessageLength_WithSpace = 6;
-
+            public string S_3 = "▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬";
             public int? Millisecond_Threshold = 5000;
-
+            public string S_4 = "▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬";
             public int? MutePlayer_AtWarning = 4;
-
+            public string S_5 = "▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬";
             public int? MuteDuration_Seconds = 600;
             public bool? PermanentDuration = false;
-
+            public string S_6 = "▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬";
             public bool? SendLog_SpamWarning = true;
-
+            public string S_7 = "▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬";
             public int? Maximum__MessageLength_NoSpace = 30;
             public int? Maximum__MessageLength_WithSpace = 200;
-
+            public string S_8 = "▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬";
             public bool? EnableLockDown_When_MultipleMutes = false;
             public int? NumberOFPlayersAutoMute_Lockdown = 5;
             public string AutoLockDown_Reason = "Multiple Player Mute's occur";
@@ -365,10 +416,37 @@ namespace MKLP
             {
                 CONFIG_CHATMODERATION getdefault = new();
 
+                S_1 = getdefault.S_1;
+                S_2 = getdefault.S_2;
+                S_3 = getdefault.S_3;
+                S_4 = getdefault.S_4;
+                S_5 = getdefault.S_5;
+                S_6 = getdefault.S_6;
+                S_7 = getdefault.S_7;
+                S_8 = getdefault.S_8;
+
+                HelpText_Space1 = getdefault.HelpText_Space1;
+                HelpText_Space2 = getdefault.HelpText_Space2;
+                HelpText_Space3 = getdefault.HelpText_Space3;
+                HelpText_Space4 = getdefault.HelpText_Space4;
+                HelpText_Space5 = getdefault.HelpText_Space5;
+                HelpText_Space6 = getdefault.HelpText_Space6;
+                HelpText_Space7 = getdefault.HelpText_Space7;
+                HelpText_Space8 = getdefault.HelpText_Space8;
+
+                HelpText_0a = getdefault.HelpText_0a;
+                HelpText_0b = getdefault.HelpText_0b;
+                HelpText_0c = getdefault.HelpText_0c;
+                HelpText_0d = getdefault.HelpText_0d;
+                HelpText_0e = getdefault.HelpText_0e;
+                HelpText_0f = getdefault.HelpText_0f;
+                HelpText_0g = getdefault.HelpText_0g;
 
                 if (Using_Chat_AutoMod == null) Using_Chat_AutoMod = getdefault.Using_Chat_AutoMod;
 
                 if (Ban_MessageContains == null) Ban_MessageContains = getdefault.Ban_MessageContains;
+                if (CensorInsteadOfBlock == null) CensorInsteadOfBlock = getdefault.CensorInsteadOfBlock;
+                if (Censor_Character == null) Censor_Character = getdefault.Censor_Character;
 
                 if (Maximum_Spammed_MessageLength_NoSpace == null) Maximum_Spammed_MessageLength_NoSpace = getdefault.Maximum_Spammed_MessageLength_NoSpace;
                 if (Maximum_Spammed_MessageLength_WithSpace == null) Maximum_Spammed_MessageLength_WithSpace = getdefault.Maximum_Spammed_MessageLength_WithSpace;
@@ -1513,7 +1591,7 @@ namespace MKLP
 
                 #region Main
 
-                newconfig.Main.Allow_PlayerName_InappropriateWords = oldconfig.Main.Allow_PlayerName_InappropriateWords;
+                newconfig.Main.Allow_PlayerName_On_BannedWords = oldconfig.Main.Allow_PlayerName_InappropriateWords;
                 newconfig.Main.Allow_PlayerName_Symbols = oldconfig.Main.Allow_PlayerName_Symbols;
                 newconfig.Main.Allow_Players_StackSameAccessory = oldconfig.Main.Allow_Players_StackSameAccessory;
                 newconfig.Main.Allow_User_JoinMatchUUID = oldconfig.Main.Allow_User_JoinMatchUUID;
@@ -1606,7 +1684,16 @@ namespace MKLP
                 #region ChatMod
 
                 newconfig.Main.ChatMod.AutoLockDown_Reason = oldconfig.ChatMod.AutoLockDown_Reason;
-                newconfig.Main.ChatMod.Ban_MessageContains = oldconfig.ChatMod.Ban_MessageContains;
+
+                List<BannedWordValue> Ban_MessageContainsTrsfer = new();
+
+                foreach (string getword in oldconfig.ChatMod.Ban_MessageContains)
+                {
+                    Ban_MessageContainsTrsfer.Add(new(getword, BannedWordChecker.Detection.Moderate, false));
+                }
+
+                newconfig.Main.ChatMod.Ban_MessageContains = Ban_MessageContainsTrsfer.ToArray();
+
                 newconfig.Main.ChatMod.EnableLockDown_When_MultipleMutes = oldconfig.ChatMod.EnableLockDown_When_MultipleMutes;
                 newconfig.Main.ChatMod.Maximum_Spammed_MessageLength_NoSpace = oldconfig.ChatMod.Maximum_Spammed_MessageLength_NoSpace;
                 newconfig.Main.ChatMod.Maximum_Spammed_MessageLength_WithSpace = oldconfig.ChatMod.Maximum_Spammed_MessageLength_WithSpace;

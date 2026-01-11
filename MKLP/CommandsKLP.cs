@@ -74,7 +74,7 @@ namespace MKLP
 
             #region { Admin }
 
-            Commands.ChatCommands.Add(new Command(MKLP.Config.Permissions.CMD_ClearMessage, CMD_ClearMessage, "clearmessage", "messageclear", "purgemessage")
+            Commands.ChatCommands.Add(new Command(MKLP.Config.Permissions.CMD_ClearMessage, CMD_ClearMessages, "clearmessages", "clearmessage", "messageclear", "purgemessage")
             {
                 HelpText = MKLP.GetText("Clears the whole message chat")
             });
@@ -136,6 +136,11 @@ namespace MKLP
             Commands.ChatCommands.Add(new Command(MKLP.Config.Permissions.CMD_Disable, CMD_undisable, "enable", "undisable")
             {
                 HelpText = MKLP.GetText("enable's a player that got disabled")
+            });
+
+            Commands.ChatCommands.Add(new Command(MKLP.Config.Permissions.CMD_Disable, CMD_disablelist, "disablelist")
+            {
+                HelpText = MKLP.GetText("list of player names that got disabled")
             });
 
             Commands.ChatCommands.Add(new Command(MKLP.Config.Permissions.CMD_UnBan, CMD_UnBan, "unban")
@@ -243,875 +248,71 @@ namespace MKLP
 
             MKLP.check_bosssched();
 
-            #region { stringdefeatedbosses }
-            /*
-            string GetListDefeatedBoss()
+            string GetDefeatedBoss = "";
+            string GetEnableBoss = "";
+
+            string GetDefeatedEvents = "";
+
+            foreach (var get in BossManager.GetDefeatedBoss())
             {
-                CONFIG_BOSSES getenabledboss = Config.BossManager;
-                Dictionary<string, bool> defeatedbosses = new();
-                if ((bool)getenabledboss.AllowKingSlime)
+                if ((bool)MKLP.Config.Main.Simplified_DefeatedBossEventList)
                 {
-                    if (NPC.downedSlimeKing)
+                    if (get.Value)
                     {
-                        defeatedbosses.Add("[i:2493] King Slime", true);
+                        GetDefeatedBoss += BossManager.GetBossIconFromName(get.Key) + ",";
                     }
                     else
                     {
-                        defeatedbosses.Add("[i:2493] King Slime", false);
-                    }
-                }
-                else if (NPC.downedSlimeKing)
-                {
-                    defeatedbosses.Add("[i:2493] King Slime", true);
-                }
-                if ((bool)getenabledboss.AllowEyeOfCthulhu)
-                {
-                    if (NPC.downedBoss1)
-                    {
-                        defeatedbosses.Add("[i:2112] Eye of Cthulhu", true);
-                    }
-                    else
-                    {
-                        defeatedbosses.Add("[i:2112] Eye of Cthulhu", false);
-                    }
-                }
-                else if (NPC.downedBoss1)
-                {
-                    defeatedbosses.Add("[i:2112] Eye of Cthulhu", true);
-                }
-                if ((bool)getenabledboss.AllowEaterOfWorlds || (bool)getenabledboss.AllowBrainOfCthulhu)
-                {
-                    if (NPC.downedBoss2)
-                    {
-                        defeatedbosses.Add($"{(WorldGen.crimson ? "[i:2104]" : "[i:2111]")} Evil Boss", true);
-                    }
-                    else
-                    {
-                        defeatedbosses.Add($"{(WorldGen.crimson ? "[i:2104]" : "[i:2111]")} Evil Boss", false);
-                    }
-                }
-                else if (NPC.downedBoss2)
-                {
-                    defeatedbosses.Add($"{(WorldGen.crimson ? "[i:2104]" : "[i:2111]")} Evil Boss", true);
-                }
-                if ((bool)getenabledboss.AllowDeerclops)
-                {
-                    if (NPC.downedDeerclops)
-                    {
-                        defeatedbosses.Add("[i:5109] Deerclops", true);
-                    }
-                    else
-                    {
-                        defeatedbosses.Add("[i:5109] Deerclops", false);
-                    }
-                }
-                else if (NPC.downedDeerclops)
-                {
-                    defeatedbosses.Add("[i:5109] Deerclops", true);
-                }
-                if ((bool)getenabledboss.AllowQueenBee)
-                {
-                    if (NPC.downedQueenBee)
-                    {
-                        defeatedbosses.Add("[i:2108] QueenBee", true);
-                    }
-                    else
-                    {
-                        defeatedbosses.Add("[i:2108] QueenBee", false);
-                    }
-                }
-                else if (NPC.downedQueenBee)
-                {
-                    defeatedbosses.Add("[i:2108] QueenBee", true);
-                }
-                if ((bool)getenabledboss.AllowSkeletron)
-                {
-                    if (NPC.downedBoss3)
-                    {
-                        defeatedbosses.Add("[i:1281] Skeletron", true);
-                    }
-                    else
-                    {
-                        defeatedbosses.Add("[i:1281] Skeletron", false);
-                    }
-                }
-                else if (NPC.downedBoss3)
-                {
-                    defeatedbosses.Add("[i:1281] Skeletron", true);
-                }
-                if ((bool)getenabledboss.AllowWallOfFlesh)
-                {
-                    if (Main.hardMode)
-                    {
-                        defeatedbosses.Add("[i:2105] Wall of Flesh", true);
-                    }
-                    else
-                    {
-                        defeatedbosses.Add("[i:2105] Wall of Flesh", false);
-                    }
-                }
-                else if (Main.hardMode)
-                {
-                    defeatedbosses.Add("[i:2105] Wall of Flesh", true);
-                }
-                if ((bool)getenabledboss.AllowQueenSlime)
-                {
-                    if (NPC.downedQueenSlime)
-                    {
-                        defeatedbosses.Add("[i:4959] Queen Slime", true);
-                    }
-                    else
-                    {
-                        defeatedbosses.Add("[i:4959] Queen Slime", false);
-                    }
-                }
-                else if (NPC.downedQueenSlime)
-                {
-                    defeatedbosses.Add("[i:4959] Queen Slime", true);
-                }
-                if (Main.zenithWorld)
-                {
-                    if ((bool)getenabledboss.AllowTheDestroyer && (bool)getenabledboss.AllowTheTwins && (bool)getenabledboss.AllowSkeletronPrime)
-                    {
-                        if (NPC.downedMechBoss1 && NPC.downedMechBoss2 && NPC.downedMechBoss3)
-                        {
-                            defeatedbosses.Add("[i:2113] Mechdusa", true);
-                        }
-                        else
-                        {
-                            defeatedbosses.Add("[i:2113] Mechdusa", false);
-                        }
-                    }
-                    else if (NPC.downedMechBoss1 && NPC.downedMechBoss2 && NPC.downedMechBoss3)
-                    {
-                        defeatedbosses.Add("[i:2113] Mechdusa", true);
+                        GetEnableBoss += BossManager.GetBossIconFromName(get.Key) + ",";
                     }
                 }
                 else
                 {
-                    if ((bool)getenabledboss.AllowTheDestroyer)
+                    if (get.Value)
                     {
-                        if (NPC.downedMechBoss1)
-                        {
-                            defeatedbosses.Add("[i:2113] Destroyer", true);
-                        }
-                        else
-                        {
-                            defeatedbosses.Add("[i:2113] Destroyer", false);
-                        }
-                    }
-                    else if (NPC.downedMechBoss1)
-                    {
-                        defeatedbosses.Add("[i:2113] Destroyer", true);
-                    }
-                    if ((bool)getenabledboss.AllowTheTwins)
-                    {
-                        if (NPC.downedMechBoss2)
-                        {
-                            defeatedbosses.Add("[i:2106] The Twins", true);
-                        }
-                        else
-                        {
-                            defeatedbosses.Add("[i:2106] The Twins", false);
-                        }
-                    }
-                    else if (NPC.downedMechBoss2)
-                    {
-                        defeatedbosses.Add("[i:2106] The Twins", true);
-                    }
-                    if ((bool)getenabledboss.AllowSkeletronPrime)
-                    {
-                        if (NPC.downedMechBoss3)
-                        {
-                            defeatedbosses.Add("[i:2107] Skeletron prime", true);
-                        }
-                        else
-                        {
-                            defeatedbosses.Add("[i:2107] Skeletron prime", false);
-                        }
-                    }
-                    else if (NPC.downedMechBoss3)
-                    {
-                        defeatedbosses.Add("[i:2107] Skeletron prime", true);
-                    }
-                }
-
-                if ((bool)getenabledboss.AllowDukeFishron)
-                {
-                    if (NPC.downedFishron)
-                    {
-                        defeatedbosses.Add("[i:2588] Duke Fishron", true);
+                        GetDefeatedBoss += $"- {BossManager.GetBossIconFromName(get.Key)} [c/87ff74:{get.Key}]\n";
                     }
                     else
                     {
-                        defeatedbosses.Add("[i:2588] Duke Fishron", false);
+                        GetEnableBoss += $"- {BossManager.GetBossIconFromName(get.Key)} [c/fefe6a:{get.Key}]\n";
                     }
                 }
-                else if (NPC.downedFishron)
-                {
-                    defeatedbosses.Add("[i:2588] Duke Fishron", true);
-                }
-                if ((bool)getenabledboss.AllowPlantera)
-                {
-                    if (NPC.downedPlantBoss)
-                    {
-                        defeatedbosses.Add("[i:2109] Plantera", true);
-                    }
-                    else
-                    {
-                        defeatedbosses.Add("[i:2109] Plantera", false);
-                    }
-                }
-                else if (NPC.downedPlantBoss)
-                {
-                    defeatedbosses.Add("[i:2109] Plantera", true);
-                }
-                if ((bool)getenabledboss.AllowEmpressOfLight)
-                {
-                    if (NPC.downedEmpressOfLight)
-                    {
-                        defeatedbosses.Add("[i:4784] Empress of Light", true);
-                    }
-                    else
-                    {
-                        defeatedbosses.Add("[i:4784] Empress of Light", false);
-                    }
-                }
-                else if (NPC.downedEmpressOfLight)
-                {
-                    defeatedbosses.Add("[i:4784] Empress of Light", true);
-                }
-                if ((bool)getenabledboss.AllowGolem)
-                {
-                    if (NPC.downedGolemBoss)
-                    {
-                        defeatedbosses.Add("[i:2110] Golem", true);
-                    }
-                    else
-                    {
-                        defeatedbosses.Add("[i:2110] Golem", false);
-                    }
-                }
-                else if (NPC.downedGolemBoss)
-                {
-                    defeatedbosses.Add("[i:2110] Golem", true);
-                }
-                if ((bool)getenabledboss.AllowLunaticCultist)
-                {
-                    if (NPC.downedAncientCultist)
-                    {
-                        defeatedbosses.Add("[i:3372] Lunatic Cultist", true);
-                    }
-                    else
-                    {
-                        defeatedbosses.Add("[i:3372] Lunatic Cultist", false);
-                    }
-                }
-                else if (NPC.downedAncientCultist)
-                {
-                    defeatedbosses.Add("[i:3372] Lunatic Cultist", true);
-                }
-                if ((bool)getenabledboss.AllowMoonLord)
-                {
-                    if (NPC.downedMoonlord)
-                    {
-                        defeatedbosses.Add("[i:3373] MoonLord", true);
-                    }
-                    else
-                    {
-                        defeatedbosses.Add("[i:3373] MoonLord", false);
-                    }
-                }
-                else if (NPC.downedMoonlord)
-                {
-                    defeatedbosses.Add("[i:3373] MoonLord", true);
-                }
-                string result = "";
-                foreach (var boss in defeatedbosses)
-                {
-                    result += $"{boss.Key} {(boss.Value ? "[c/00f000:[K][c/00f000:]]" : "[c/ffff00:[E][c/ffff00:]]")}\n";
-                }
-
-                return result;
             }
-            */
-            #endregion
-
-            #region { stringdefeatedbosses2 }
-            string GetListDefeatedBoss2()
+            foreach (var get in BossManager.GetDefeatedEvents())
             {
-                Config.CONFIG_BOSSES getenabledboss = MKLP.Config.BossManager;
-                Dictionary<string, bool> defeatedbosses = new();
-                if ((bool)getenabledboss.AllowKingSlime)
+                if ((bool)MKLP.Config.Main.Simplified_DefeatedBossEventList)
                 {
-                    if (NPC.downedSlimeKing)
-                    {
-                        defeatedbosses.Add("[i:2493]", true);
-                    }
-                    else
-                    {
-                        defeatedbosses.Add("[i:2493]", false);
-                    }
-                }
-                else if (NPC.downedSlimeKing)
+                    GetDefeatedEvents += BossManager.GetEventsIconFromName(get.Key) + ",";
+                    
+                } else
                 {
-                    defeatedbosses.Add("[i:2493]", true);
+                    GetDefeatedEvents += $"- {BossManager.GetEventsIconFromName(get.Key)} [c/8dfdf1:{get.Key}]\n";
+                    
                 }
-                if ((bool)getenabledboss.AllowEyeOfCthulhu)
-                {
-                    if (NPC.downedBoss1)
-                    {
-                        defeatedbosses.Add("[i:2112]", true);
-                    }
-                    else
-                    {
-                        defeatedbosses.Add("[i:2112]", false);
-                    }
-                }
-                else if (NPC.downedBoss1)
-                {
-                    defeatedbosses.Add("[i:2112]", true);
-                }
-                if ((bool)getenabledboss.AllowEaterOfWorlds || (bool)getenabledboss.AllowBrainOfCthulhu)
-                {
-                    if (NPC.downedBoss2)
-                    {
-                        defeatedbosses.Add($"{(WorldGen.crimson ? "[i:2104]" : "[i:2111]")}", true);
-                    }
-                    else
-                    {
-                        defeatedbosses.Add($"{(WorldGen.crimson ? "[i:2104]" : "[i:2111]")}", false);
-                    }
-                }
-                else if (NPC.downedBoss2)
-                {
-                    defeatedbosses.Add($"{(WorldGen.crimson ? "[i:2104]" : "[i:2111]")}", true);
-                }
-                if ((bool)getenabledboss.AllowDeerclops)
-                {
-                    if (NPC.downedDeerclops)
-                    {
-                        defeatedbosses.Add("[i:5109]", true);
-                    }
-                    else
-                    {
-                        defeatedbosses.Add("[i:5109]", false);
-                    }
-                }
-                else if (NPC.downedDeerclops)
-                {
-                    defeatedbosses.Add("[i:5109]", true);
-                }
-                if ((bool)getenabledboss.AllowQueenBee)
-                {
-                    if (NPC.downedQueenBee)
-                    {
-                        defeatedbosses.Add("[i:2108]", true);
-                    }
-                    else
-                    {
-                        defeatedbosses.Add("[i:2108]", false);
-                    }
-                }
-                else if (NPC.downedQueenBee)
-                {
-                    defeatedbosses.Add("[i:2108]", true);
-                }
-                if ((bool)getenabledboss.AllowSkeletron)
-                {
-                    if (NPC.downedBoss3)
-                    {
-                        defeatedbosses.Add("[i:1281]", true);
-                    }
-                    else
-                    {
-                        defeatedbosses.Add("[i:1281]", false);
-                    }
-                }
-                else if (NPC.downedBoss3)
-                {
-                    defeatedbosses.Add("[i:1281]", true);
-                }
-                if ((bool)getenabledboss.AllowWallOfFlesh)
-                {
-                    if (Main.hardMode)
-                    {
-                        defeatedbosses.Add("[i:2105]", true);
-                    }
-                    else
-                    {
-                        defeatedbosses.Add("[i:2105]", false);
-                    }
-                }
-                else if (Main.hardMode)
-                {
-                    defeatedbosses.Add("[i:2105]", true);
-                }
-                if ((bool)getenabledboss.AllowQueenSlime)
-                {
-                    if (NPC.downedQueenSlime)
-                    {
-                        defeatedbosses.Add("[i:4959]", true);
-                    }
-                    else
-                    {
-                        defeatedbosses.Add("[i:4959]", false);
-                    }
-                }
-                else if (NPC.downedQueenSlime)
-                {
-                    defeatedbosses.Add("[i:4959]", true);
-                }
-                if (Main.zenithWorld)
-                {
-                    if ((bool)getenabledboss.AllowTheDestroyer && (bool)getenabledboss.AllowTheTwins && (bool)getenabledboss.AllowSkeletronPrime)
-                    {
-                        if (NPC.downedMechBoss1 && NPC.downedMechBoss2 && NPC.downedMechBoss3)
-                        {
-                            defeatedbosses.Add("[i:2113]", true);
-                        }
-                        else
-                        {
-                            defeatedbosses.Add("[i:2113]", false);
-                        }
-                    }
-                    else if (NPC.downedMechBoss1 && NPC.downedMechBoss2 && NPC.downedMechBoss3)
-                    {
-                        defeatedbosses.Add("[i:2113]", true);
-                    }
-                }
-                else
-                {
-                    if ((bool)getenabledboss.AllowTheDestroyer)
-                    {
-                        if (NPC.downedMechBoss1)
-                        {
-                            defeatedbosses.Add("[i:2113]", true);
-                        }
-                        else
-                        {
-                            defeatedbosses.Add("[i:2113]", false);
-                        }
-                    }
-                    else if (NPC.downedMechBoss1)
-                    {
-                        defeatedbosses.Add("[i:2113]", true);
-                    }
-                    if ((bool)getenabledboss.AllowTheTwins)
-                    {
-                        if (NPC.downedMechBoss2)
-                        {
-                            defeatedbosses.Add("[i:2106]", true);
-                        }
-                        else
-                        {
-                            defeatedbosses.Add("[i:2106]", false);
-                        }
-                    }
-                    else if (NPC.downedMechBoss2)
-                    {
-                        defeatedbosses.Add("[i:2106]", true);
-                    }
-                    if ((bool)getenabledboss.AllowSkeletronPrime)
-                    {
-                        if (NPC.downedMechBoss3)
-                        {
-                            defeatedbosses.Add("[i:2107]", true);
-                        }
-                        else
-                        {
-                            defeatedbosses.Add("[i:2107]", false);
-                        }
-                    }
-                    else if (NPC.downedMechBoss3)
-                    {
-                        defeatedbosses.Add("[i:2107]", true);
-                    }
-                }
-
-                if ((bool)getenabledboss.AllowDukeFishron)
-                {
-                    if (NPC.downedFishron)
-                    {
-                        defeatedbosses.Add("[i:2588]", true);
-                    }
-                    else
-                    {
-                        defeatedbosses.Add("[i:2588]", false);
-                    }
-                }
-                else if (NPC.downedFishron)
-                {
-                    defeatedbosses.Add("[i:2588]", true);
-                }
-                if ((bool)getenabledboss.AllowPlantera)
-                {
-                    if (NPC.downedPlantBoss)
-                    {
-                        defeatedbosses.Add("[i:2109]", true);
-                    }
-                    else
-                    {
-                        defeatedbosses.Add("[i:2109]", false);
-                    }
-                }
-                else if (NPC.downedPlantBoss)
-                {
-                    defeatedbosses.Add("[i:2109]", true);
-                }
-                if ((bool)getenabledboss.AllowEmpressOfLight)
-                {
-                    if (NPC.downedEmpressOfLight)
-                    {
-                        defeatedbosses.Add("[i:4784]", true);
-                    }
-                    else
-                    {
-                        defeatedbosses.Add("[i:4784]", false);
-                    }
-                }
-                else if (NPC.downedEmpressOfLight)
-                {
-                    defeatedbosses.Add("[i:4784]", true);
-                }
-                if ((bool)getenabledboss.AllowGolem)
-                {
-                    if (NPC.downedGolemBoss)
-                    {
-                        defeatedbosses.Add("[i:2110]", true);
-                    }
-                    else
-                    {
-                        defeatedbosses.Add("[i:2110]", false);
-                    }
-                }
-                else if (NPC.downedGolemBoss)
-                {
-                    defeatedbosses.Add("[i:2110]", true);
-                }
-                if ((bool)getenabledboss.AllowLunaticCultist)
-                {
-                    if (NPC.downedAncientCultist)
-                    {
-                        defeatedbosses.Add("[i:3372]", true);
-                    }
-                    else
-                    {
-                        defeatedbosses.Add("[i:3372]", false);
-                    }
-                }
-                else if (NPC.downedAncientCultist)
-                {
-                    defeatedbosses.Add("[i:3372]", true);
-                }
-                if ((bool)getenabledboss.AllowMoonLord)
-                {
-                    if (NPC.downedMoonlord)
-                    {
-                        defeatedbosses.Add("[i:3373]", true);
-                    }
-                    else
-                    {
-                        defeatedbosses.Add("[i:3373]", false);
-                    }
-                }
-                else if (NPC.downedMoonlord)
-                {
-                    defeatedbosses.Add("[i:3373]", true);
-                }
-                string getdefeatedboss = "";
-                string getenableboss = "";
-                foreach (var boss in defeatedbosses)
-                {
-                    if (boss.Value)
-                    {
-                        getdefeatedboss += $"{boss.Key},";
-                    }
-                    else
-                    {
-                        getenableboss += $"{boss.Key},";
-                    }
-                }
-
-                string result =
-                    $"[c/25ba14:Defeated Bosses:] {getdefeatedboss}\n" +
-                    $"[c/e0e50f:Enabled Bosses:] {getenableboss}";
-
-                return result;
             }
-            #endregion
+            GetDefeatedBoss = GetDefeatedBoss.TrimEnd(',');
+            GetEnableBoss = GetEnableBoss.TrimEnd(',');
+            GetDefeatedEvents = GetDefeatedEvents.TrimEnd(',');
 
-            #region { stringdefeatedinvasion }
-            string GetListDefeatedInvasion()
+            if (GetDefeatedBoss == "" && GetEnableBoss == "" && GetDefeatedEvents == "")
             {
-                Dictionary<string, bool> defeatedinvasion = new();
-                if (true)
-                {
-                    if (NPC.downedGoblins)
-                    {
-                        defeatedinvasion.Add("Goblin Army", true);
-                    }
-                    else
-                    {
-                        //defeatedinvasion.Add("Goblin Army", false);
-                    }
-                }
-                if (true)
-                {
-                    if (NPC.downedFrost)
-                    {
-                        defeatedinvasion.Add("Frost Legion", true);
-                    }
-                    else
-                    {
-                        //defeatedinvasion.Add("Frost Legion", false);
-                    }
-                }
-                if (true)
-                {
-                    if (NPC.downedPirates)
-                    {
-                        defeatedinvasion.Add("Pirates", true);
-                    }
-                    else
-                    {
-                        //defeatedinvasion.Add("Pirates", false);
-                    }
-                }
-                if (true)
-                {
-                    if (NPC.downedMartians)
-                    {
-                        defeatedinvasion.Add("The Martians", true);
-                    }
-                    else
-                    {
-                        //defeatedinvasion.Add("The Martians", false);
-                    }
-                }
-                if (true)
-                {
-                    if (NPC.downedTowers)
-                    {
-                        defeatedinvasion.Add("Celestial Pillars", true);
-                    }
-                    else
-                    {
-                        //defeatedinvasion.Add("Celestial Pillars", false);
-                    }
-                }
-                string result = "";
-
-                foreach (var invasion in defeatedinvasion)
-                {
-                    result += $"- {invasion.Key}\n";
-                }
-
-                return result;
-            }
-            #endregion
-
-            #region { GetNextBossSchedule }
-
-            string GetNextBossSchedule()
+                GetDefeatedBoss = "There aren't any progress yet";
+            } else
             {
-                Config.CONFIG_BOSSES getbosssched = MKLP.Config.BossManager;
-
-                string result = "";
-
-                DateTime nextsched = DateTime.MaxValue;
-
-                if (!(bool)getbosssched.AllowKingSlime && !NPC.downedSlimeKing)
-                {
-                    if (nextsched > (DateTime)getbosssched.ScheduleAllowKingSlime)
-                    {
-                        result = "\n\nNext Boss is King Slime in ";
-                        nextsched = (DateTime)getbosssched.ScheduleAllowKingSlime;
-                    }
-                }
-
-                if (!(bool)getbosssched.AllowEyeOfCthulhu && !NPC.downedBoss1)
-                {
-                    if (nextsched > (DateTime)getbosssched.ScheduleAllowEyeOfCthulhu)
-                    {
-                        result = "\n\nNext Boss is Eye Of Cthulhu in ";
-                        nextsched = (DateTime)getbosssched.ScheduleAllowEyeOfCthulhu;
-                    }
-                }
-
-                if (!(bool)getbosssched.AllowEaterOfWorlds && !NPC.downedBoss2)
-                {
-                    if (nextsched > (DateTime)getbosssched.ScheduleAllowEaterOfWorlds)
-                    {
-                        result = "\n\nNext Boss is Eater Of Worlds in ";
-                        nextsched = (DateTime)getbosssched.ScheduleAllowEaterOfWorlds;
-                    }
-                }
-
-                if (!(bool)getbosssched.AllowDeerclops && !NPC.downedDeerclops)
-                {
-                    if (nextsched > (DateTime)getbosssched.ScheduleAllowDeerclops)
-                    {
-                        result = "\n\nNext Boss is Deerclops in ";
-                        nextsched = (DateTime)getbosssched.ScheduleAllowDeerclops;
-                    }
-                }
-
-                if (!(bool)getbosssched.AllowQueenBee && !NPC.downedQueenBee)
-                {
-                    if (nextsched > (DateTime)getbosssched.ScheduleAllowQueenBee)
-                    {
-                        result = "\n\nNext Boss is Queen Bee in ";
-                        nextsched = (DateTime)getbosssched.ScheduleAllowQueenBee;
-                    }
-                }
-
-                if (!(bool)getbosssched.AllowSkeletron && !NPC.downedBoss3)
-                {
-                    if (nextsched > (DateTime)getbosssched.ScheduleAllowSkeletron)
-                    {
-                        result = "\n\nNext Boss is Skeletron in ";
-                        nextsched = (DateTime)getbosssched.ScheduleAllowSkeletron;
-                    }
-                }
-
-                if (!(bool)getbosssched.AllowWallOfFlesh && !Main.hardMode)
-                {
-                    if (nextsched > (DateTime)getbosssched.ScheduleAllowWallOfFlesh)
-                    {
-                        result = "\n\nNext Boss is Wall of Flesh in ";
-                        nextsched = (DateTime)getbosssched.ScheduleAllowWallOfFlesh;
-                    }
-                }
-
-                if (!(bool)getbosssched.AllowQueenSlime && !NPC.downedQueenSlime)
-                {
-                    if (nextsched > (DateTime)getbosssched.ScheduleAllowQueenSlime)
-                    {
-                        result = "\n\nNext Boss is Queen Slime in ";
-                        nextsched = (DateTime)getbosssched.ScheduleAllowQueenSlime;
-                    }
-                }
-
-                if (!(bool)getbosssched.AllowTheDestroyer && !NPC.downedMechBoss1)
-                {
-                    if (nextsched > (DateTime)getbosssched.ScheduleAllowTheDestroyer)
-                    {
-                        result = "\n\nNext Boss is The Destroyer in ";
-                        nextsched = (DateTime)getbosssched.ScheduleAllowTheDestroyer;
-                    }
-                }
-
-                if (!(bool)getbosssched.AllowTheTwins && !NPC.downedMechBoss2)
-                {
-                    if (nextsched > (DateTime)getbosssched.ScheduleAllowTheTwins)
-                    {
-                        result = "\n\nNext Boss is The Twins in ";
-                        nextsched = (DateTime)getbosssched.ScheduleAllowTheTwins;
-                    }
-                }
-
-                if (!(bool)getbosssched.AllowSkeletronPrime && !NPC.downedMechBoss3)
-                {
-                    if (nextsched > (DateTime)getbosssched.ScheduleAllowSkeletronPrime)
-                    {
-                        result = "\n\nNext Boss is Skeletron Prime in ";
-                        nextsched = (DateTime)getbosssched.ScheduleAllowSkeletronPrime;
-                    }
-                }
-
-                if (!(bool)getbosssched.AllowDukeFishron && !NPC.downedFishron)
-                {
-                    if (nextsched > (DateTime)getbosssched.ScheduleAllowDukeFishron)
-                    {
-                        result = "\n\nNext Boss is Duke Fishron in ";
-                        nextsched = (DateTime)getbosssched.ScheduleAllowDukeFishron;
-                    }
-                }
-
-                if (!(bool)getbosssched.AllowPlantera && !NPC.downedPlantBoss)
-                {
-                    if (nextsched > (DateTime)getbosssched.ScheduleAllowPlantera)
-                    {
-                        result = "\n\nNext Boss is Plantera in ";
-                        nextsched = (DateTime)getbosssched.ScheduleAllowPlantera;
-                    }
-                }
-
-                if (!(bool)getbosssched.AllowEmpressOfLight && !NPC.downedEmpressOfLight)
-                {
-                    if (nextsched > (DateTime)getbosssched.ScheduleAllowEmpressOfLight)
-                    {
-                        result = "\n\nNext Boss is Empress Of Light in ";
-                        nextsched = (DateTime)getbosssched.ScheduleAllowEmpressOfLight;
-                    }
-                }
-
-                if (!(bool)getbosssched.AllowGolem && !NPC.downedGolemBoss)
-                {
-                    if (nextsched > (DateTime)getbosssched.ScheduleAllowGolem)
-                    {
-                        result = "\n\nNext Boss is Golem in ";
-                        nextsched = (DateTime)getbosssched.ScheduleAllowGolem;
-                    }
-                }
-
-                if (!(bool)getbosssched.AllowLunaticCultist && !NPC.downedAncientCultist)
-                {
-                    if (nextsched > (DateTime)getbosssched.ScheduleAllowLunaticCultist)
-                    {
-                        result = "\n\nNext Boss is Lunatic Cultist in ";
-                        nextsched = (DateTime)getbosssched.ScheduleAllowLunaticCultist;
-                    }
-                }
-
-                if (!(bool)getbosssched.AllowMoonLord && !NPC.downedMoonlord)
-                {
-                    if (nextsched > (DateTime)getbosssched.ScheduleAllowMoonLord)
-                    {
-                        result = "\n\nNext Boss is Moon Lord in ";
-                        nextsched = (DateTime)getbosssched.ScheduleAllowMoonLord;
-                    }
-                }
-
-                if (nextsched == DateTime.MaxValue) return "";
-
-                string GetTimeString(DateTime datetime)
-                {
-                    TimeSpan getresult = (datetime - DateTime.UtcNow);
-
-                    if (getresult.TotalDays >= 1)
-                    {
-                        return $"{Math.Floor(getresult.TotalDays)}{(getresult.TotalDays >= 2 ? "Days" : "Day")}";
-                    }
-                    if (getresult.TotalHours >= 1)
-                    {
-                        return $"{Math.Floor(getresult.TotalHours)}{(getresult.TotalHours >= 2 ? "Hours" : "Hour")}";
-                    }
-                    if (getresult.TotalMinutes >= 1)
-                    {
-                        return $"{Math.Floor(getresult.TotalMinutes)}{(getresult.TotalMinutes >= 2 ? "Minutes" : "Minute")}";
-                    }
-                    if (getresult.TotalSeconds >= 1)
-                    {
-                        return $"{Math.Floor(getresult.TotalSeconds)}{(getresult.TotalSeconds >= 2 ? "Seconds" : "Second")}";
-                    }
-                    if (getresult.TotalMilliseconds >= 1)
-                    {
-                        return $"{Math.Floor(getresult.TotalMilliseconds)}{(getresult.TotalMilliseconds >= 2 ? "Milliseconds" : "Millisecond")}";
-                    }
-                    return $"Time {Math.Floor(getresult.TotalSeconds)}{(getresult.TotalSeconds >= 2 ? "Seconds" : "Second")}";
-                }
-
-                return result + GetTimeString(nextsched);
+                GetDefeatedBoss = GetDefeatedBoss == "" ? "[c/23ff00:No Defeated Bosses...]\n\n" : "[c/23ff00:Defeated Bosses:]\n" + ((bool)MKLP.Config.Main.Simplified_DefeatedBossEventList ? $"- {GetDefeatedBoss}\n" : GetDefeatedBoss);
+                GetEnableBoss = GetEnableBoss == "" ? "[c/ffff00:No Enable Bosses...]\n\n" : "[c/ffff00:Enabled Bosses:]\n" + ((bool)MKLP.Config.Main.Simplified_DefeatedBossEventList ? $"- {GetEnableBoss}\n" : GetEnableBoss);
+                GetDefeatedEvents = GetDefeatedEvents == "" ? "[c/00fde2:No Defeated Events...]\n\n" : "[c/00fde2:Defeated Events:]\n" + ((bool)MKLP.Config.Main.Simplified_DefeatedBossEventList ? $"- {GetDefeatedEvents}\n" : GetDefeatedEvents);
             }
 
-            #endregion
 
-            args.Player.SendMessage(
-                MKLP.GetText($"List Of Bosses:") +
-                MKLP.GetText($"\n{GetListDefeatedBoss2()}{GetNextBossSchedule()}"),
-                Color.Gray);
+                args.Player.SendMessage(
+                    MKLP.GetText(
+                        $"List Of Bosses:\n" +
+                        $"{GetDefeatedBoss}" +
+                        $"{GetEnableBoss}" +
+                        $"{GetDefeatedEvents}"
+                    ),
+                    Color.Gray);
 
             #endregion
         }
@@ -1545,7 +746,7 @@ namespace MKLP
 
         #region { Admin }
 
-        private static void CMD_ClearMessage(CommandArgs args)
+        private static void CMD_ClearMessages(CommandArgs args)
         {
             #region code
 
@@ -1554,7 +755,7 @@ namespace MKLP
                 TSPlayer.All.SendMessage("\n\n\n\n", Color.Black);
             }
 
-            args.Player.SendSuccessMessage(MKLP.GetText("Message Cleared!"));
+            args.Player.SendSuccessMessage(MKLP.GetText("Messages Cleared!"));
 
             #endregion
         }
@@ -4301,35 +3502,69 @@ namespace MKLP
             if (args.Parameters.Count == 0)
             {
                 args.Player.SendErrorMessage(MKLP.GetText($"Proper Usage: {Commands.Specifier}enable <player>" +
-                    $"\nEnable Offline by '{Commands.Specifier}enable <playername> -offline'"));
+                    (args.Player.HasPermission(MKLP.Config.Permissions.CMD_OfflineEnable) ? $"\nEnable Offline by '{Commands.Specifier}enable <playername> -offline'" : "")));
                 return;
             }
 
-            var players = TSPlayer.FindByNameOrID(args.Parameters[0]);
-
-            if (players.Count > 1)
+            if (enableoffline && !args.Player.HasPermission(MKLP.Config.Permissions.CMD_OfflineEnable))
             {
-                args.Player.SendMultipleMatchError(players.Select(p => p.Name));
-                return;
+                args.Player.SendErrorMessage(MKLP.GetText("You do not have permission to Enable Offline Players"));
             }
 
-            if (players.Count < 1)
-            {
-                args.Player.SendErrorMessage(MKLP.GetText("Could not find the target specified. Check that you have the correct spelling."));
-                return;
-            }
+            IEnumerable<string> mplayers;
+            string targetplayername;
 
-            var targetplayer = players[0];
-
-            if (ManagePlayer.UnDisablePlayer(targetplayer.Name, enableoffline, false, args.Player.Name))
+            switch (ManagePlayer.UnDisablePlayer(args.Parameters[0], enableoffline, false, out targetplayername, out mplayers, args.Player.Name))
             {
-                args.Player.SendSuccessMessage(MKLP.GetText("Player {0} enabled", targetplayer.Name));
+                case ManagePlayer.DisableResult.Success:
+                    {
+                        args.Player.SendSuccessMessage(MKLP.GetText("Player {0} enabled", targetplayername));
+                        break;
+                    }
+                case ManagePlayer.DisableResult.SuccessOffline:
+                    {
+                        args.Player.SendSuccessMessage(MKLP.GetText("Offline Player {0} enabled", targetplayername));
+                        break;
+                    }
+                case ManagePlayer.DisableResult.MultiplePlayerMatch:
+                    {
+                        args.Player.SendMultipleMatchError(mplayers);
+                        break;
+                    }
+                case ManagePlayer.DisableResult.NotFoundOffline:
+                    {
+                        args.Player.SendErrorMessage(MKLP.GetText("Could not find the target specified. Check that you have the correct spelling."));
+                        break;
+                    }
+                case ManagePlayer.DisableResult.AlreadyEnabled:
+                    {
+                        args.Player.SendErrorMessage(MKLP.GetText("Player {0} isn't disabled", targetplayername));
+                        break;
+                    }
+                default:
+                    {
+                        args.Player.SendErrorMessage(MKLP.GetText("an error occur"));
+                        break;
+                    }
             }
-            else
-            {
-                args.Player.SendErrorMessage(MKLP.GetText("Player {0} isn't disabled", targetplayer.Name));
-            }
+            #endregion
+        }
 
+        private static void CMD_disablelist(CommandArgs args)
+        {
+            #region code
+            var DisableList = MKLP.DisabledKey.Select(dp => dp.Key);
+
+            int page = 1;
+
+            if (args.Parameters.Count >= 1) { int.TryParse(args.Parameters[0], out page); }
+
+            PaginationTools.SendPage(args.Player, page, DisableList.ToList(), new PaginationTools.Settings()
+            {
+                HeaderFormat = string.Format(MKLP.GetText("Disable Players page ({{0}}/{{1}}):")),
+                FooterFormat = string.Format(MKLP.GetText("Type '" + Commands.Specifier + "disablelist {{0}}' for more.")),
+                NothingToDisplayString = MKLP.GetText("No Players are currently disabled...")
+            });
 
             #endregion
         }
@@ -4740,7 +3975,7 @@ namespace MKLP
                     $"\n{(userid != 0 ? $"Discord UserID: {userid}\n\n" : "")}" +
                     $"Last  known IP: [c/ffffff:{lastknownip}]\n" +
                     $"Last accessed: [c/ffffff:{account.LastAccessed} UTC{UTC}] [c/82ff91:{GetSince(DateTime.Parse(account.LastAccessed))}]\n" +
-                    $"Registered Since: [c/ffffff:{account.Registered} UTC{UTC}] [c/82ff91:{GetSince(DateTime.Parse(account.Registered))}]\n",
+                    $"Registered Since: [c/ffffff:{account.Registered} UTC{UTC}] [c/82ff91:{GetSince(DateTime.Parse(account.Registered))}]",
                     Color.Gray);
             }
 
