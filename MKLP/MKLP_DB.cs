@@ -1,6 +1,7 @@
 ﻿using Microsoft.Data.Sqlite;
 using MKLP.Modules;
 using MySql.Data.MySqlClient;
+using Newtonsoft.Json;
 using NuGet.Protocol.Plugins;
 using Org.BouncyCastle.Asn1.X509;
 using Org.BouncyCastle.Bcpg.Sig;
@@ -397,6 +398,53 @@ namespace MKLP
             }
 
             return player.mute;
+
+        }
+        public bool PlayerIsMuted(UserAccount account)
+        {
+            bool muted = false;
+            try
+            {
+                Mute get = GetMuteExpiration($"{Identifier.Name}{account.Name}");
+                if ((DateTime.UtcNow - get.Expiration).TotalSeconds < 0)
+                {
+                    muted = true;
+                }
+            }
+            catch (NullReferenceException) { }
+
+            try
+            {
+                Mute get = GetMuteExpiration($"{Identifier.Account}{account.Name}");
+                if ((DateTime.UtcNow - get.Expiration).TotalSeconds < 0)
+                {
+                    muted = true;
+                }
+            }
+            catch (NullReferenceException) { }
+
+            try
+            {
+                var GetIPs = JsonConvert.DeserializeObject<List<string>>(account.KnownIps);
+                Mute get = GetMuteExpiration($"{Identifier.IP}{GetIPs[GetIPs.Count() - 1]}");
+                if ((DateTime.UtcNow - get.Expiration).TotalSeconds < 0)
+                {
+                    muted = true;
+                }
+            }
+            catch (NullReferenceException) { }
+
+            try
+            {
+                Mute get = GetMuteExpiration($"{Identifier.UUID}{account.UUID}");
+                if ((DateTime.UtcNow - get.Expiration).TotalSeconds < 0)
+                {
+                    muted = true;
+                }
+            }
+            catch (NullReferenceException) { }
+
+            return muted;
 
         }
 

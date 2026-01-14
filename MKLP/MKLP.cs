@@ -8,6 +8,7 @@ using MKLP.Functions;
 using MKLP.Modules;
 using MySqlX.XDevAPI.Relational;
 using Newtonsoft.Json;
+using NuGet.Common;
 using NuGet.Protocol;
 using NuGet.Protocol.Plugins;
 using Org.BouncyCastle.Asn1.X509;
@@ -58,7 +59,7 @@ namespace MKLP
         public override string Author => "Nightklp";
         public override string Description => "Makes Moderating a bit easy";
         public override string Name => "MKLP";
-        public override System.Version Version => new System.Version(1, 5);
+        public override System.Version Version => new System.Version(1, 6);
         #endregion
 
         #region [ Variables ]
@@ -85,6 +86,11 @@ namespace MKLP
         public static bool HasBanGuardPlugin = false;
         #endregion
 
+        #region [ Main Var ]
+
+        public static string Text_NA = MKLP.GetText("N/A");
+
+        #endregion
         public MKLP(Main game) : base(game)
         {
             //amogus
@@ -235,6 +241,7 @@ namespace MKLP
                 ServerApi.Hooks.NpcKilled.Deregister(this, OnNPCKilled);
 
                 GetDataHandlers.Sign -= OnSignChange;
+                GetDataHandlers.SignRead -= OnSignRead;
 
                 GetDataHandlers.PlayerDamage -= OnPlayerDamage;
 
@@ -401,27 +408,24 @@ namespace MKLP
                 {
                     if (player.ContainsData("MKLP_IsDisabled"))
                     {
-                        if (!player.Active || player.Dead)
-                            return;
-
-                        if (!player.GetData<bool>("MKLP_IsDisabled"))
-                            return;
-
-                        if (args.MsgID == PacketTypes.PlayerSlot ||
-                            args.MsgID == PacketTypes.PlayerUpdate ||
-                            args.MsgID == PacketTypes.ItemOwner ||
-                            args.MsgID == PacketTypes.ClientSyncedInventory)
-                            return;
-
-                        if (TShockAPI.Utils.Distance(value2: new Vector2((int)player.TPlayer.position.X / 16, (int)player.TPlayer.position.Y / 16), value1: new Vector2(Main.spawnTileX, Main.spawnTileY)) >= 3f)
+                        if (player.Active && !player.Dead && player.GetData<bool>("MKLP_IsDisabled"))
                         {
-                            player.Teleport(Main.spawnTileX * 16, Main.spawnTileY * 16);
-                        }
-                        player.SetBuff(149, 330, true);
+                            if (args.MsgID == PacketTypes.PlayerSlot ||
+                                args.MsgID == PacketTypes.PlayerUpdate ||
+                                args.MsgID == PacketTypes.ItemOwner ||
+                                args.MsgID == PacketTypes.ClientSyncedInventory)
+                                return;
 
-                        // Prevent the packet from being processed
-                        args.Handled = true;
-                        return;
+                            if (TShockAPI.Utils.Distance(value2: new Vector2((int)player.TPlayer.position.X / 16, (int)player.TPlayer.position.Y / 16), value1: new Vector2(Main.spawnTileX, Main.spawnTileY)) >= 3f)
+                            {
+                                player.Teleport(Main.spawnTileX * 16, Main.spawnTileY * 16);
+                            }
+                            player.SetBuff(149, 330, true);
+
+                            // Prevent the packet from being processed
+                            args.Handled = true;
+                            return;
+                        }
                     }
                 }
             }
@@ -989,7 +993,7 @@ namespace MKLP
                 }
 
                 string[] bannedwords;
-                if (BannedWordChecker.ISBannedWord(player.Name, out bannedwords) && !(bool)Config.Main.Allow_PlayerName_On_BannedWords)
+                if (BannedWordChecker.ISBannedWord(TShockAPI.Group.DefaultGroup, player.Name, out bannedwords) && !(bool)Config.Main.Allow_PlayerName_On_BannedWords)
                 {
                     player.Disconnect(GetText("Your name contains \"" + string.Join(',', bannedwords) + "\" and is not allowed on this server."));
                     return;
@@ -1185,6 +1189,8 @@ namespace MKLP
         }
 
         public static bool LockDownRegister = false;
+
+        public static List<string> get_itemgive_log = new();
         private void OnPlayerCommand(PlayerCommandEventArgs args)
         {
             #region code
@@ -1240,7 +1246,25 @@ namespace MKLP
 
                 Discordklp.KLPBotSendMessageLog((ulong)Config.Discord.CommandLogChannel,
                     GetText($"{TypePlayer} Player **{getPlayerName}** {(cmd.CanRun(player) ? "✅Executed" : "⛔Tried")}|{IsNormal} `{getcmdtext}`"));
+
+                if (Config.Main.Logging.CommandLog_ItemGive.Contains(cmd.Name) && cmd.CanRun(player))
+                {
+                    AddItemLog($"{getPlayerName} Executed: {getcmdtext}");
+                }
             }
+            #endregion
+
+            #region
+
+            void AddItemLog(string logtext)
+            {
+                if (get_itemgive_log.Count() > 7)
+                {
+                    get_itemgive_log.RemoveAt(0);
+                }
+                get_itemgive_log.Add(logtext);
+            }
+
             #endregion
         }
 
@@ -1289,7 +1313,18 @@ namespace MKLP
             if (text.StartsWith(Commands.SilentSpecifier) && text != Commands.SilentSpecifier) return;
 
             string CensorText;
-            if (BannedWordChecker.ISBannedWord(text, out CensorText))
+
+            TShockAPI.Group GetGroup()
+            {
+                if (player.tempGroup != null)
+                {
+                    return player.tempGroup;
+                }
+
+                return player.Group;
+            }
+
+            if (BannedWordChecker.ISBannedWord(GetGroup(), text, out CensorText))
             {
                 if ((bool)Config.Main.ChatMod.CensorInsteadOfBlock)
                 {
@@ -1321,7 +1356,6 @@ namespace MKLP
                 args.Handled = true;
                 return;
             }
-
             if (args.Text.Length >= (int)Config.Main.ChatMod.Maximum_Spammed_MessageLength_NoSpace && !args.Text.Contains(" "))
             {
                 if (player.ContainsData("MKLP_Chat_Spam_message1"))
@@ -2194,7 +2228,6 @@ namespace MKLP
                 {
                     if (PunishPlayer(MKLP_CodeType.Survival, 2, args.Player, $"{GetIllegalProj[type]} Projectile", $"Player **{args.Player.Name}** spawned illegal Projectile progression `itemheld: {args.Player.SelectedItem.netID} projectile: {Lang.GetProjectileName(type)}` **{GetIllegalProj[type]}**"))
                     {
-                        args.Player.RemoveProjectile(ident, owner);
                         argsHandled();
                         return;
                     }
@@ -2295,13 +2328,14 @@ namespace MKLP
                         ProjectileID.Celeb2RocketLarge
                     };
 
-                    if (!explosives.Contains(type)) return;
-
-                    if (!args.Player.HasPermission(Config.Permissions.IgnoreAntiGrief_protectsurface_explosive) && (bool)Config.Main.AntiGrief.Using_AntiGrief_Surface_Explosive)
+                    if (explosives.Contains(type))
                     {
-                        args.Player.SendErrorMessage(Config.Main.AntiGrief.Message_AntiGrief_Surface_Explosive);
-                        argsHandled();
-                        return;
+                        if (!args.Player.HasPermission(Config.Permissions.IgnoreAntiGrief_protectsurface_explosive) && (bool)Config.Main.AntiGrief.Using_AntiGrief_Surface_Explosive)
+                        {
+                            args.Player.SendErrorMessage(Config.Main.AntiGrief.Message_AntiGrief_Surface_Explosive);
+                            argsHandled();
+                            return;
+                        }
                     }
                 }
 
@@ -2311,7 +2345,179 @@ namespace MKLP
                     {
                         if (get.identity == ident) continue;
                         if (get.owner != owner) continue;
+                        if (!get.active) continue;
                         if (get.bobber)
+                        {
+                            argsHandled();
+                            return;
+                        }
+                    }
+                }
+                if ((bool)Config.Main.Prevent_Players_BypassMaxSummons)
+                {
+                    short[] SummonProjectiles =
+                    {
+                        //Pre-HM
+                        //require checking
+                        ProjectileID.AbigailCounter,
+                        ProjectileID.AbigailMinion,
+
+                        ProjectileID.BabyBird,
+                        ProjectileID.FlinxMinion,
+                        ProjectileID.BabySlime,
+                        ProjectileID.VampireFrog,
+                        ProjectileID.Hornet,
+                        ProjectileID.FlyingImp,
+
+                        //HM
+                        ProjectileID.VenomSpider,
+                        ProjectileID.JumperSpider,
+                        ProjectileID.DangerousSpider,
+                        ProjectileID.BatOfLight,//sanguine bat
+                        ProjectileID.OneEyedPirate,
+                        ProjectileID.SoulscourgePirate,
+                        ProjectileID.PirateCaptain,
+                        ProjectileID.Smolstar,//enchanted dagger
+                        ProjectileID.Retanimini,
+                        ProjectileID.Spazmamini,
+                        ProjectileID.Pygmy,
+                        ProjectileID.Pygmy2,
+                        ProjectileID.Pygmy3,
+                        ProjectileID.Pygmy4,
+                        ProjectileID.Pygmy4,
+
+                        //require checking
+                        ProjectileID.StormTigerGem,//1
+                        ProjectileID.StormTigerTier1,//1
+                        ProjectileID.StormTigerTier2,//4
+                        ProjectileID.StormTigerTier3,//7
+
+                        ProjectileID.DeadlySphere,
+                        ProjectileID.Raven,
+                        ProjectileID.UFOMinion,
+                        ProjectileID.Tempest,
+                        ProjectileID.StardustDragon2,
+                        ProjectileID.StardustDragon3,
+                        ProjectileID.StardustCellMinion,
+                        ProjectileID.EmpressBlade,
+                    };
+
+                    if (SummonProjectiles.Contains(type))
+                    {
+                        int numberofsummons = 0;
+                        foreach (var get in Main.projectile)
+                        {
+                            if (get.identity == ident) continue;
+                            if (get.owner != owner) continue;
+                            if (!get.active) continue;
+                            if (SummonProjectiles.Contains((short)get.type))
+                            {
+                                int minion = 1;
+                                /*
+                                switch ((short)get.type)
+                                {
+                                    case ProjectileID.StormTigerTier1:
+                                        {
+                                            if (get.originalDamage == 57 || get.originalDamage == 57)
+                                            {
+                                                minion = 2;
+                                                break;
+                                            } else if (get.originalDamage == 73 || get.originalDamage == 94)
+                                            {
+                                                minion = 3;
+                                                break;
+                                            }
+                                            break;
+                                        }
+                                    case ProjectileID.StormTigerTier2:
+                                        {
+                                            minion = 4;
+                                            if (get.originalDamage == 106 || get.originalDamage == 127)
+                                            {
+                                                minion = 5;
+                                                break;
+                                            } else if (get.originalDamage == 123 || get.originalDamage == 143)
+                                            {
+                                                minion = 6;
+                                                break;
+                                            }
+                                            break;
+                                        }
+                                    case ProjectileID.StormTigerTier3:
+                                        {
+                                            minion = 7;
+                                            if (get.originalDamage == 155 || get.originalDamage == 176)
+                                            {
+                                                minion = 8;
+                                                break;
+                                            } else if (get.originalDamage == 172 || get.originalDamage == 192)
+                                            {
+                                                minion = 9;
+                                                break;
+                                            }
+                                            break;
+                                        }
+                                }
+                                */
+                                numberofsummons += minion;
+                                continue;
+                            }
+                        }
+
+                        Console.WriteLine($"plrmax: {ManagePlayer.GetPlayerMaxSummons(args.Player)} | minions: {numberofsummons}");
+
+                        if (ManagePlayer.GetPlayerMaxSummons(args.Player) <= numberofsummons)
+                        {
+                            argsHandled();
+                            return;
+                        }
+                    }
+                }
+                if ((bool)Config.Main.Prevent_Players_BypassMaxSentry)
+                {
+                    short[] SentryProjectiles =
+                    {
+                        //Pre-HM
+                        ProjectileID.HoundiusShootius,
+
+                        //OOA
+                        ProjectileID.DD2LightningAuraT1,
+                        ProjectileID.DD2FlameBurstTowerT1,
+                        ProjectileID.DD2ExplosiveTrapT1,
+                        ProjectileID.DD2BallistraTowerT1,
+
+                        //HM
+                        ProjectileID.SpiderHiver,//spider turret
+                        ProjectileID.FrostHydra,
+                        ProjectileID.MoonlordTurret,
+                        ProjectileID.RainbowCrystal,
+
+                        //OOA
+                        ProjectileID.DD2LightningAuraT2,
+                        ProjectileID.DD2LightningAuraT3,
+                        ProjectileID.DD2FlameBurstTowerT2,
+                        ProjectileID.DD2FlameBurstTowerT3,
+                        ProjectileID.DD2ExplosiveTrapT2,
+                        ProjectileID.DD2ExplosiveTrapT3,
+                        ProjectileID.DD2BallistraTowerT2,
+                        ProjectileID.DD2BallistraTowerT3,
+                    };
+                    if (SentryProjectiles.Contains(type))
+                    {
+                        int numberofsentry = 0;
+                        foreach (var get in Main.projectile)
+                        {
+                            if (get.identity == ident) continue;
+                            if (get.owner != owner) continue;
+                            if (!get.active) continue;
+                            if (SentryProjectiles.Contains((short)get.type))
+                            {
+                                numberofsentry++;
+                                continue;
+                            }
+                        }
+
+                        if (ManagePlayer.GetPlayerMaxSentry(args.Player) <= numberofsentry)
                         {
                             argsHandled();
                             return;
@@ -2406,7 +2612,6 @@ namespace MKLP
         }
 
 
-        static bool OnCheckIllegal = false;
         private void OnNPCKilled(NpcKilledEventArgs args)
         {
             #region code
@@ -2862,6 +3067,21 @@ namespace MKLP
             #endregion
         }
 
+        private void OnSignRead(object? sender, GetDataHandlers.SignReadEventArgs args)
+        {
+            #region code
+
+            if (args.Player.ContainsData("MKLP_CheckLog_Sign"))
+            {
+                if (args.Player.GetData<string>("MKLP_CheckLog_Sign") == "OnTrack")
+                {
+                    args.Player.SetData("MKLP_CheckLog_Sign", $"{args.X}|{args.Y}");
+                    args.Player.SendSuccessMessage($"[MKLP-SignLog] Selected SignPos ({args.X}, {args.Y})");
+                }
+            }
+
+            #endregion
+        }
         private void OnSignChange(object? sender, GetDataHandlers.SignEventArgs args)
         {
             #region code
@@ -3113,7 +3333,7 @@ namespace MKLP
         {
             Config = Config.Read();
             LinkAccountManager.ReloadConfig();
-            args.Player.SendMessage(GetText("MKLP config reloaded!"), Microsoft.Xna.Framework.Color.Purple);
+            args.Player.SendMessage(GetText("MKLP Config reloaded!"), Microsoft.Xna.Framework.Color.Purple);
 
             if (!HasBanGuardPlugin && (bool)Config.Main.UsingBanGuardPlugin)
             {
@@ -3446,7 +3666,21 @@ namespace MKLP
             #endregion
         }
 
-        public static bool PunishPlayer(MKLP_CodeType CodeType, byte CodeNumber, TSPlayer player, string getReason, string getWarningMessage, bool RevertInventory = false)
+        private static DateTime OnCheckIllegalSince = DateTime.MinValue;
+        private static bool OnCheckIllegal = false;
+        private static void ReCheckBosses()
+        {
+            OnCheckIllegal = true;
+            IllegalItemProgression = SurvivalManager.GetIllegalItem();
+
+            IllegalProjectileProgression = SurvivalManager.GetIllegalProjectile();
+
+            IllegalTileProgression = SurvivalManager.GetIllegalTile();
+
+            IllegalWallProgression = SurvivalManager.GetIllegalWall();
+            OnCheckIllegal = false;
+        }
+        public static bool PunishPlayer(MKLP_CodeType CodeType, byte CodeNumber, TSPlayer player, string getReason, string getWarningMessage, bool RevertInventory = false, bool IsItemRelated = false)
         {
             #region code
 
@@ -3464,146 +3698,56 @@ namespace MKLP
 
             if (CodeType == MKLP_CodeType.Main)
             {
-                switch ((PunishmentType)Config.Main.DisableNode.Main_Code_PunishmentType)
+                if (Action((PunishmentType)Config.Main.DisableNode.Main_Code_PunishmentType, IsItemRelated))
                 {
-                    case PunishmentType.Ban:
-                        {
-
-                            ManagePlayer.OnlineBan(false, player, Reason, "MKLP-AntiCheat", DateTime.MaxValue);
-                            return true;
-                        }
-                    case PunishmentType.Disable:
-                        {
-                            ManagePlayer.DisablePlayer(player, Reason, "MKLP-AntiCheat", WarningMessage + $"\n-# {CodeType} Code {CodeNumber}");
-                            return true;
-                        }
-                    case PunishmentType.KickAndLog:
-                        {
-                            Discordklp.KLPBotSendMessage_Warning(WarningMessage + $"\n-# {CodeType} Code {CodeNumber}", player.Name, Reason);
-                            player.Kick(Reason, true, false, "MKLP-AntiCheat");
-                            return true;
-                        }
-                    case PunishmentType.Kick:
-                        {
-                            player.Kick(Reason, true, false, "MKLP-AntiCheat");
-                            return true;
-                        }
-                    case PunishmentType.RevertAndLog:
-                        {
-                            if (RevertInventory) RevertPlayerInv();
-                            Discordklp.KLPBotSendMessage_Warning(WarningMessage + $"\n-# {CodeType} Code {CodeNumber}", player.Name, Reason);
-                            player.SendWarningMessage(Reason);
-                            return true;
-                        }
-                    case PunishmentType.Revert:
-                        {
-                            if (RevertInventory) RevertPlayerInv();
-                            player.SendWarningMessage(Reason);
-                            return true;
-                        }
-                    case PunishmentType.Log:
-                        {
-                            Discordklp.KLPBotSendMessage_Warning(WarningMessage + $"\n-# {CodeType} Code {CodeNumber}", player.Name, Reason);
-                            return false;
-                        }
+                    return true;
                 }
                 return false;
             }
             if (CodeType == MKLP_CodeType.Survival)
             {
                 if (OnCheckIllegal) return true;
-                switch ((PunishmentType)Config.Main.DisableNode.Survival_Code_PunishmentType)
+                if ((DateTime.Now - OnCheckIllegalSince).TotalHours >= 1)
                 {
-                    case PunishmentType.Ban:
-                        {
-                            ManagePlayer.OnlineBan(false, player, Reason, "MKLP-AntiCheat", DateTime.MaxValue);
-                            return true;
-                        }
-                    case PunishmentType.Disable:
-                        {
-                            ManagePlayer.DisablePlayer(player, Reason, "MKLP-AntiCheat", WarningMessage + $"\n-# {CodeType} Code {CodeNumber}");
-                            return true;
-                        }
-                    case PunishmentType.KickAndLog:
-                        {
-                            Discordklp.KLPBotSendMessage_Warning(WarningMessage + $"\n-# {CodeType} Code {CodeNumber}", player.Name, Reason);
-                            player.Kick(Reason, true, false, "MKLP-AntiCheat");
-                            return true;
-                        }
-                    case PunishmentType.Kick:
-                        {
-                            player.Kick(Reason, true, false, "MKLP-AntiCheat");
-                            return true;
-                        }
-                    case PunishmentType.RevertAndLog:
-                        {
-                            if (RevertInventory) RevertPlayerInv();
-                            Discordklp.KLPBotSendMessage_Warning(WarningMessage + $"\n-# {CodeType} Code {CodeNumber}", player.Name, Reason);
-                            player.SendWarningMessage(Reason);
-                            return true;
-                        }
-                    case PunishmentType.Revert:
-                        {
-                            if (RevertInventory) RevertPlayerInv();
-                            player.SendWarningMessage(Reason);
-                            return true;
-                        }
-                    case PunishmentType.Log:
-                        {
-                            Discordklp.KLPBotSendMessage_Warning(WarningMessage + $"\n-# {CodeType} Code {CodeNumber}", player.Name, Reason);
-                            return false;
-                        }
+                    OnCheckIllegal = true;
+                    ReCheckBosses();
+                    return true;
+                }
+                if (Action((PunishmentType)Config.Main.DisableNode.Survival_Code_PunishmentType, IsItemRelated))
+                {
+                    return true;
                 }
                 return false;
             }
             if (CodeType == MKLP_CodeType.Default)
             {
-                switch ((PunishmentType)Config.Main.DisableNode.Default_Code_PunishmentType)
+                if (Action((PunishmentType)Config.Main.DisableNode.Default_Code_PunishmentType, IsItemRelated))
                 {
-                    case PunishmentType.Ban:
-                        {
-                            ManagePlayer.OnlineBan(false, player, Reason, "MKLP-AntiCheat", DateTime.MaxValue);
-                            return true;
-                        }
-                    case PunishmentType.Disable:
-                        {
-                            ManagePlayer.DisablePlayer(player, Reason, "MKLP-AntiCheat", WarningMessage + $"\n-# {CodeType} Code {CodeNumber}");
-                            return true;
-                        }
-                    case PunishmentType.KickAndLog:
-                        {
-                            Discordklp.KLPBotSendMessage_Warning(WarningMessage + $"\n-# {CodeType} Code {CodeNumber}", player.Name, Reason);
-                            player.Kick(Reason, true, false, "MKLP-AntiCheat");
-                            return true;
-                        }
-                    case PunishmentType.Kick:
-                        {
-                            player.Kick(Reason, true, false, "MKLP-AntiCheat");
-                            return true;
-                        }
-                    case PunishmentType.RevertAndLog:
-                        {
-                            if (RevertInventory) RevertPlayerInv();
-                            Discordklp.KLPBotSendMessage_Warning(WarningMessage + $"\n-# {CodeType} Code {CodeNumber}", player.Name, Reason);
-                            player.SendWarningMessage(Reason);
-                            return true;
-                        }
-                    case PunishmentType.Revert:
-                        {
-                            if (RevertInventory) RevertPlayerInv();
-                            player.SendWarningMessage(Reason);
-                            return true;
-                        }
-                    case PunishmentType.Log:
-                        {
-                            Discordklp.KLPBotSendMessage_Warning(WarningMessage + $"\n-# {CodeType} Code {CodeNumber}", player.Name, Reason);
-                            return false;
-                        }
+                    return true;
                 }
             }
             if (CodeType == MKLP_CodeType.Dupe)
             {
-                switch ((PunishmentType)Config.Main.DisableNode.SuspiciousDupe_PunishmentType)
+                if (Action((PunishmentType)Config.Main.DisableNode.SuspiciousDupe_PunishmentType, IsItemRelated))
+                {
+                    return true;
+                }
+                return false;
+            }
+            return false;
+
+            bool Action(PunishmentType type, bool ShowItemGiveLog)
+            {
+                string log = "";
+
+                if (ShowItemGiveLog && get_itemgive_log.Count > 0)
+                {
+                    log = GetText("\n\nHere is the last item command used:") +
+                        $"\n```\n- {string.Join("\n- ", get_itemgive_log)}\n```";
+                    get_itemgive_log.Clear();
+                }
+
+                switch (type)
                 {
                     case PunishmentType.Ban:
                         {
@@ -3612,12 +3756,12 @@ namespace MKLP
                         }
                     case PunishmentType.Disable:
                         {
-                            ManagePlayer.DisablePlayer(player, Reason, "MKLP-AntiCheat", WarningMessage + $"\n-# {CodeType} Code {CodeNumber}");
+                            ManagePlayer.DisablePlayer(player, Reason, "MKLP-AntiCheat", WarningMessage + $"\n-# {CodeType} Code {CodeNumber}", log);
                             return true;
                         }
                     case PunishmentType.KickAndLog:
                         {
-                            Discordklp.KLPBotSendMessage_Warning(WarningMessage + $"\n-# {CodeType} Code {CodeNumber}", player.Name, Reason);
+                            Discordklp.KLPBotSendMessage_Warning(WarningMessage + $"\n-# {CodeType} Code {CodeNumber}", player.Name, Reason, log);
                             player.Kick(Reason, true, false, "MKLP-AntiCheat");
                             return true;
                         }
@@ -3629,7 +3773,7 @@ namespace MKLP
                     case PunishmentType.RevertAndLog:
                         {
                             if (RevertInventory) RevertPlayerInv();
-                            Discordklp.KLPBotSendMessage_Warning(WarningMessage + $"\n-# {CodeType} Code {CodeNumber}", player.Name, Reason);
+                            Discordklp.KLPBotSendMessage_Warning(WarningMessage + $"\n-# {CodeType} Code {CodeNumber}", player.Name, Reason, log);
                             player.SendWarningMessage(Reason);
                             return true;
                         }
@@ -3641,13 +3785,12 @@ namespace MKLP
                         }
                     case PunishmentType.Log:
                         {
-                            Discordklp.KLPBotSendMessage_Warning(WarningMessage + $"\n-# {CodeType} Code {CodeNumber}", player.Name, Reason);
+                            Discordklp.KLPBotSendMessage_Warning(WarningMessage + $"\n-# {CodeType} Code {CodeNumber}", player.Name, Reason, log);
                             return false;
                         }
                 }
                 return false;
             }
-            return false;
 
             void RevertPlayerInv()
             {
@@ -3950,12 +4093,12 @@ namespace MKLP
             if (!Directory.Exists(LogPath_Tile) && (bool)MKLP.Config.Main.Logging.LogTile) Directory.CreateDirectory(LogPath_Tile);
             if (!Directory.Exists(LogPath_Sign) && (bool)MKLP.Config.Main.Logging.LogSign) Directory.CreateDirectory(LogPath_Sign);
 
-            if ((bool)MKLP.Config.Main.Logging.ModLogTXT_Enable) LogPath_ModLog = Path.Combine(LogPath_ModLog, $"{Currentlogfile.ToString("dd/MM/yyyy")}.log".Replace("/", "-"));
-            if ((bool)MKLP.Config.Main.Logging.ReportLogTXT_Enable) LogPath_ReportLog = Path.Combine(LogPath_ReportLog, $"{Currentlogfile.ToString("dd/MM/yyyy")}.log".Replace("/", "-"));
 
-            if ((bool)MKLP.Config.Main.Logging.LogTile) LogPath_Tile = Path.Combine(LogPath_Tile, $"{Currentlogfile.ToString("dd/MM/yyyy")}.log".Replace("/", "-"));
-            if ((bool)MKLP.Config.Main.Logging.LogSign) LogPath_Sign = Path.Combine(LogPath_Sign, $"{Currentlogfile.ToString("dd/MM/yyyy")}.log".Replace("/", "-"));
+        }
 
+        public static string GetPath(string path, DateTime time)
+        {
+            return Path.Combine(path, $"{time.ToString("yyyy-MM-dd")}.log");
         }
 
         public static string TileLogS = "";
@@ -3966,7 +4109,7 @@ namespace MKLP
         {
             if (!(bool)MKLP.Config.Main.Logging.ModLogTXT_Enable) return;
 
-            using (StreamWriter writer = new StreamWriter(LogPath_ModLog, true))
+            using (StreamWriter writer = new StreamWriter(GetPath(LogPath_ModLog, Currentlogfile), true))
             {
                 writer.WriteLine($"{text}");
             }
@@ -3975,7 +4118,7 @@ namespace MKLP
         {
             if (!(bool)MKLP.Config.Main.Logging.ReportLogTXT_Enable) return;
 
-            using (StreamWriter writer = new StreamWriter(LogPath_ReportLog, true))
+            using (StreamWriter writer = new StreamWriter(GetPath(LogPath_ReportLog, Currentlogfile), true))
             {
                 writer.WriteLine($"{text}");
             }
@@ -3987,7 +4130,7 @@ namespace MKLP
         {
             if (!(bool)MKLP.Config.Main.Logging.LogTile) return;
 
-            using (StreamWriter writer = new StreamWriter(LogPath_Tile, true))
+            using (StreamWriter writer = new StreamWriter(GetPath(LogPath_Tile, Currentlogfile), true))
             {
                 writer.WriteLine($"{text}");
             }
@@ -3996,7 +4139,7 @@ namespace MKLP
         {
             if (!(bool)MKLP.Config.Main.Logging.LogSign) return;
 
-            using (StreamWriter writer = new StreamWriter(LogPath_Sign, true))
+            using (StreamWriter writer = new StreamWriter(GetPath(LogPath_Sign, Currentlogfile), true))
             {
                 writer.WriteLine($"{text}");
             }
@@ -4004,11 +4147,91 @@ namespace MKLP
         #endregion
 
 
+        #region GetLog
+
+        public static List<(string, string, string)> GetLog_Sign(string filepath, Vector2 pos)
+        {
+            string filecontext = File.ReadAllText(filepath);
+
+            List<(string, string, string)> log = new();
+
+            foreach (string gcontext in filecontext.Split("\n"))
+            {
+                if (gcontext == "" || gcontext == " ") continue;
+
+                string playername = gcontext.Split("|")[0].Split(" ")[1];
+                string edittype = gcontext.Split("|")[1].Trim();
+
+                string X = gcontext.Split("|")[2].Split(":")[1];
+                string Y = gcontext.Split("|")[3].Split(":")[1];
+                Vector2 getposlog = new(int.Parse(X), int.Parse(Y));
+
+                if (pos != getposlog) continue;
+
+                Regex regex = new Regex(@"text\s*:\s*(.*?)(?=\s*\||$)", RegexOptions.IgnoreCase);
+
+                MatchCollection matches = regex.Matches(gcontext);
+
+                if (matches.Count > 0)
+                {
+                    string gettext = matches[matches.Count - 1].Groups[1].Value.Trim();
+
+                    log.Add((playername, edittype, gettext));
+                }
+
+            }
+
+            return log;
+        }
+        public static Dictionary<string, Dictionary<Vector2, int>> GetLog_Tile(string filepath, Vector2 pos, int getdistance)
+        {
+            string filecontext = File.ReadAllText(filepath);
+
+            Dictionary<string, Dictionary<Vector2, int>> log = new();
+
+            foreach (string gcontext in filecontext.Split("\n"))
+            {
+                if (gcontext == "" || gcontext == " ") continue;
+
+                string playername = gcontext.Split("|")[0].Split(" ")[1];
+                string edittype = gcontext.Split("|")[1].Trim();
+
+                string title = $"{playername}, {edittype}";
+
+                string X = gcontext.Split("|")[2].Split(":")[1];
+                string Y = gcontext.Split("|")[3].Split(":")[1];
+                Vector2 getposlog = new(int.Parse(X), int.Parse(Y));
+
+                if (pos.Distance(getposlog) <= getdistance)
+                {
+                    if (log.ContainsKey(title))
+                    {
+                        if (log[title].ContainsKey(getposlog))
+                        {
+                            log[title][getposlog]++;
+                            continue;
+                        }
+                        log[title].Add(getposlog, 1);
+                    }
+                    else
+                    {
+                        Dictionary<Vector2, int> temp = new();
+                        temp.Add(getposlog, 1);
+                        log.Add(title, temp);
+                    }
+                }
+            }
+
+            return log;
+        }
+
+
+        #endregion
+
         #region SaveLog
 
         public static void SaveLog()
         {
-
             if ((bool)MKLP.Config.Main.Logging.LogTile && TileLogS != "")
             {
                 LogKLP.Log_Tile(TileLogS);
@@ -4019,6 +4242,7 @@ namespace MKLP
                 LogKLP.Log_Sign(SignLogS);
             }
             SignLogS = "";
+            Currentlogfile = DateTime.Now;
         }
 
         #endregion

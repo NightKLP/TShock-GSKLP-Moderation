@@ -1,4 +1,4 @@
-﻿using IL.Terraria;
+﻿using Terraria.ID;
 using MKLP.Functions;
 using Newtonsoft.Json;
 using Steamworks;
@@ -219,6 +219,8 @@ namespace MKLP
             public bool? Allow_Players_StackSameAccessory = false;
             public string S_6 = "▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬";
             public bool? Allow_Players_MultipleFishingBobber = false;
+            public bool? Prevent_Players_BypassMaxSummons = true;
+            public bool? Prevent_Players_BypassMaxSentry = true;
             public string S_7 = "▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬";
             public int? Ignore_Value_ClearLag = 12000;
             public string S_8 = "▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬";
@@ -299,6 +301,8 @@ namespace MKLP
                 if (Allow_Players_StackSameAccessory == null) Allow_Players_StackSameAccessory = getdefault.Allow_Players_StackSameAccessory;
 
                 if (Allow_Players_MultipleFishingBobber == null) Allow_Players_MultipleFishingBobber = getdefault.Allow_Players_MultipleFishingBobber;
+                if (Prevent_Players_BypassMaxSummons == null) Prevent_Players_BypassMaxSummons = getdefault.Prevent_Players_BypassMaxSummons;
+                if (Prevent_Players_BypassMaxSentry == null) Prevent_Players_BypassMaxSentry = getdefault.Prevent_Players_BypassMaxSentry;
 
                 if (Ignore_Value_ClearLag == null) Ignore_Value_ClearLag = getdefault.Ignore_Value_ClearLag;
 
@@ -347,12 +351,13 @@ namespace MKLP
             public string Word;
             public BannedWordChecker.Detection BannedWordDetectionRange;
             public bool MustBeSeperated;
-
-            public BannedWordValue(string Word, BannedWordChecker.Detection BannedWordDetectionRange, bool MustBeSeperated)
+            public string PermissionByPass;
+            public BannedWordValue(string Word, BannedWordChecker.Detection BannedWordDetectionRange, bool MustBeSeperated, string PermissionByPass)
             {
                 this.Word = Word;
                 this.BannedWordDetectionRange = BannedWordDetectionRange;
                 this.MustBeSeperated = MustBeSeperated;
+                this.PermissionByPass = PermissionByPass;
             }
         }
 
@@ -376,15 +381,17 @@ namespace MKLP
             public string HelpText_0g = "[ 5 ] VeryHigh";
             public string HelpText_Space7 = " ";
             public string HelpText_Space8 = " ";
+            public string HelpText_0h = "Use '*' as permission so they can bypass when they are super admin or etc...";
+            public string HelpText_Space9 = " ";
             public BannedWordValue[] Ban_MessageContains =
             {
-                new BannedWordValue("fuck", BannedWordChecker.Detection.Moderate, false),
-                new BannedWordValue("shit", BannedWordChecker.Detection.Moderate, false),
-                new BannedWordValue("bitch", BannedWordChecker.Detection.Moderate, false),
-                new BannedWordValue("cum", BannedWordChecker.Detection.Moderate, true),
-                new BannedWordValue("ass", BannedWordChecker.Detection.Moderate, true),
-                new BannedWordValue("nigga", BannedWordChecker.Detection.High, false),
-                new BannedWordValue("卍", BannedWordChecker.Detection.Low, false) 
+                new BannedWordValue("fuck", BannedWordChecker.Detection.Moderate, false, "*"),
+                new BannedWordValue("shit", BannedWordChecker.Detection.Moderate, false, "*"),
+                new BannedWordValue("bitch", BannedWordChecker.Detection.Moderate, false, "*"),
+                new BannedWordValue("cum", BannedWordChecker.Detection.Moderate, true, "*"),
+                new BannedWordValue("ass", BannedWordChecker.Detection.Moderate, true, "*"),
+                new BannedWordValue("nigga", BannedWordChecker.Detection.High, false, "*"),
+                new BannedWordValue("卍", BannedWordChecker.Detection.Low, false, "*") 
             };
             public bool? CensorInsteadOfBlock = false;
             public char? Censor_Character = '*';
@@ -433,6 +440,7 @@ namespace MKLP
                 HelpText_Space6 = getdefault.HelpText_Space6;
                 HelpText_Space7 = getdefault.HelpText_Space7;
                 HelpText_Space8 = getdefault.HelpText_Space8;
+                HelpText_Space9 = getdefault.HelpText_Space9;
 
                 HelpText_0a = getdefault.HelpText_0a;
                 HelpText_0b = getdefault.HelpText_0b;
@@ -441,6 +449,7 @@ namespace MKLP
                 HelpText_0e = getdefault.HelpText_0e;
                 HelpText_0f = getdefault.HelpText_0f;
                 HelpText_0g = getdefault.HelpText_0g;
+                HelpText_0h = getdefault.HelpText_0h;
 
                 if (Using_Chat_AutoMod == null) Using_Chat_AutoMod = getdefault.Using_Chat_AutoMod;
 
@@ -522,6 +531,7 @@ namespace MKLP
 
             public string S_1 = "▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬";
             public bool? Use_SuspiciousDupe = true;
+            public int[]? WhiteList_Dupe_Code1 = { ItemID.MusketBall, ItemID.WoodenArrow };
             public PunishmentType? SuspiciousDupe_PunishmentType = PunishmentType.Log;
             public string S_2 = "▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬";
             public bool? Using_Main_Code1 = false;
@@ -632,6 +642,7 @@ namespace MKLP
 
 
                 if (Use_SuspiciousDupe == null) Use_SuspiciousDupe = getdefault.Use_SuspiciousDupe;
+                if (WhiteList_Dupe_Code1 == null) WhiteList_Dupe_Code1 = getdefault.WhiteList_Dupe_Code1;
                 if (SuspiciousDupe_PunishmentType == null) SuspiciousDupe_PunishmentType = getdefault.SuspiciousDupe_PunishmentType;
 
                 if (Using_Main_Code1 == null) Using_Main_Code1 = getdefault.Using_Main_Code1;
@@ -934,15 +945,17 @@ namespace MKLP
         public class CONFIG_LOGGING
         {
             public string[] CommandLog_Ignore = { "help" };
-            public string[] CommandLog_Normal = { "help", "motd", "who", "playing" };
+            public string[] CommandLog_Normal = { "help", "motd", "who", "playing", "rules" };
             public string[] CommandLog_IgnoreARGS = { "user" };
             public string S_1 = "▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬";
+            public string[] CommandLog_ItemGive = { "item", "i", "give", "g" };
+            public string S_2 = "▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬";
             public bool? ModLogTXT_Enable = false;
             public bool? ReportLogTXT_Enable = false;
-            public string S_2 = "▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬";
+            public string S_3 = "▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬";
             public bool? LogTile = true;
             public bool? LogSign = true;
-            public string S_3 = "▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬";
+            public string S_4 = "▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬";
             public bool? Save_Inventory_Log = false;
             public int? Save_InvLog_Max = 70;
             public int? Remove_InvLog_IfMax = 40;
@@ -956,10 +969,13 @@ namespace MKLP
                 S_1 = getdefault.S_1;
                 S_2 = getdefault.S_2;
                 S_3 = getdefault.S_3;
+                S_4 = getdefault.S_4;
 
                 if (CommandLog_Ignore == null) CommandLog_Ignore = getdefault.CommandLog_Ignore;
                 if (CommandLog_Normal == null) CommandLog_Normal = getdefault.CommandLog_Normal;
                 if (CommandLog_IgnoreARGS == null) CommandLog_IgnoreARGS = getdefault.CommandLog_IgnoreARGS;
+
+                if (CommandLog_ItemGive == null) CommandLog_ItemGive = getdefault.CommandLog_ItemGive;
 
                 if (ModLogTXT_Enable == null) ModLogTXT_Enable = getdefault.ModLogTXT_Enable;
                 if (ReportLogTXT_Enable == null) ReportLogTXT_Enable = getdefault.ReportLogTXT_Enable;
@@ -1040,6 +1056,7 @@ namespace MKLP
 
             //admin
             public string CMD_ClearMessage = "MKLP.message.clear";
+            public string CMD_KickAll = "MKLP.kickall";
             public string CMD_LockDown = "MKLP.lockdown.join";
             public string CMD_LockDownRegister = "MKLP.lockdown.register";
             public string CMD_MapPingTP = "MKLP.mapping.tp";
@@ -1689,7 +1706,7 @@ namespace MKLP
 
                 foreach (string getword in oldconfig.ChatMod.Ban_MessageContains)
                 {
-                    Ban_MessageContainsTrsfer.Add(new(getword, BannedWordChecker.Detection.Moderate, false));
+                    Ban_MessageContainsTrsfer.Add(new(getword, BannedWordChecker.Detection.Moderate, false, "*"));
                 }
 
                 newconfig.Main.ChatMod.Ban_MessageContains = Ban_MessageContainsTrsfer.ToArray();

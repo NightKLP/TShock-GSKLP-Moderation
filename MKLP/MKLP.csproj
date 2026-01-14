@@ -15,7 +15,7 @@
 
   <ItemGroup>
     <Reference Include="BanGuard">
-      <HintPath>D:\Nightklp_KLP\my_Terraria_Plugins\GSKLP\MKLP\Ref\BanGuard.dll</HintPath>
+      <HintPath>..\Ref\BanGuard.dll</HintPath>
     </Reference>
   </ItemGroup>
 

@@ -35,6 +35,7 @@ namespace MKLP.Modules
 			    113, // Wall of Flesh
 			    657, // Queen Slime
 			    125, // Retinazer
+			    126, // Spazmatism
 			    127, // Skeletron Prime	
 			    134, // The Destroyer
 			    262, // Plantera
@@ -52,7 +53,7 @@ namespace MKLP.Modules
             for (int i = 0; i < Main.maxNPCs; i++)
             {
                 NPC npc = Main.npc[i];
-                int requireplayers = -1;
+                int requireplayers;
 
                 switch (BossManager.BossIsAllowed(npc.type, out requireplayers))
                 {
@@ -636,16 +637,16 @@ namespace MKLP.Modules
             {
                 if (NPC.downedBoss1)
                 {
-                    defeatedbosses.Add("Eye of Cthulhu", true);
+                    defeatedbosses.Add("Eye Of Cthulhu", true);
                 }
                 else
                 {
-                    defeatedbosses.Add("Eye of Cthulhu", false);
+                    defeatedbosses.Add("Eye Of Cthulhu", false);
                 }
             }
             else if (NPC.downedBoss1)
             {
-                defeatedbosses.Add("Eye of Cthulhu", true);
+                defeatedbosses.Add("Eye Of Cthulhu", true);
             }
             if ((bool)getenabledboss.AllowEaterOfWorlds || (bool)getenabledboss.AllowBrainOfCthulhu)
             {
@@ -909,6 +910,7 @@ namespace MKLP.Modules
                 "Pumpkin Moon" => "[i:1844]",
                 "Frost Moon" => "[i:1958]",
                 "Martians" => "[i:2769]",
+                "The Martians" => "[i:2769]",
                 "Martian Invasion" => "[i:2769]",
                 "Celestial Pillar" => "[i:3601]",
                 "Celestial Pillars" => "[i:3601]",
@@ -999,6 +1001,154 @@ namespace MKLP.Modules
                 }
             }
             return defeatedinvasion;
+            #endregion
+        }
+
+        public static (string, DateTime) GetNextBossSchedule()
+        {
+            #region code
+            Config.CONFIG_BOSSES getbosssched = MKLP.Config.BossManager;
+            string result = "";
+            DateTime nextsched = DateTime.MaxValue;
+            if (!(bool)getbosssched.AllowKingSlime && !NPC.downedSlimeKing)
+            {
+                if (nextsched > (DateTime)getbosssched.ScheduleAllowKingSlime)
+                {
+                    result = "\n\nNext Boss is King Slime in ";
+                    nextsched = (DateTime)getbosssched.ScheduleAllowKingSlime;
+                }
+            }
+            if (!(bool)getbosssched.AllowEyeOfCthulhu && !NPC.downedBoss1)
+            {
+                if (nextsched > (DateTime)getbosssched.ScheduleAllowEyeOfCthulhu)
+                {
+                    result = "\n\nNext Boss is Eye Of Cthulhu in ";
+                    nextsched = (DateTime)getbosssched.ScheduleAllowEyeOfCthulhu;
+                }
+            }
+            if (!(bool)getbosssched.AllowEaterOfWorlds && !NPC.downedBoss2)
+            {
+                if (nextsched > (DateTime)getbosssched.ScheduleAllowEaterOfWorlds)
+                {
+                    result = "\n\nNext Boss is Eater Of Worlds in ";
+                    nextsched = (DateTime)getbosssched.ScheduleAllowEaterOfWorlds;
+                }
+            }
+            if (!(bool)getbosssched.AllowDeerclops && !NPC.downedDeerclops)
+            {
+                if (nextsched > (DateTime)getbosssched.ScheduleAllowDeerclops)
+                {
+                    result = "\n\nNext Boss is Deerclops in ";
+                    nextsched = (DateTime)getbosssched.ScheduleAllowDeerclops;
+                }
+            }
+            if (!(bool)getbosssched.AllowQueenBee && !NPC.downedQueenBee)
+            {
+                if (nextsched > (DateTime)getbosssched.ScheduleAllowQueenBee)
+                {
+                    result = "\n\nNext Boss is Queen Bee in ";
+                    nextsched = (DateTime)getbosssched.ScheduleAllowQueenBee;
+                }
+            }
+            if (!(bool)getbosssched.AllowSkeletron && !NPC.downedBoss3)
+            {
+                if (nextsched > (DateTime)getbosssched.ScheduleAllowSkeletron)
+                {
+                    result = "\n\nNext Boss is Skeletron in ";
+                    nextsched = (DateTime)getbosssched.ScheduleAllowSkeletron;
+                }
+            }
+            if (!(bool)getbosssched.AllowWallOfFlesh && !Main.hardMode)
+            {
+                if (nextsched > (DateTime)getbosssched.ScheduleAllowWallOfFlesh)
+                {
+                    result = "\n\nNext Boss is Wall of Flesh in ";
+                    nextsched = (DateTime)getbosssched.ScheduleAllowWallOfFlesh;
+                }
+            }
+            if (!(bool)getbosssched.AllowQueenSlime && !NPC.downedQueenSlime)
+            {
+                if (nextsched > (DateTime)getbosssched.ScheduleAllowQueenSlime)
+                {
+                    result = "\n\nNext Boss is Queen Slime in ";
+                    nextsched = (DateTime)getbosssched.ScheduleAllowQueenSlime;
+                }
+            }
+            if (!(bool)getbosssched.AllowTheDestroyer && !NPC.downedMechBoss1)
+            {
+                if (nextsched > (DateTime)getbosssched.ScheduleAllowTheDestroyer)
+                {
+                    result = "\n\nNext Boss is The Destroyer in ";
+                    nextsched = (DateTime)getbosssched.ScheduleAllowTheDestroyer;
+                }
+            }
+            if (!(bool)getbosssched.AllowTheTwins && !NPC.downedMechBoss2)
+            {
+                if (nextsched > (DateTime)getbosssched.ScheduleAllowTheTwins)
+                {
+                    result = "\n\nNext Boss is The Twins in ";
+                    nextsched = (DateTime)getbosssched.ScheduleAllowTheTwins;
+                }
+            }
+            if (!(bool)getbosssched.AllowSkeletronPrime && !NPC.downedMechBoss3)
+            {
+                if (nextsched > (DateTime)getbosssched.ScheduleAllowSkeletronPrime)
+                {
+                    result = "\n\nNext Boss is Skeletron Prime in ";
+                    nextsched = (DateTime)getbosssched.ScheduleAllowSkeletronPrime;
+                }
+            }
+            if (!(bool)getbosssched.AllowDukeFishron && !NPC.downedFishron)
+            {
+                if (nextsched > (DateTime)getbosssched.ScheduleAllowDukeFishron)
+                {
+                    result = "\n\nNext Boss is Duke Fishron in ";
+                    nextsched = (DateTime)getbosssched.ScheduleAllowDukeFishron;
+                }
+            }
+            if (!(bool)getbosssched.AllowPlantera && !NPC.downedPlantBoss)
+            {
+                if (nextsched > (DateTime)getbosssched.ScheduleAllowPlantera)
+                {
+                    result = "\n\nNext Boss is Plantera in ";
+                    nextsched = (DateTime)getbosssched.ScheduleAllowPlantera;
+                }
+            }
+            if (!(bool)getbosssched.AllowEmpressOfLight && !NPC.downedEmpressOfLight)
+            {
+                if (nextsched > (DateTime)getbosssched.ScheduleAllowEmpressOfLight)
+                {
+                    result = "\n\nNext Boss is Empress Of Light in ";
+                    nextsched = (DateTime)getbosssched.ScheduleAllowEmpressOfLight;
+                }
+            }
+            if (!(bool)getbosssched.AllowGolem && !NPC.downedGolemBoss)
+            {
+                if (nextsched > (DateTime)getbosssched.ScheduleAllowGolem)
+                {
+                    result = "\n\nNext Boss is Golem in ";
+                    nextsched = (DateTime)getbosssched.ScheduleAllowGolem;
+                }
+            }
+            if (!(bool) getbosssched.AllowLunaticCultist && !NPC.downedAncientCultist)
+            {
+                if (nextsched > (DateTime)getbosssched.ScheduleAllowLunaticCultist)
+                {
+                    result = "\n\nNext Boss is Lunatic Cultist in ";
+                    nextsched = (DateTime)getbosssched.ScheduleAllowLunaticCultist;
+                }
+            }
+
+            if (!(bool)getbosssched.AllowMoonLord && !NPC.downedMoonlord)
+            {
+                if (nextsched > (DateTime)getbosssched.ScheduleAllowMoonLord)
+                {
+                    result = "\n\nNext Boss is Moon Lord in ";
+                    nextsched = (DateTime)getbosssched.ScheduleAllowMoonLord;
+                }
+            }
+
+            return (result, nextsched);
             #endregion
         }
     }

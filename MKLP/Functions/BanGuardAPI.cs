@@ -7,14 +7,12 @@ using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
 using TShockAPI;
-using BanGuard;
-using BanGuard.Models;
 
 namespace MKLP.Functions
 {
     public class BanGuardAPI
     {
-        public static async Task<PlayerBan?> CheckPlayerBan(string uuid, string playerName, string playerIP)
+        public static async Task<BanGuard.Models.PlayerBan?> CheckPlayerBan(string uuid, string playerName, string playerIP)
         {
             if (MKLP.HasBanGuardPlugin && (bool)MKLP.Config.Main.UsingBanGuardPlugin)
             {
@@ -23,35 +21,39 @@ namespace MKLP.Functions
             return null;
         }
 
-        public static async Task<APIResponse<ConnectionCode>> GenerateNewConnection(string uuid)
-        {
-            if (MKLP.HasBanGuardPlugin && (bool)MKLP.Config.Main.UsingBanGuardPlugin)
-            {
-                return await Plugin_GenerateNewConnection(uuid);
-            }
-            return null;
-        }
-
         public static async Task<APIResponse<bool>> BanPlayer(string uuid, string category, string ip)
         {
             if (MKLP.HasBanGuardPlugin && (bool)MKLP.Config.Main.UsingBanGuardPlugin)
             {
-                return await Plugin_BanPlayer(uuid, category, ip);
+                var get1 = await Plugin_BanPlayer(uuid, category, ip);
+
+                return new(get1.Success, get1.Data, get1.ErrorMessage);
             }
-            return new APIResponse<bool>(success: false, data: false, "");
+            return new(success: false, data: false, "");
         }
 
-        public static async Task<PlayerBan?> Plugin_CheckPlayerBan(string uuid, string playerName, string playerIP)
+        public class APIResponse<T>
+        {
+            public bool Success { get; set; }
+
+            public string? ErrorMessage { get; set; }
+
+            public T? Data { get; set; }
+
+            public APIResponse(bool success, T? data = default(T?), string? errorMessage = null)
+            {
+                Success = success;
+                Data = data;
+                ErrorMessage = errorMessage;
+            }
+        }
+
+        public static async Task<BanGuard.Models.PlayerBan?> Plugin_CheckPlayerBan(string uuid, string playerName, string playerIP)
         {
             return await BanGuard.APIService.CheckPlayerBan(uuid, playerName, playerIP);
         }
 
-        public static async Task<APIResponse<ConnectionCode>> Plugin_GenerateNewConnection(string uuid)
-        {
-            return await BanGuard.APIService.GenerateNewConnection(uuid);
-        }
-
-        public static async Task<APIResponse<bool>> Plugin_BanPlayer(string uuid, string category, string ip)
+        public static async Task<BanGuard.APIResponse<bool>> Plugin_BanPlayer(string uuid, string category, string ip)
         {
             return await BanGuard.APIService.BanPlayer(uuid, category, ip);
         }

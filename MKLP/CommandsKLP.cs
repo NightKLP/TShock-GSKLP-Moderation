@@ -12,6 +12,7 @@ using MKLP.Functions;
 using MKLP.Modules;
 using Terraria.ID;
 using Newtonsoft.Json;
+using MKLP.Functions;
 
 
 namespace MKLP
@@ -78,6 +79,14 @@ namespace MKLP
             {
                 HelpText = MKLP.GetText("Clears the whole message chat")
             });
+
+            if (!Commands.ChatCommands.Any(cmd => cmd.Name == "kickall"))
+            {
+                Commands.ChatCommands.Add(new Command(MKLP.Config.Permissions.CMD_KickAll, CMD_KickAll, "kickall")
+                {
+                    HelpText = MKLP.GetText("Kicks all the players on the server except you")
+                });
+            }
 
             Commands.ChatCommands.Add(new Command(MKLP.Config.Permissions.CMD_LockDown, CMD_LockDown, "lockdown")
             {
@@ -202,6 +211,11 @@ namespace MKLP
                 HelpText = MKLP.GetText("check useraccounts with following match uuid accounts")
             });
 
+            Commands.ChatCommands.Add(new Command(MKLP.Config.Permissions.CMD_UUIDMatch, CMD_Logs, "logs")
+            {
+                HelpText = MKLP.GetText("check useraccounts with following match uuid accounts")
+            });
+
             #endregion
 
             #region [ Manager ]
@@ -270,11 +284,11 @@ namespace MKLP
                 {
                     if (get.Value)
                     {
-                        GetDefeatedBoss += $"- {BossManager.GetBossIconFromName(get.Key)} [c/87ff74:{get.Key}]\n";
+                        GetDefeatedBoss += $"- {BossManager.GetBossIconFromName(get.Key)} [c/87ff74:{MKLP.GetText(get.Key)}]\n";
                     }
                     else
                     {
-                        GetEnableBoss += $"- {BossManager.GetBossIconFromName(get.Key)} [c/fefe6a:{get.Key}]\n";
+                        GetEnableBoss += $"- {BossManager.GetBossIconFromName(get.Key)} [c/fefe6a:{MKLP.GetText(get.Key)}]\n";
                     }
                 }
             }
@@ -286,7 +300,7 @@ namespace MKLP
                     
                 } else
                 {
-                    GetDefeatedEvents += $"- {BossManager.GetEventsIconFromName(get.Key)} [c/8dfdf1:{get.Key}]\n";
+                    GetDefeatedEvents += $"- {BossManager.GetEventsIconFromName(get.Key)} [c/8dfdf1:{MKLP.GetText(get.Key)}]\n";
                     
                 }
             }
@@ -296,24 +310,51 @@ namespace MKLP
 
             if (GetDefeatedBoss == "" && GetEnableBoss == "" && GetDefeatedEvents == "")
             {
-                GetDefeatedBoss = "There aren't any progress yet";
+                GetDefeatedBoss = MKLP.GetText("There aren't any progress yet");
             } else
             {
-                GetDefeatedBoss = GetDefeatedBoss == "" ? "[c/23ff00:No Defeated Bosses...]\n\n" : "[c/23ff00:Defeated Bosses:]\n" + ((bool)MKLP.Config.Main.Simplified_DefeatedBossEventList ? $"- {GetDefeatedBoss}\n" : GetDefeatedBoss);
-                GetEnableBoss = GetEnableBoss == "" ? "[c/ffff00:No Enable Bosses...]\n\n" : "[c/ffff00:Enabled Bosses:]\n" + ((bool)MKLP.Config.Main.Simplified_DefeatedBossEventList ? $"- {GetEnableBoss}\n" : GetEnableBoss);
-                GetDefeatedEvents = GetDefeatedEvents == "" ? "[c/00fde2:No Defeated Events...]\n\n" : "[c/00fde2:Defeated Events:]\n" + ((bool)MKLP.Config.Main.Simplified_DefeatedBossEventList ? $"- {GetDefeatedEvents}\n" : GetDefeatedEvents);
+                GetDefeatedBoss = GetDefeatedBoss == "" ? $"[c/23ff00:{MKLP.GetText("No Defeated Bosses...")}]\n\n" : $"[c/23ff00:{MKLP.GetText("Defeated Bosses:")}]\n" + ((bool)MKLP.Config.Main.Simplified_DefeatedBossEventList ? $"- {GetDefeatedBoss}\n" : GetDefeatedBoss);
+                GetEnableBoss = GetEnableBoss == "" ? $"[c/ffff00:{MKLP.GetText("No Enable Bosses...")}]\n\n" : $"[c/ffff00:{MKLP.GetText("Enabled Bosses:")}]\n" + ((bool)MKLP.Config.Main.Simplified_DefeatedBossEventList ? $"- {GetEnableBoss}\n" : GetEnableBoss);
+                GetDefeatedEvents = GetDefeatedEvents == "" ? $"[c/00fde2:{MKLP.GetText("No Defeated Events...")}]\n\n" : $"[c/00fde2:{MKLP.GetText("Defeated Events:")}]\n" + ((bool)MKLP.Config.Main.Simplified_DefeatedBossEventList ? $"- {GetDefeatedEvents}\n" : GetDefeatedEvents);
             }
 
+            var getnextbosssched = BossManager.GetNextBossSchedule();
+            args.Player.SendMessage(
+                    $"{MKLP.GetText("List Of Bosses:")}\n" +
+                    $"{GetDefeatedBoss}" +
+                    $"{GetEnableBoss}" +
+                    $"{GetDefeatedEvents}" +
+                    (getnextbosssched.Item1 == "" ? "" : $"\n{MKLP.GetText($"{getnextbosssched.Item1} in")} {GetTimetring((int)(getnextbosssched.Item2 - DateTime.UtcNow).TotalSeconds)}")
+                ,
+                Color.Gray);
 
-                args.Player.SendMessage(
-                    MKLP.GetText(
-                        $"List Of Bosses:\n" +
-                        $"{GetDefeatedBoss}" +
-                        $"{GetEnableBoss}" +
-                        $"{GetDefeatedEvents}"
-                    ),
-                    Color.Gray);
 
+            string GetTimetring(int seconds)
+            {
+                TimeSpan t = TimeSpan.FromSeconds(seconds);
+
+                if (seconds < 0)
+                {
+                    return MKLP.GetText("{0}" + $"  second{(seconds > 1 ? "s" : "")}", seconds);
+                }
+
+                if (t.TotalMinutes < 1)
+                {
+                    return MKLP.GetText("{0}" + $" second{(t.Seconds > 1 ? "s" : "")}", t.Seconds);
+                }
+                else if (t.TotalHours < 1)
+                {
+                    return MKLP.GetText("{0}" + $" minute{(t.Minutes > 1 ? "s" : "")}", t.Minutes);
+                }
+                else if (t.TotalDays < 1)
+                {
+                    return MKLP.GetText("{0}" + $" hour{(t.Hours > 1 ? "s" : "")}", t.Hours);
+                }
+                else
+                {
+                    return MKLP.GetText("{0}" + $" day{(t.Days > 1 ? "s" : "")}", t.Days);
+                }
+            }
             #endregion
         }
 
@@ -454,12 +495,12 @@ namespace MKLP
                         MKLP.SendStaffMessage(MKLP.GetText($"[{(istemp ? "Temporary " : "")}Player-Report] from {args.Player.Account.Name}" +
                             "\nTarget: {0}" +
                             "\nMessage: {1}",
-                            (get_target_name == "" ? $"{DiscordKLP.S_}none{DiscordKLP.S_}" : $"{get_target_name} {(isAccount ? "(Account) " : "")} {(get_target_index == -1 ? "" : get_target_index)}"),
+                            (get_target_name == "" ? $"{DiscordKLP.S_}{MKLP.GetText("none")}{DiscordKLP.S_}" : $"{get_target_name} {(isAccount ? "(Account) " : "")} {(get_target_index == -1 ? "" : get_target_index)}"),
                             report_message), Color.OrangeRed);
                         args.Player.SendSuccessMessage(MKLP.GetText($"{(istemp ? "[Temporary] " : "")}Player Report Sent!" +
                             "\ntarget: {0}" +
                             "\nmessage: {1}",
-                            (get_target_name == "" ? $"{DiscordKLP.S_}none{DiscordKLP.S_}" : $"{get_target_name} {(isAccount ? "(Account) " : "")} {(get_target_index == -1 ? "" : get_target_index)}"),
+                            (get_target_name == "" ? $"{DiscordKLP.S_}{MKLP.GetText("none")}{DiscordKLP.S_}" : $"{get_target_name} {(isAccount ? "(Account) " : "")} {(get_target_index == -1 ? "" : get_target_index)}"),
                             report_message));
                         return;
                     }
@@ -524,7 +565,7 @@ namespace MKLP
                         args.Player.SendSuccessMessage(MKLP.GetText($"{(istemp ? "[Temporary] " : "")}Staff Report Sent!" +
                             "\ntarget: {0}" +
                             "\nmessage: {1}",
-                            (get_target_name == "" ? $"{DiscordKLP.S_}none{DiscordKLP.S_}" : $"{get_target_name} {(isAccount ? "(Account) " : "")} {(get_target_index == -1 ? "" : get_target_index)}"),
+                            (get_target_name == "" ? $"{DiscordKLP.S_}{MKLP.GetText("none")}{DiscordKLP.S_}" : $"{get_target_name} {(isAccount ? "(Account) " : "")} {(get_target_index == -1 ? "" : get_target_index)}"),
                             report_message));
                         return;
                     }
@@ -756,6 +797,23 @@ namespace MKLP
             }
 
             args.Player.SendSuccessMessage(MKLP.GetText("Messages Cleared!"));
+
+            #endregion
+        }
+
+        private static void CMD_KickAll(CommandArgs args)
+        {
+            #region code
+
+            string reason = (args.Parameters.Count == 0 ? string.Join(" ", args.Parameters.ToArray(), 0, args.Parameters.Count) : MKLP.GetText("Misbehaviour."));
+            foreach (TSPlayer player in TShock.Players)
+            {
+                if (player == null) continue;
+                if (!player.RealPlayer) continue;
+                if (args.Player == player) continue;
+                player.Kick(reason, !args.Player.RealPlayer, silent: false, args.Player.Name);
+            }
+            args.Player.SendSuccessMessage(MKLP.GetText("Successfully kick all the players..."));
 
             #endregion
         }
@@ -2581,14 +2639,26 @@ namespace MKLP
                 {
                     MKLP.TogglePlayerVanish(args.Player, true);
 
-                    TShock.Utils.Broadcast($"{args.Player.Name} has left.", Color.Yellow);
+                    foreach (var player in TShock.Players)
+                    {
+                        if (player != null && player.Active && player != args.Player)
+                        {
+                            player.SendInfoMessage($"{args.Player.Name} has left.", Color.Yellow);
+                        }
+                    }
                     args.Player.SendSuccessMessage(MKLP.GetText("You're on Vanish"));
                 }
                 else
                 {
                     MKLP.TogglePlayerVanish(args.Player, false);
 
-                    TShock.Utils.Broadcast($"{args.Player.Name} has joined.", Color.Yellow);
+                    foreach (var player in TShock.Players)
+                    {
+                        if (player != null && player.Active && player != args.Player)
+                        {
+                            player.SendInfoMessage($"{args.Player.Name} has joined.", Color.Yellow);
+                        }
+                    }
                     args.Player.SendSuccessMessage(MKLP.GetText("You're no longer on Vanish"));
                 }
             }
@@ -2596,7 +2666,13 @@ namespace MKLP
             {
                 MKLP.TogglePlayerVanish(args.Player, true);
 
-                TShock.Utils.Broadcast($"{args.Player.Name} has left.", Color.Yellow);
+                foreach (var player in TShock.Players)
+                {
+                    if (player != null && player.Active && player != args.Player)
+                    {
+                        player.SendInfoMessage($"{args.Player.Name} has left.", Color.Yellow);
+                    }
+                }
                 args.Player.SendSuccessMessage(MKLP.GetText("You're on Vanish"));
             }
 
@@ -3646,6 +3722,265 @@ namespace MKLP
             #endregion
         }
 
+
+        private static void CMD_Logs(CommandArgs args)
+        {
+            #region code
+
+            if (args.Parameters.Count == 0)
+            {
+                args.Player.SendErrorMessage("Use '/logs help' for more info.");
+                return;
+            }
+
+
+            switch (args.Parameters[0].ToLower())
+            {
+                #region [ Help Text ]
+                case "help":
+                    {
+                        return;
+                    }
+                #endregion
+                #region [ sub-command : tile ]
+                case "tile":
+                    {
+                        if (args.Parameters.Count == 1)
+                        {
+                            args.Player.SendErrorMessage("do '/logs tile help' for more info.");
+                            return;
+                        }
+
+                        Vector2 getpos;
+                        int getdistance = 10;
+                        DateTime timedateprev = DateTime.Now;
+                        DateTime timedate = timedateprev;
+
+
+                        int getpage;
+
+                        switch (args.Parameters[1].ToLower())
+                        {
+                            case "help":
+                                {
+                                    args.Player.SendMessage(
+                                        "=== tile Sub-Commands ===" +
+                                        "\n'/logs tile pos <x> <y> <distance> <page> <date/time>' : shows the log near on that specific position you choose" +
+                                        "\n" +
+                                        "\n'/log tile near <distance> <page> <date/time>' : shows the log near your standing on" +
+                                        "\n" +
+                                        "\n---------------" +
+                                        "\nDistance Ex. 30 = get log 30 blocks near you" +
+                                        "\n---------------" +
+                                        "\nDate/Time Ex. MM/DD/YYYY" +
+                                        "\n---------------"
+                                        , Color.Gray);
+                                    return;
+                                }
+                            case "pos":
+                                {
+                                    if (args.Parameters.Count < 4)
+                                    {
+                                        args.Player.SendErrorMessage("Proper Usage: /logs tile pos <x> <y> <page> <datetime>");
+                                        return;
+                                    }
+
+                                    int x;
+                                    int y;
+
+                                    if (!int.TryParse(args.Parameters[2], out x))
+                                    {
+                                        args.Player.SendErrorMessage("Invalid X Position!");
+                                        return;
+                                    }
+                                    if (!int.TryParse(args.Parameters[3], out y))
+                                    {
+                                        args.Player.SendErrorMessage("Invalid Y Position!");
+                                        return;
+                                    }
+
+                                    getpos = new(x, y);
+
+
+                                    getpage = StringPageKLP.ParsePage(4, args.Parameters.ToArray());
+
+                                    if (args.Parameters.Count >= 6)
+                                    {
+                                        if (!DateTime.TryParse(args.Parameters[5], out timedate))
+                                        {
+                                            args.Player.SendErrorMessage("Invalid DateTime Schedule!");
+                                            return;
+                                        }
+                                    }
+                                    break;
+                                }
+                            case "near":
+                                {
+
+                                    getpage = StringPageKLP.ParsePage(2, args.Parameters.ToArray());
+
+                                    if (args.Parameters.Count >= 4)
+                                    {
+                                        if (!DateTime.TryParse(args.Parameters[3], out timedate))
+                                        {
+                                            args.Player.SendErrorMessage("Invalid DateTime Schedule!");
+                                            return;
+                                        }
+                                    }
+
+                                    getpos = new (args.Player.TileX, args.Player.TileY);
+                                    break;
+                                }
+                            default:
+                                {
+                                    args.Player.SendErrorMessage("Please Specify a Sub-command!" +
+                                        "\ndo '/logs tile help' for more info.");
+                                    return;
+                                }
+                        }
+
+                        string filepath = LogKLP.GetPath(LogKLP.LogPath_Tile, timedate);
+
+                        if (timedate == timedateprev)
+                        {
+                            int breakf = 0;
+                            while (!File.Exists(filepath))
+                            {
+                                if (breakf >= 8)
+                                {
+                                    args.Player.SendErrorMessage("Unable to find log");
+                                    return;
+                                }
+                                breakf++;
+                                timedate = timedate.AddDays(-1);
+                                filepath = LogKLP.GetPath(LogKLP.LogPath_Tile, timedate);
+                            }
+                        }
+                        else
+                        {
+                            if (!File.Exists(filepath))
+                            {
+                                args.Player.SendErrorMessage("tile log does not exist!");
+                                return;
+                            }
+                        }
+
+                        
+
+                        string[] text = LogKLP.GetLog_Tile(filepath, getpos, getdistance).Select(get => 
+                            $"\n=== {get.Key} ===" +
+                            $"\n{string.Join("\n", get.Value.Select(e => $"- ({e.Key.X}, {e.Key.Y}) {e.Value}"))}"
+                        ).ToArray();
+
+                        StringPageKLP pageklp = new(6, text)
+                        {
+                            DisplayText = "=== Tile Log Info page ({0}/{1}) ==="
+                        };
+
+                        args.Player.SendMessage(
+                            pageklp.GetDisplayText(getpage) +
+                            $"= {getdistance} near position ({getpos.X}, {getpos.Y})\n" +
+                            pageklp.GetText(getpage)
+                            , Color.LightGray);
+
+
+                        return;
+                    }
+                #endregion
+                #region [ sub-command : sign ]
+                case "sign":
+                    {
+                        DateTime timedateprev = DateTime.Now;
+                        DateTime timedate = timedateprev;
+
+                        if (args.Player.ContainsData("MKLP_CheckLog_Sign"))
+                        {
+                            string getdata = args.Player.GetData<string>("MKLP_CheckLog_Sign");
+
+                            if (getdata == "OnTrack")
+                            {
+
+                                args.Player.SendErrorMessage("please select a sign you want to check" +
+                                    "\ndo '/logs sign select' and interact any sign!");
+                                return;
+                            }
+
+                            Vector2 getpos;
+
+                            try
+                            {
+                                getpos = new(int.Parse(getdata.Split("|")[0]), int.Parse(getdata.Split("|")[0]));
+                            } catch
+                            {
+                                args.Player.SendErrorMessage("Unable to get SignPOS please retry '/logs sign select'");
+                                return;
+                            }
+                            int page = StringPageKLP.ParsePage(1, args.Parameters.ToArray());
+
+                            string filepath = LogKLP.GetPath(LogKLP.LogPath_Sign, timedate);
+
+                            if (timedate == timedateprev)
+                            {
+                                int breakf = 0;
+                                while (!File.Exists(filepath))
+                                {
+                                    if (breakf >= 8)
+                                    {
+                                        args.Player.SendErrorMessage("Unable to find log");
+                                        return;
+                                    }
+                                    breakf++;
+                                    timedate = timedate.AddDays(-1);
+                                    filepath = LogKLP.GetPath(LogKLP.LogPath_Tile, timedate);
+                                }
+                            }
+                            else
+                            {
+                                if (!File.Exists(filepath))
+                                {
+                                    args.Player.SendErrorMessage("tile log does not exist!");
+                                    return;
+                                }
+                            }
+
+                            string[] text = LogKLP.GetLog_Sign(filepath, getpos).Select(
+                                e => $"-- {e.Item1} | {e.Item2} --" +
+                                $"\ntext: {e.Item3}"
+                                ).ToArray();
+
+                            StringPageKLP getpage = new(3, text)
+                            {
+                                DisplayText = $"SignLog | position: ({getpos.X}, {getpos.Y})"
+                            };
+
+                            args.Player.SendMessage(
+                                getpage.GetDisplayText(page) + "\n" +
+                                getpage.GetText(page)
+                                , Color.WhiteSmoke);
+                        } else
+                        {
+                            if (args.Parameters.Count == 1)
+                            {
+                                if (args.Parameters[1].ToLower() != "select")
+                                {
+                                    args.Player.SetData("MKLP_CheckLog_Sign", "OnTrack");
+                                    args.Player.SendSuccessMessage("please interact a sign to select.");
+                                    return;
+                                }
+                            }
+
+                            args.Player.SendErrorMessage("please select a sign you want to check" +
+                                "\ndo '/logs sign select' and interact any sign!");
+                        }
+                        return;
+                    }
+                    #endregion
+            }
+
+
+            #endregion
+        }
+
         #endregion
 
         #region { Manager }
@@ -4073,6 +4408,3 @@ namespace MKLP
         #endregion
     }
 }
-
-
-

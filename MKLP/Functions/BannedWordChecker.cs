@@ -4,30 +4,32 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
+using TShockAPI;
 using System.Reactive.Joins;
 using MySqlX.XDevAPI.Common;
+using Group = TShockAPI.Group;
 
 namespace MKLP.Functions
 {
     public static class BannedWordChecker
     {
-        public static bool ISBannedWord(string text)
+        public static bool ISBannedWord(Group group, string text)
         {
             string[] dummy1;
             string dummy2;
-            return ISBannedWord(text, out dummy1, out dummy2);
+            return ISBannedWord(group, text, out dummy1, out dummy2);
         }
-        public static bool ISBannedWord(string text, out string[] badwords)
+        public static bool ISBannedWord(Group group, string text, out string[] badwords)
         {
             string dummy;
-            return ISBannedWord(text, out badwords ,out dummy);
+            return ISBannedWord(group, text, out badwords ,out dummy);
         }
-        public static bool ISBannedWord(string text, out string censorText)
+        public static bool ISBannedWord(Group group, string text, out string censorText)
         {
             string[] dummy;
-            return ISBannedWord(text, out dummy, out censorText);
+            return ISBannedWord(group, text, out dummy, out censorText);
         }
-        public static bool ISBannedWord(string text, out string[] badwords, out string censorText)
+        public static bool ISBannedWord(Group group, string text, out string[] badwords, out string censorText)
         {
             string censorResult = text;
             List<string> badwordsResult = new();
@@ -35,6 +37,8 @@ namespace MKLP.Functions
 
             foreach (Config.BannedWordValue get in MKLP.Config.Main.ChatMod.Ban_MessageContains)
             {
+                if (group.HasPermission(get.PermissionByPass)) continue;
+
                 string pattern = $@"{GetRegexBadWord(get.Word, get.BannedWordDetectionRange, get.MustBeSeperated)}";
                 var matches = Regex.Matches(text, pattern, RegexOptions.IgnoreCase);
 
@@ -69,7 +73,7 @@ namespace MKLP.Functions
 
             string result = "";
 
-            string MBS = MustBeSeperated ? "(?<![a-zA-Z])" : "";
+            string MBS = MustBeSeperated ? "" : "(?<![a-zA-Z])";
 
             switch (detection)
             {

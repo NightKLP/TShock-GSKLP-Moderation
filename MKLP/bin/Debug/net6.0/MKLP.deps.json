@@ -12,7 +12,7 @@
           "OTAPI.Upcoming": "3.1.20",
           "TSAPI": "5.2.1",
           "TShock": "5.2.3",
-          "BanGuard": "1.0.0.0"
+          "BanGuard": "0.2.0.0"
         },
         "runtime": {
           "MKLP.dll": {}
@@ -1084,11 +1084,11 @@
           }
         }
       },
-      "BanGuard/1.0.0.0": {
+      "BanGuard/0.2.0.0": {
         "runtime": {
           "BanGuard.dll": {
-            "assemblyVersion": "1.0.0.0",
-            "fileVersion": "1.0.0.0"
+            "assemblyVersion": "0.2.0.0",
+            "fileVersion": "0.2.0.0"
           }
         }
       }
@@ -1765,7 +1765,7 @@
       "path": "zstdsharp.port/0.7.1",
       "hashPath": "zstdsharp.port.0.7.1.nupkg.sha512"
     },
-    "BanGuard/1.0.0.0": {
+    "BanGuard/0.2.0.0": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""
