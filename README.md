@@ -1,7 +1,7 @@
 # TShock-GSKLP-Moderation
 Moderation Plugin from GSKLP Server
 
-In order to install the plugin donwload `MKLP.dll` in releases after that put that file in `ServerPlugins` folder
+In order to install the plugin download `MKLP.dll` in releases after that put that file in `ServerPlugins` folder
 
 ⚠️ Warning! you need `Discord.Net.Rest.dll`, `Discord.Net.Core.dll`, `Discord.Net.WebSocket.dll` in `bin` folder!
 - MKLP uses Discord.Net v3.13.0
