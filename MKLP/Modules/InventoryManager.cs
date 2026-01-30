@@ -31,9 +31,9 @@ namespace MKLP.Modules
             //OutOfMemoryException
 
             string log = $"{tsplayer.Name}{DiscordKLP.S_}{Type}{DiscordKLP.S_}{slot}{DiscordKLP.S_}" +
-                $"{prevplayerinv.netID},{prevplayerinv.stack},{prevplayerinv.prefix}" +
+                $"{prevplayerinv.type},{prevplayerinv.stack},{prevplayerinv.prefix}" +
                 DiscordKLP.S_ +
-                $"{playerinv.netID},{playerinv.stack},{playerinv.prefix}|{InvLog_index}";
+                $"{playerinv.type},{playerinv.stack},{playerinv.prefix}|{InvLog_index}";
 
             SendLog_ToInvTrackPlayers(tsplayer,
                 $"[c/FF8E59:{tsplayer.Name}] [c/FFFC59:{Type} Slot {slot}] has change from {TShock.Utils.ItemTag(prevplayerinv)} to {TShock.Utils.ItemTag(playerinv)}"
@@ -94,7 +94,7 @@ namespace MKLP.Modules
             string log = $"{tsplayer.Account.Name}{DiscordKLP.S_}{Type}{DiscordKLP.S_}{slot}{DiscordKLP.S_}" +
                 $"{prevplayerinv.NetId},{prevplayerinv.Stack},{prevplayerinv.PrefixId}" +
                 DiscordKLP.S_ +
-                $"{playerinv.netID},{playerinv.stack},{playerinv.prefix}|{InvLog_index}";
+                $"{playerinv.type},{playerinv.stack},{playerinv.prefix}|{InvLog_index}";
 
             if (!InventoryLogs.Contains(log))
             {

@@ -1,6 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
 <Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ImportGroup Condition=" '$(ExcludeRestorePackageImports)' != 'true' ">
+    <Import Project="$(NuGetPackageRoot)monomod.core\1.2.3\buildTransitive\MonoMod.Core.targets" Condition="Exists('$(NuGetPackageRoot)monomod.core\1.2.3\buildTransitive\MonoMod.Core.targets')" />
+    <Import Project="$(NuGetPackageRoot)monomod.runtimedetour\25.2.3\buildTransitive\MonoMod.RuntimeDetour.targets" Condition="Exists('$(NuGetPackageRoot)monomod.runtimedetour\25.2.3\buildTransitive\MonoMod.RuntimeDetour.targets')" />
     <Import Project="$(NuGetPackageRoot)system.text.json\7.0.1\buildTransitive\net6.0\System.Text.Json.targets" Condition="Exists('$(NuGetPackageRoot)system.text.json\7.0.1\buildTransitive\net6.0\System.Text.Json.targets')" />
   </ImportGroup>
 </Project>

@@ -176,7 +176,7 @@ namespace MKLP.Modules
             if (args.Control.IsUsingItem && IsSpawnerItem(plr.SelectedItem))
             {
                 int requireplayer = -1;
-                switch (BossIsAllowed(GetBossNetIDFromSpawner(plr.SelectedItem.netID), out requireplayer))
+                switch (BossIsAllowed(GetBossNetIDFromSpawner(plr.SelectedItem.type), out requireplayer))
                 {
                     case BossAllowType.NotAllowed:
                     case BossAllowType.MechDusaNotAllowed1:
@@ -246,7 +246,7 @@ namespace MKLP.Modules
                 ItemID.CelestialSigil
             };
 
-            return spawnerIds.Contains(item.netID);
+            return spawnerIds.Contains(item.type);
         }
         public static int GetBossNetIDFromSpawner(int itemID)
         {

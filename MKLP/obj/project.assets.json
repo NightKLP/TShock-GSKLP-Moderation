@@ -1,7 +1,7 @@
 {
   "version": 3,
   "targets": {
-    "net6.0": {
+    "net9.0": {
       "BCrypt.Net-Next/4.0.3": {
         "type": "package",
         "compile": {
@@ -312,22 +312,20 @@
           }
         }
       },
-      "ModFramework/1.1.7": {
+      "ModFramework/1.1.15": {
         "type": "package",
         "dependencies": {
-          "MonoMod": "22.5.1.1",
-          "MonoMod.RuntimeDetour.HookGen": "22.5.1.1",
-          "NuGet.Protocol": "6.3.1",
-          "System.Runtime.Loader": "4.3.0"
+          "MonoMod": "22.7.31.1",
+          "NuGet.Protocol": "6.13.2"
         },
         "compile": {
-          "lib/net6.0/ModFramework.dll": {}
+          "lib/net9.0/ModFramework.dll": {}
         },
         "runtime": {
-          "lib/net6.0/ModFramework.dll": {}
+          "lib/net9.0/ModFramework.dll": {}
         }
       },
-      "Mono.Cecil/0.11.4": {
+      "Mono.Cecil/0.11.5": {
         "type": "package",
         "compile": {
           "lib/netstandard2.0/Mono.Cecil.Mdb.dll": {
@@ -358,11 +356,11 @@
           }
         }
       },
-      "MonoMod/22.5.1.1": {
+      "MonoMod/22.7.31.1": {
         "type": "package",
         "dependencies": {
           "Mono.Cecil": "0.11.4",
-          "MonoMod.Utils": "22.5.1.1",
+          "MonoMod.Utils": "22.7.31.1",
           "System.Collections.NonGeneric": "4.3.0",
           "System.ComponentModel.TypeConverter": "4.3.0",
           "System.IO.FileSystem.Primitives": "4.3.0",
@@ -381,73 +379,101 @@
           }
         }
       },
-      "MonoMod.RuntimeDetour/22.5.1.1": {
+      "MonoMod.Backports/1.1.2": {
         "type": "package",
         "dependencies": {
-          "Mono.Cecil": "0.11.4",
-          "MonoMod.Utils": "22.5.1.1",
-          "System.Collections.NonGeneric": "4.3.0",
-          "System.ComponentModel.TypeConverter": "4.3.0",
-          "System.IO.FileSystem.Primitives": "4.3.0",
-          "System.Reflection.Emit.ILGeneration": "4.7.0",
-          "System.Reflection.Emit.Lightweight": "4.7.0",
-          "System.Reflection.TypeExtensions": "4.7.0"
+          "MonoMod.ILHelpers": "1.1.0"
         },
         "compile": {
-          "lib/net5.0/MonoMod.RuntimeDetour.dll": {
-            "related": ".xml"
+          "lib/net8.0/MonoMod.Backports.dll": {
+            "related": ".pdb;.xml"
           }
         },
         "runtime": {
-          "lib/net5.0/MonoMod.RuntimeDetour.dll": {
-            "related": ".xml"
+          "lib/net8.0/MonoMod.Backports.dll": {
+            "related": ".pdb;.xml"
           }
         }
       },
-      "MonoMod.RuntimeDetour.HookGen/22.5.1.1": {
+      "MonoMod.Core/1.2.3": {
         "type": "package",
         "dependencies": {
-          "Mono.Cecil": "0.11.4",
-          "MonoMod": "22.5.1.1",
-          "MonoMod.RuntimeDetour": "22.5.1.1",
-          "MonoMod.Utils": "22.5.1.1",
-          "System.Collections.NonGeneric": "4.3.0",
-          "System.ComponentModel.TypeConverter": "4.3.0",
-          "System.IO.FileSystem.Primitives": "4.3.0",
-          "System.Reflection.Emit.ILGeneration": "4.7.0",
-          "System.Reflection.Emit.Lightweight": "4.7.0",
-          "System.Reflection.TypeExtensions": "4.7.0"
+          "Mono.Cecil": "0.11.5",
+          "MonoMod.Backports": "1.1.2",
+          "MonoMod.ILHelpers": "1.1.0",
+          "MonoMod.Utils": "25.0.8"
         },
         "compile": {
-          "lib/net5.0/MonoMod.RuntimeDetour.HookGen.dll": {
-            "related": ".runtimeconfig.json;.xml"
+          "lib/net9.0/MonoMod.Core.dll": {
+            "related": ".pdb;.xml"
+          },
+          "lib/net9.0/MonoMod.Iced.dll": {
+            "related": ".pdb;.xml"
           }
         },
         "runtime": {
-          "lib/net5.0/MonoMod.RuntimeDetour.HookGen.dll": {
-            "related": ".runtimeconfig.json;.xml"
+          "lib/net9.0/MonoMod.Core.dll": {
+            "related": ".pdb;.xml"
+          },
+          "lib/net9.0/MonoMod.Iced.dll": {
+            "related": ".pdb;.xml"
+          }
+        },
+        "build": {
+          "buildTransitive/MonoMod.Core.targets": {}
+        }
+      },
+      "MonoMod.ILHelpers/1.1.0": {
+        "type": "package",
+        "compile": {
+          "lib/net8.0/MonoMod.ILHelpers.dll": {
+            "related": ".pdb"
+          }
+        },
+        "runtime": {
+          "lib/net8.0/MonoMod.ILHelpers.dll": {
+            "related": ".pdb"
           }
         }
       },
-      "MonoMod.Utils/22.5.1.1": {
+      "MonoMod.RuntimeDetour/25.2.3": {
         "type": "package",
         "dependencies": {
-          "Mono.Cecil": "0.11.4",
-          "System.Collections.NonGeneric": "4.3.0",
-          "System.ComponentModel.TypeConverter": "4.3.0",
-          "System.IO.FileSystem.Primitives": "4.3.0",
-          "System.Reflection.Emit.ILGeneration": "4.7.0",
-          "System.Reflection.Emit.Lightweight": "4.7.0",
-          "System.Reflection.TypeExtensions": "4.7.0"
+          "Mono.Cecil": "0.11.5",
+          "MonoMod.Backports": "1.1.2",
+          "MonoMod.Core": "1.2.3",
+          "MonoMod.ILHelpers": "1.1.0",
+          "MonoMod.Utils": "25.0.8"
         },
         "compile": {
-          "lib/net5.0/MonoMod.Utils.dll": {
-            "related": ".xml"
+          "lib/net9.0/MonoMod.RuntimeDetour.dll": {
+            "related": ".pdb;.xml"
           }
         },
         "runtime": {
-          "lib/net5.0/MonoMod.Utils.dll": {
-            "related": ".xml"
+          "lib/net9.0/MonoMod.RuntimeDetour.dll": {
+            "related": ".pdb;.xml"
+          }
+        },
+        "build": {
+          "buildTransitive/MonoMod.RuntimeDetour.targets": {}
+        }
+      },
+      "MonoMod.Utils/25.0.8": {
+        "type": "package",
+        "dependencies": {
+          "Mono.Cecil": "0.11.5",
+          "MonoMod.Backports": "1.1.2",
+          "MonoMod.ILHelpers": "1.1.0"
+        },
+        "compile": {
+          "lib/net9.0/MonoMod.Utils.dll": {
+            "related": ".pdb;.xml"
+          }
+        },
+        "runtime": {
+          "lib/net9.0/MonoMod.Utils.dll": {
+            "related": ".pdb;.xml"
           }
         }
       },
@@ -469,12 +495,12 @@
           "ZstdSharp.Port": "0.7.1"
         },
         "compile": {
-          "lib/net6.0/MySql.Data.dll": {
+          "lib/net8.0/MySql.Data.dll": {
             "related": ".xml"
           }
         },
         "runtime": {
-          "lib/net6.0/MySql.Data.dll": {
+          "lib/net8.0/MySql.Data.dll": {
             "related": ".xml"
           }
         },
@@ -514,10 +540,11 @@
           }
         }
       },
-      "NuGet.Common/6.3.1": {
+      "NuGet.Common/6.13.2": {
         "type": "package",
         "dependencies": {
-          "NuGet.Frameworks": "6.3.1"
+          "NuGet.Frameworks": "6.13.2",
+          "System.Collections.Immutable": "8.0.0"
         },
         "compile": {
           "lib/netstandard2.0/NuGet.Common.dll": {
@@ -530,10 +557,10 @@
           }
         }
       },
-      "NuGet.Configuration/6.3.1": {
+      "NuGet.Configuration/6.13.2": {
         "type": "package",
         "dependencies": {
-          "NuGet.Common": "6.3.1",
+          "NuGet.Common": "6.13.2",
           "System.Security.Cryptography.ProtectedData": "4.4.0"
         },
         "compile": {
@@ -547,7 +574,7 @@
           }
         }
       },
-      "NuGet.Frameworks/6.3.1": {
+      "NuGet.Frameworks/6.13.2": {
         "type": "package",
         "compile": {
           "lib/netstandard2.0/NuGet.Frameworks.dll": {
@@ -560,43 +587,43 @@
           }
         }
       },
-      "NuGet.Packaging/6.3.1": {
+      "NuGet.Packaging/6.13.2": {
         "type": "package",
         "dependencies": {
-          "Newtonsoft.Json": "13.0.1",
-          "NuGet.Configuration": "6.3.1",
-          "NuGet.Versioning": "6.3.1",
-          "System.Security.Cryptography.Cng": "5.0.0",
-          "System.Security.Cryptography.Pkcs": "5.0.0"
+          "Newtonsoft.Json": "13.0.3",
+          "NuGet.Configuration": "6.13.2",
+          "NuGet.Versioning": "6.13.2",
+          "System.Formats.Asn1": "8.0.1",
+          "System.Security.Cryptography.Pkcs": "6.0.4"
         },
         "compile": {
-          "lib/net5.0/NuGet.Packaging.dll": {
+          "lib/net8.0/NuGet.Packaging.dll": {
             "related": ".xml"
           }
         },
         "runtime": {
-          "lib/net5.0/NuGet.Packaging.dll": {
+          "lib/net8.0/NuGet.Packaging.dll": {
             "related": ".xml"
           }
         }
       },
-      "NuGet.Protocol/6.3.1": {
+      "NuGet.Protocol/6.13.2": {
         "type": "package",
         "dependencies": {
-          "NuGet.Packaging": "6.3.1"
+          "NuGet.Packaging": "6.13.2"
         },
         "compile": {
-          "lib/net5.0/NuGet.Protocol.dll": {
+          "lib/net8.0/NuGet.Protocol.dll": {
             "related": ".xml"
           }
         },
         "runtime": {
-          "lib/net5.0/NuGet.Protocol.dll": {
+          "lib/net8.0/NuGet.Protocol.dll": {
             "related": ".xml"
           }
         }
       },
-      "NuGet.Versioning/6.3.1": {
+      "NuGet.Versioning/6.13.2": {
         "type": "package",
         "compile": {
           "lib/netstandard2.0/NuGet.Versioning.dll": {
@@ -609,22 +636,22 @@
           }
         }
       },
-      "OTAPI.Upcoming/3.1.20": {
+      "OTAPI.Upcoming/3.3.3": {
         "type": "package",
         "dependencies": {
-          "ModFramework": "1.1.7",
-          "MonoMod": "22.5.1.1",
-          "MonoMod.RuntimeDetour": "22.5.1.1",
-          "Newtonsoft.Json": "13.0.1",
-          "Steamworks.NET": "20.1.0"
+          "ModFramework": "1.1.15",
+          "MonoMod": "22.7.31.1",
+          "MonoMod.RuntimeDetour": "25.2.3",
+          "Newtonsoft.Json": "13.0.3",
+          "Steamworks.NET": "2024.8.0"
         },
         "compile": {
-          "lib/net6.0/OTAPI.Runtime.dll": {},
-          "lib/net6.0/OTAPI.dll": {}
+          "lib/net9.0/OTAPI.Runtime.dll": {},
+          "lib/net9.0/OTAPI.dll": {}
         },
         "runtime": {
-          "lib/net6.0/OTAPI.Runtime.dll": {},
-          "lib/net6.0/OTAPI.dll": {}
+          "lib/net9.0/OTAPI.Runtime.dll": {},
+          "lib/net9.0/OTAPI.dll": {}
         }
       },
       "SQLitePCLRaw.bundle_e_sqlite3/2.0.6": {
@@ -736,7 +763,7 @@
           "lib/net5.0/SQLitePCLRaw.provider.e_sqlite3.dll": {}
         }
       },
-      "Steamworks.NET/20.1.0": {
+      "Steamworks.NET/2024.8.0": {
         "type": "package",
         "compile": {
           "ref/netstandard2.1/Steamworks.NET.dll": {}
@@ -793,23 +820,20 @@
           }
         }
       },
-      "System.Collections.Immutable/6.0.0": {
+      "System.Collections.Immutable/8.0.0": {
         "type": "package",
-        "dependencies": {
-          "System.Runtime.CompilerServices.Unsafe": "6.0.0"
-        },
         "compile": {
-          "lib/net6.0/System.Collections.Immutable.dll": {
+          "lib/net8.0/System.Collections.Immutable.dll": {
             "related": ".xml"
           }
         },
         "runtime": {
-          "lib/net6.0/System.Collections.Immutable.dll": {
+          "lib/net8.0/System.Collections.Immutable.dll": {
             "related": ".xml"
           }
         },
         "build": {
-          "buildTransitive/netcoreapp3.1/_._": {}
+          "buildTransitive/net6.0/_._": {}
         }
       },
       "System.Collections.NonGeneric/4.3.0": {
@@ -944,16 +968,13 @@
       },
       "System.Diagnostics.DiagnosticSource/7.0.2": {
         "type": "package",
-        "dependencies": {
-          "System.Runtime.CompilerServices.Unsafe": "6.0.0"
-        },
         "compile": {
-          "lib/net6.0/System.Diagnostics.DiagnosticSource.dll": {
+          "lib/net7.0/System.Diagnostics.DiagnosticSource.dll": {
             "related": ".xml"
           }
         },
         "runtime": {
-          "lib/net6.0/System.Diagnostics.DiagnosticSource.dll": {
+          "lib/net7.0/System.Diagnostics.DiagnosticSource.dll": {
             "related": ".xml"
           }
         },
@@ -1015,17 +1036,20 @@
           }
         }
       },
-      "System.Formats.Asn1/5.0.0": {
+      "System.Formats.Asn1/8.0.1": {
         "type": "package",
         "compile": {
-          "lib/netstandard2.0/_._": {
+          "lib/net8.0/System.Formats.Asn1.dll": {
             "related": ".xml"
           }
         },
         "runtime": {
-          "lib/netstandard2.0/System.Formats.Asn1.dll": {
+          "lib/net8.0/System.Formats.Asn1.dll": {
             "related": ".xml"
           }
+        },
+        "build": {
+          "buildTransitive/net6.0/_._": {}
         }
       },
       "System.Globalization/4.3.0": {
@@ -1377,46 +1401,26 @@
           }
         }
       },
-      "System.Security.Cryptography.Cng/5.0.0": {
+      "System.Security.Cryptography.Pkcs/6.0.4": {
         "type": "package",
         "dependencies": {
-          "System.Formats.Asn1": "5.0.0"
+          "System.Formats.Asn1": "6.0.0"
         },
         "compile": {
-          "ref/netcoreapp3.0/System.Security.Cryptography.Cng.dll": {
+          "lib/net6.0/System.Security.Cryptography.Pkcs.dll": {
             "related": ".xml"
           }
         },
         "runtime": {
-          "lib/netcoreapp3.0/System.Security.Cryptography.Cng.dll": {
+          "lib/net6.0/System.Security.Cryptography.Pkcs.dll": {
             "related": ".xml"
           }
+        },
+        "build": {
+          "buildTransitive/netcoreapp3.1/_._": {}
         },
         "runtimeTargets": {
-          "runtimes/win/lib/netcoreapp3.0/System.Security.Cryptography.Cng.dll": {
-            "assetType": "runtime",
-            "rid": "win"
-          }
-        }
-      },
-      "System.Security.Cryptography.Pkcs/5.0.0": {
-        "type": "package",
-        "dependencies": {
-          "System.Formats.Asn1": "5.0.0",
-          "System.Security.Cryptography.Cng": "5.0.0"
-        },
-        "compile": {
-          "ref/netcoreapp3.0/System.Security.Cryptography.Pkcs.dll": {
-            "related": ".xml"
-          }
-        },
-        "runtime": {
-          "lib/netcoreapp3.0/System.Security.Cryptography.Pkcs.dll": {
-            "related": ".xml"
-          }
-        },
-        "runtimeTargets": {
-          "runtimes/win/lib/netcoreapp3.0/System.Security.Cryptography.Pkcs.dll": {
+          "runtimes/win/lib/net6.0/System.Security.Cryptography.Pkcs.dll": {
             "assetType": "runtime",
             "rid": "win"
           }
@@ -1499,16 +1503,13 @@
       },
       "System.Text.Encodings.Web/7.0.0": {
         "type": "package",
-        "dependencies": {
-          "System.Runtime.CompilerServices.Unsafe": "6.0.0"
-        },
         "compile": {
-          "lib/net6.0/System.Text.Encodings.Web.dll": {
+          "lib/net7.0/System.Text.Encodings.Web.dll": {
             "related": ".xml"
           }
         },
         "runtime": {
-          "lib/net6.0/System.Text.Encodings.Web.dll": {
+          "lib/net7.0/System.Text.Encodings.Web.dll": {
             "related": ".xml"
           }
         },
@@ -1516,7 +1517,7 @@
           "buildTransitive/net6.0/_._": {}
         },
         "runtimeTargets": {
-          "runtimes/browser/lib/net6.0/System.Text.Encodings.Web.dll": {
+          "runtimes/browser/lib/net7.0/System.Text.Encodings.Web.dll": {
             "assetType": "runtime",
             "rid": "browser"
           }
@@ -1525,16 +1526,15 @@
       "System.Text.Json/7.0.1": {
         "type": "package",
         "dependencies": {
-          "System.Runtime.CompilerServices.Unsafe": "6.0.0",
           "System.Text.Encodings.Web": "7.0.0"
         },
         "compile": {
-          "lib/net6.0/System.Text.Json.dll": {
+          "lib/net7.0/System.Text.Json.dll": {
             "related": ".xml"
           }
         },
         "runtime": {
-          "lib/net6.0/System.Text.Json.dll": {
+          "lib/net7.0/System.Text.Json.dll": {
             "related": ".xml"
           }
         },
@@ -1659,10 +1659,10 @@
       "ZstdSharp.Port/0.7.1": {
         "type": "package",
         "compile": {
-          "lib/net6.0/ZstdSharp.dll": {}
+          "lib/net7.0/ZstdSharp.dll": {}
         },
         "runtime": {
-          "lib/net6.0/ZstdSharp.dll": {}
+          "lib/net7.0/ZstdSharp.dll": {}
         }
       }
     }
@@ -2104,22 +2104,22 @@
         "useSharedDesignerContext.txt"
       ]
     },
-    "ModFramework/1.1.7": {
-      "sha512": "Y+aWqispd8zqrx2PCo4IwKxMWR1C/vtVzZwhXjiPJoHdDn38GGnCCwij8DuNzOHAiucgCS0qmRFLOdfFNCt6ow==",
+    "ModFramework/1.1.15": {
+      "sha512": "jUKY3+6PiuVjMdgAJMeKtQ4zD/OhFaG8HaGu0nxgqkvduP8QuMHIAO5lNnvyCNgQSkaYVuDRz/J/jGI6w0QexQ==",
       "type": "package",
-      "path": "modframework/1.1.7",
+      "path": "modframework/1.1.15",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
-        "lib/net6.0/ModFramework.dll",
-        "modframework.1.1.7.nupkg.sha512",
+        "lib/net9.0/ModFramework.dll",
+        "modframework.1.1.15.nupkg.sha512",
         "modframework.nuspec"
       ]
     },
-    "Mono.Cecil/0.11.4": {
-      "sha512": "IC1h5g0NeJGHIUgzM1P82ld57knhP0IcQfrYITDPXlNpMYGUrsG5TxuaWTjaeqDNQMBDNZkB8L0rBnwsY6JHuQ==",
+    "Mono.Cecil/0.11.5": {
+      "sha512": "fxfX+0JGTZ8YQeu1MYjbBiK2CYTSzDyEeIixt+yqKKTn7FW8rv7JMY70qevup4ZJfD7Kk/VG/jDzQQTpfch87g==",
       "type": "package",
-      "path": "mono.cecil/0.11.4",
+      "path": "mono.cecil/0.11.5",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
@@ -2139,14 +2139,14 @@
         "lib/netstandard2.0/Mono.Cecil.Rocks.pdb",
         "lib/netstandard2.0/Mono.Cecil.dll",
         "lib/netstandard2.0/Mono.Cecil.pdb",
-        "mono.cecil.0.11.4.nupkg.sha512",
+        "mono.cecil.0.11.5.nupkg.sha512",
         "mono.cecil.nuspec"
       ]
     },
-    "MonoMod/22.5.1.1": {
-      "sha512": "FKU1brIbpoQ655Akbefrk+mvDStmYzUwZVFBztUdJrjbtwVVaSsn+dFIvUG15SX9ij4jx9c649MKo/p4wbYrXQ==",
+    "MonoMod/22.7.31.1": {
+      "sha512": "NcfQBxRnQt9TkYPcyMvNRmCgfxvcqPoJbSpyZlYcG8mVtshR5CsQdwqKO5S1696gkVB50pCLSwskBWjzvsZuTg==",
       "type": "package",
-      "path": "monomod/22.5.1.1",
+      "path": "monomod/22.7.31.1",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
@@ -2159,65 +2159,229 @@
         "lib/net5.0/MonoMod.xml",
         "lib/netstandard2.0/MonoMod.dll",
         "lib/netstandard2.0/MonoMod.xml",
-        "monomod.22.5.1.1.nupkg.sha512",
+        "monomod.22.7.31.1.nupkg.sha512",
         "monomod.nuspec"
       ]
     },
-    "MonoMod.RuntimeDetour/22.5.1.1": {
-      "sha512": "WG5zLRuAr8KJEnIkKTuIG1OJCrGIT3pjvnAD43E0FDchHf3Dp985MF/8tmIQvAzCZV87JNs6QKeGGqmwDmpXpw==",
+    "MonoMod.Backports/1.1.2": {
+      "sha512": "baYlNy8n8kmaNhNvqmZ/dIPOeO1r9//dG1i2WbunMWtWZ2EKtIgmXaS+ZzphzTsikkGnoD4Jwr5g0TVdpDjgpw==",
       "type": "package",
-      "path": "monomod.runtimedetour/22.5.1.1",
+      "path": "monomod.backports/1.1.2",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
+        "README.md",
+        "icon.png",
+        "lib/net35/MonoMod.Backports.dll",
+        "lib/net35/MonoMod.Backports.pdb",
+        "lib/net35/MonoMod.Backports.xml",
+        "lib/net452/MonoMod.Backports.dll",
+        "lib/net452/MonoMod.Backports.pdb",
+        "lib/net452/MonoMod.Backports.xml",
+        "lib/net5.0/MonoMod.Backports.dll",
+        "lib/net5.0/MonoMod.Backports.pdb",
+        "lib/net5.0/MonoMod.Backports.xml",
+        "lib/net6.0/MonoMod.Backports.dll",
+        "lib/net6.0/MonoMod.Backports.pdb",
+        "lib/net6.0/MonoMod.Backports.xml",
+        "lib/net7.0/MonoMod.Backports.dll",
+        "lib/net7.0/MonoMod.Backports.pdb",
+        "lib/net7.0/MonoMod.Backports.xml",
+        "lib/net8.0/MonoMod.Backports.dll",
+        "lib/net8.0/MonoMod.Backports.pdb",
+        "lib/net8.0/MonoMod.Backports.xml",
+        "lib/netcoreapp2.1/MonoMod.Backports.dll",
+        "lib/netcoreapp2.1/MonoMod.Backports.pdb",
+        "lib/netcoreapp2.1/MonoMod.Backports.xml",
+        "lib/netcoreapp3.0/MonoMod.Backports.dll",
+        "lib/netcoreapp3.0/MonoMod.Backports.pdb",
+        "lib/netcoreapp3.0/MonoMod.Backports.xml",
+        "lib/netcoreapp3.1/MonoMod.Backports.dll",
+        "lib/netcoreapp3.1/MonoMod.Backports.pdb",
+        "lib/netcoreapp3.1/MonoMod.Backports.xml",
+        "lib/netstandard2.0/MonoMod.Backports.dll",
+        "lib/netstandard2.0/MonoMod.Backports.pdb",
+        "lib/netstandard2.0/MonoMod.Backports.xml",
+        "lib/netstandard2.1/MonoMod.Backports.dll",
+        "lib/netstandard2.1/MonoMod.Backports.pdb",
+        "lib/netstandard2.1/MonoMod.Backports.xml",
+        "monomod.backports.1.1.2.nupkg.sha512",
+        "monomod.backports.nuspec"
+      ]
+    },
+    "MonoMod.Core/1.2.3": {
+      "sha512": "Hl3/giQTIR7ejAR6fBwsMOy4AXsYYUVXsKbEfMCinw8aIdUJusMO9bf3mQ+1emP3gpqdfXaimQTHkg0SXI1nvg==",
+      "type": "package",
+      "path": "monomod.core/1.2.3",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE.txt",
+        "README.md",
+        "buildTransitive/MonoMod.CheckTargetRuntime.targets",
+        "buildTransitive/MonoMod.Core.targets",
+        "icon.png",
+        "lib/net35/MonoMod.Core.dll",
+        "lib/net35/MonoMod.Core.pdb",
+        "lib/net35/MonoMod.Core.xml",
+        "lib/net35/MonoMod.Iced.dll",
+        "lib/net35/MonoMod.Iced.pdb",
+        "lib/net35/MonoMod.Iced.xml",
+        "lib/net452/MonoMod.Core.dll",
+        "lib/net452/MonoMod.Core.pdb",
+        "lib/net452/MonoMod.Core.xml",
+        "lib/net452/MonoMod.Iced.dll",
+        "lib/net452/MonoMod.Iced.pdb",
+        "lib/net452/MonoMod.Iced.xml",
+        "lib/net5.0/MonoMod.Core.dll",
+        "lib/net5.0/MonoMod.Core.pdb",
+        "lib/net5.0/MonoMod.Core.xml",
+        "lib/net5.0/MonoMod.Iced.dll",
+        "lib/net5.0/MonoMod.Iced.pdb",
+        "lib/net5.0/MonoMod.Iced.xml",
+        "lib/net6.0/MonoMod.Core.dll",
+        "lib/net6.0/MonoMod.Core.pdb",
+        "lib/net6.0/MonoMod.Core.xml",
+        "lib/net6.0/MonoMod.Iced.dll",
+        "lib/net6.0/MonoMod.Iced.pdb",
+        "lib/net6.0/MonoMod.Iced.xml",
+        "lib/net7.0/MonoMod.Core.dll",
+        "lib/net7.0/MonoMod.Core.pdb",
+        "lib/net7.0/MonoMod.Core.xml",
+        "lib/net7.0/MonoMod.Iced.dll",
+        "lib/net7.0/MonoMod.Iced.pdb",
+        "lib/net7.0/MonoMod.Iced.xml",
+        "lib/net8.0/MonoMod.Core.dll",
+        "lib/net8.0/MonoMod.Core.pdb",
+        "lib/net8.0/MonoMod.Core.xml",
+        "lib/net8.0/MonoMod.Iced.dll",
+        "lib/net8.0/MonoMod.Iced.pdb",
+        "lib/net8.0/MonoMod.Iced.xml",
+        "lib/net9.0/MonoMod.Core.dll",
+        "lib/net9.0/MonoMod.Core.pdb",
+        "lib/net9.0/MonoMod.Core.xml",
+        "lib/net9.0/MonoMod.Iced.dll",
+        "lib/net9.0/MonoMod.Iced.pdb",
+        "lib/net9.0/MonoMod.Iced.xml",
+        "lib/netstandard2.0/MonoMod.Core.dll",
+        "lib/netstandard2.0/MonoMod.Core.pdb",
+        "lib/netstandard2.0/MonoMod.Core.xml",
+        "lib/netstandard2.0/MonoMod.Iced.dll",
+        "lib/netstandard2.0/MonoMod.Iced.pdb",
+        "lib/netstandard2.0/MonoMod.Iced.xml",
+        "logo.png",
+        "monomod.core.1.2.3.nupkg.sha512",
+        "monomod.core.nuspec"
+      ]
+    },
+    "MonoMod.ILHelpers/1.1.0": {
+      "sha512": "L2FWjhTrv7tcIxshfZ+M3OcaNr4cNw0IwiVZEgwqRnZ5QAN3+RrNJ8ZwCzwXUWyPDqooJxMcjjg8PsSYUiNBjQ==",
+      "type": "package",
+      "path": "monomod.ilhelpers/1.1.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "README.md",
+        "icon.png",
+        "lib/net35/MonoMod.ILHelpers.dll",
+        "lib/net35/MonoMod.ILHelpers.pdb",
+        "lib/net452/MonoMod.ILHelpers.dll",
+        "lib/net452/MonoMod.ILHelpers.pdb",
+        "lib/net5.0/MonoMod.ILHelpers.dll",
+        "lib/net5.0/MonoMod.ILHelpers.pdb",
+        "lib/net6.0/MonoMod.ILHelpers.dll",
+        "lib/net6.0/MonoMod.ILHelpers.pdb",
+        "lib/net7.0/MonoMod.ILHelpers.dll",
+        "lib/net7.0/MonoMod.ILHelpers.pdb",
+        "lib/net8.0/MonoMod.ILHelpers.dll",
+        "lib/net8.0/MonoMod.ILHelpers.pdb",
+        "lib/netcoreapp2.1/MonoMod.ILHelpers.dll",
+        "lib/netcoreapp2.1/MonoMod.ILHelpers.pdb",
+        "lib/netcoreapp3.0/MonoMod.ILHelpers.dll",
+        "lib/netcoreapp3.0/MonoMod.ILHelpers.pdb",
+        "lib/netcoreapp3.1/MonoMod.ILHelpers.dll",
+        "lib/netcoreapp3.1/MonoMod.ILHelpers.pdb",
+        "lib/netstandard2.0/MonoMod.ILHelpers.dll",
+        "lib/netstandard2.0/MonoMod.ILHelpers.pdb",
+        "lib/netstandard2.1/MonoMod.ILHelpers.dll",
+        "lib/netstandard2.1/MonoMod.ILHelpers.pdb",
+        "monomod.ilhelpers.1.1.0.nupkg.sha512",
+        "monomod.ilhelpers.nuspec"
+      ]
+    },
+    "MonoMod.RuntimeDetour/25.2.3": {
+      "sha512": "dSGNNfpDt6MBiSy2+wtX0WoSEdNINTTqJAkv268a38XumU2efrHgLkjFUg7r2r+RKo27qNuLuXDLQnMbRJU36A==",
+      "type": "package",
+      "path": "monomod.runtimedetour/25.2.3",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "README.md",
+        "buildTransitive/MonoMod.CheckTargetRuntime.targets",
+        "buildTransitive/MonoMod.RuntimeDetour.targets",
+        "icon.png",
         "lib/net35/MonoMod.RuntimeDetour.dll",
+        "lib/net35/MonoMod.RuntimeDetour.pdb",
         "lib/net35/MonoMod.RuntimeDetour.xml",
         "lib/net452/MonoMod.RuntimeDetour.dll",
+        "lib/net452/MonoMod.RuntimeDetour.pdb",
         "lib/net452/MonoMod.RuntimeDetour.xml",
         "lib/net5.0/MonoMod.RuntimeDetour.dll",
+        "lib/net5.0/MonoMod.RuntimeDetour.pdb",
         "lib/net5.0/MonoMod.RuntimeDetour.xml",
+        "lib/net6.0/MonoMod.RuntimeDetour.dll",
+        "lib/net6.0/MonoMod.RuntimeDetour.pdb",
+        "lib/net6.0/MonoMod.RuntimeDetour.xml",
+        "lib/net7.0/MonoMod.RuntimeDetour.dll",
+        "lib/net7.0/MonoMod.RuntimeDetour.pdb",
+        "lib/net7.0/MonoMod.RuntimeDetour.xml",
+        "lib/net8.0/MonoMod.RuntimeDetour.dll",
+        "lib/net8.0/MonoMod.RuntimeDetour.pdb",
+        "lib/net8.0/MonoMod.RuntimeDetour.xml",
+        "lib/net9.0/MonoMod.RuntimeDetour.dll",
+        "lib/net9.0/MonoMod.RuntimeDetour.pdb",
+        "lib/net9.0/MonoMod.RuntimeDetour.xml",
         "lib/netstandard2.0/MonoMod.RuntimeDetour.dll",
+        "lib/netstandard2.0/MonoMod.RuntimeDetour.pdb",
         "lib/netstandard2.0/MonoMod.RuntimeDetour.xml",
-        "monomod.runtimedetour.22.5.1.1.nupkg.sha512",
+        "monomod.runtimedetour.25.2.3.nupkg.sha512",
         "monomod.runtimedetour.nuspec"
       ]
     },
-    "MonoMod.RuntimeDetour.HookGen/22.5.1.1": {
-      "sha512": "jZunQfvC0mfK99PNLCMvTYnZ3pKrPe4rHtyDqB1li29fTyYdmsGjPhgEF9TkL4xXcoPQvTqFNpfRyWZucMU9XQ==",
+    "MonoMod.Utils/25.0.8": {
+      "sha512": "8wfyawgvGqUvfchAj7/gPazAjXO8CWNyXH+C0az+hgJH/80zVL5LxDhQMz0NQTyoCEJWU6gNBGc7CL+G7vCbaQ==",
       "type": "package",
-      "path": "monomod.runtimedetour.hookgen/22.5.1.1",
+      "path": "monomod.utils/25.0.8",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
-        "lib/net35/MonoMod.RuntimeDetour.HookGen.exe",
-        "lib/net35/MonoMod.RuntimeDetour.HookGen.xml",
-        "lib/net452/MonoMod.RuntimeDetour.HookGen.exe",
-        "lib/net452/MonoMod.RuntimeDetour.HookGen.xml",
-        "lib/net5.0/MonoMod.RuntimeDetour.HookGen.dll",
-        "lib/net5.0/MonoMod.RuntimeDetour.HookGen.runtimeconfig.json",
-        "lib/net5.0/MonoMod.RuntimeDetour.HookGen.xml",
-        "lib/netstandard2.0/MonoMod.RuntimeDetour.HookGen.dll",
-        "lib/netstandard2.0/MonoMod.RuntimeDetour.HookGen.xml",
-        "monomod.runtimedetour.hookgen.22.5.1.1.nupkg.sha512",
-        "monomod.runtimedetour.hookgen.nuspec"
-      ]
-    },
-    "MonoMod.Utils/22.5.1.1": {
-      "sha512": "vBObO1atXxhi2C4AuC53y87Bqeogi9xIrD1Ym3YWr5uxc8Nrm8SrsFeD1i3x04R999+XQ3FdeHrbXScyWYEHqQ==",
-      "type": "package",
-      "path": "monomod.utils/22.5.1.1",
-      "files": [
-        ".nupkg.metadata",
-        ".signature.p7s",
+        "README.md",
+        "icon.png",
         "lib/net35/MonoMod.Utils.dll",
+        "lib/net35/MonoMod.Utils.pdb",
         "lib/net35/MonoMod.Utils.xml",
         "lib/net452/MonoMod.Utils.dll",
+        "lib/net452/MonoMod.Utils.pdb",
         "lib/net452/MonoMod.Utils.xml",
         "lib/net5.0/MonoMod.Utils.dll",
+        "lib/net5.0/MonoMod.Utils.pdb",
         "lib/net5.0/MonoMod.Utils.xml",
+        "lib/net6.0/MonoMod.Utils.dll",
+        "lib/net6.0/MonoMod.Utils.pdb",
+        "lib/net6.0/MonoMod.Utils.xml",
+        "lib/net7.0/MonoMod.Utils.dll",
+        "lib/net7.0/MonoMod.Utils.pdb",
+        "lib/net7.0/MonoMod.Utils.xml",
+        "lib/net8.0/MonoMod.Utils.dll",
+        "lib/net8.0/MonoMod.Utils.pdb",
+        "lib/net8.0/MonoMod.Utils.xml",
+        "lib/net9.0/MonoMod.Utils.dll",
+        "lib/net9.0/MonoMod.Utils.pdb",
+        "lib/net9.0/MonoMod.Utils.xml",
         "lib/netstandard2.0/MonoMod.Utils.dll",
+        "lib/netstandard2.0/MonoMod.Utils.pdb",
         "lib/netstandard2.0/MonoMod.Utils.xml",
-        "monomod.utils.22.5.1.1.nupkg.sha512",
+        "monomod.utils.25.0.8.nupkg.sha512",
         "monomod.utils.nuspec"
       ]
     },
@@ -2283,10 +2447,10 @@
         "packageIcon.png"
       ]
     },
-    "NuGet.Common/6.3.1": {
-      "sha512": "/WgxNyc9dXl+ZrQJDf5BXaqtMbl0CcDC5GEQITecbHZBQHApTMuxeTMMEqa0Y+PD1CIxTtbRY4jmotKS5dsLuA==",
+    "NuGet.Common/6.13.2": {
+      "sha512": "JnUbEq6XtyF6+mPbGx3ZjTD07SCx39EL0wZ5RCXaHkstI3J4uK9OcofTbYDmKSKEUt6CU6UaNM5kE+n1HXtL0w==",
       "type": "package",
-      "path": "nuget.common/6.3.1",
+      "path": "nuget.common/6.13.2",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
@@ -2296,14 +2460,14 @@
         "lib/net472/NuGet.Common.xml",
         "lib/netstandard2.0/NuGet.Common.dll",
         "lib/netstandard2.0/NuGet.Common.xml",
-        "nuget.common.6.3.1.nupkg.sha512",
+        "nuget.common.6.13.2.nupkg.sha512",
         "nuget.common.nuspec"
       ]
     },
-    "NuGet.Configuration/6.3.1": {
-      "sha512": "ja227AmXuDVgPXi3p2VTZFTYI/4xwwLSPYtd9Y9WIfCrRqSNDa96J5hm70wXhBCOQYvoRVDjp3ufgDnnqZ0bYA==",
+    "NuGet.Configuration/6.13.2": {
+      "sha512": "ByqCXO43kRdG0hLt1/izvHr/eswT0k1hspTaQxAxOq02MDw1j9RGzic+8F6NJwP4FhWBKhXOEReboIcEDt+1eg==",
       "type": "package",
-      "path": "nuget.configuration/6.3.1",
+      "path": "nuget.configuration/6.13.2",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
@@ -2313,14 +2477,14 @@
         "lib/net472/NuGet.Configuration.xml",
         "lib/netstandard2.0/NuGet.Configuration.dll",
         "lib/netstandard2.0/NuGet.Configuration.xml",
-        "nuget.configuration.6.3.1.nupkg.sha512",
+        "nuget.configuration.6.13.2.nupkg.sha512",
         "nuget.configuration.nuspec"
       ]
     },
-    "NuGet.Frameworks/6.3.1": {
-      "sha512": "Ae1vRjHDbNU7EQwQnDlxFRl+O9iQLp2H9Z/sRB/EAmO8+neUOeOfbkLClO7ZNcTcW5p1FDABrPakXICtQ0JCRw==",
+    "NuGet.Frameworks/6.13.2": {
+      "sha512": "SQKUf56j7IdJL//fU7fcmn234awjRA2qLvgbfs/TxmY7oJrNOxaaDxASyCbS4eJW3LCOd6ONHMZ/cPlbQh4xVg==",
       "type": "package",
-      "path": "nuget.frameworks/6.3.1",
+      "path": "nuget.frameworks/6.13.2",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
@@ -2330,14 +2494,14 @@
         "lib/net472/NuGet.Frameworks.xml",
         "lib/netstandard2.0/NuGet.Frameworks.dll",
         "lib/netstandard2.0/NuGet.Frameworks.xml",
-        "nuget.frameworks.6.3.1.nupkg.sha512",
+        "nuget.frameworks.6.13.2.nupkg.sha512",
         "nuget.frameworks.nuspec"
       ]
     },
-    "NuGet.Packaging/6.3.1": {
-      "sha512": "/GI2ujy3t00I8qFGvuLrVMNAEMFgEHfW+GNACZna2zgjADrxqrCeONStYZR2hHt3eI2/5HbiaoX4NCP17JCYzw==",
+    "NuGet.Packaging/6.13.2": {
+      "sha512": "MWpK+ORENvn39Tzff2n9AWgAEVkPenflON11CgMnzhcbGGvZGtTcGskLmKgaB/pUAxSsJ6NCrew/zQsS22kCvg==",
       "type": "package",
-      "path": "nuget.packaging/6.3.1",
+      "path": "nuget.packaging/6.13.2",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
@@ -2345,18 +2509,18 @@
         "icon.png",
         "lib/net472/NuGet.Packaging.dll",
         "lib/net472/NuGet.Packaging.xml",
-        "lib/net5.0/NuGet.Packaging.dll",
-        "lib/net5.0/NuGet.Packaging.xml",
+        "lib/net8.0/NuGet.Packaging.dll",
+        "lib/net8.0/NuGet.Packaging.xml",
         "lib/netstandard2.0/NuGet.Packaging.dll",
         "lib/netstandard2.0/NuGet.Packaging.xml",
-        "nuget.packaging.6.3.1.nupkg.sha512",
+        "nuget.packaging.6.13.2.nupkg.sha512",
         "nuget.packaging.nuspec"
       ]
     },
-    "NuGet.Protocol/6.3.1": {
-      "sha512": "1x3jozJNwoECAo88hrhYNuKkRrv9V2VoVxlCntpwr9jX5h6sTV3uHnXAN7vaVQ2/NRX9LLRIiD8K0NOTCG5EmQ==",
+    "NuGet.Protocol/6.13.2": {
+      "sha512": "IbU1xt4RrZ5YHOjI8D7qBH6pOBle9zaW1BmGAIsYYw6lwNNli0Q0sE5fWr+BOEoIJNQjVVWL+N7yBL2tR8BmcQ==",
       "type": "package",
-      "path": "nuget.protocol/6.3.1",
+      "path": "nuget.protocol/6.13.2",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
@@ -2364,18 +2528,18 @@
         "icon.png",
         "lib/net472/NuGet.Protocol.dll",
         "lib/net472/NuGet.Protocol.xml",
-        "lib/net5.0/NuGet.Protocol.dll",
-        "lib/net5.0/NuGet.Protocol.xml",
+        "lib/net8.0/NuGet.Protocol.dll",
+        "lib/net8.0/NuGet.Protocol.xml",
         "lib/netstandard2.0/NuGet.Protocol.dll",
         "lib/netstandard2.0/NuGet.Protocol.xml",
-        "nuget.protocol.6.3.1.nupkg.sha512",
+        "nuget.protocol.6.13.2.nupkg.sha512",
         "nuget.protocol.nuspec"
       ]
     },
-    "NuGet.Versioning/6.3.1": {
-      "sha512": "T/igBDLXCd+pH3YTWgGVNvYSOwbwaT30NyyM9ONjvlHlmaUjKBJpr9kH0AeL+Ado4EJsBhU3qxXVc6lyrpRcMw==",
+    "NuGet.Versioning/6.13.2": {
+      "sha512": "pGYNyvCVM+Z9jITTiJiuxFC8oJXFdh2k25ZDV4tSAOSuKyAWvh1VcfJy0WZGWdI6J7Avkbl0qra7XENYFSy4Ng==",
       "type": "package",
-      "path": "nuget.versioning/6.3.1",
+      "path": "nuget.versioning/6.13.2",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
@@ -2385,21 +2549,21 @@
         "lib/net472/NuGet.Versioning.xml",
         "lib/netstandard2.0/NuGet.Versioning.dll",
         "lib/netstandard2.0/NuGet.Versioning.xml",
-        "nuget.versioning.6.3.1.nupkg.sha512",
+        "nuget.versioning.6.13.2.nupkg.sha512",
         "nuget.versioning.nuspec"
       ]
     },
-    "OTAPI.Upcoming/3.1.20": {
-      "sha512": "nuWBI9nLsg4VrS1BBW0TrQof4M+YQYE4ldhGSNg86YO1l6FwN6/bqc3nwkv3JRpKJUGR0F2tnLQMGrS3puRZrw==",
+    "OTAPI.Upcoming/3.3.3": {
+      "sha512": "f9zjKtC3CIEp5M4LYEJA7J1uv6zQZgqZjWqfh/OMxSBQ0mA7HB1U913+ZWpH1glZbcg1osUekEuIxY/PXMXGYA==",
       "type": "package",
-      "path": "otapi.upcoming/3.1.20",
+      "path": "otapi.upcoming/3.3.3",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
         "COPYING.txt",
-        "lib/net6.0/OTAPI.Runtime.dll",
-        "lib/net6.0/OTAPI.dll",
-        "otapi.upcoming.3.1.20.nupkg.sha512",
+        "lib/net9.0/OTAPI.Runtime.dll",
+        "lib/net9.0/OTAPI.dll",
+        "otapi.upcoming.3.3.3.nupkg.sha512",
         "otapi.upcoming.nuspec"
       ]
     },
@@ -2477,10 +2641,10 @@
         "sqlitepclraw.provider.e_sqlite3.nuspec"
       ]
     },
-    "Steamworks.NET/20.1.0": {
-      "sha512": "+GntwnyJ5tCNvUIaQxv2+ehDvZJzGUqlSB5xRBk1hTj1qqBJ6s4vK/OfGD/jae7aTmXiGSm8wpJORosNtQevJQ==",
+    "Steamworks.NET/2024.8.0": {
+      "sha512": "FHTj80ZyT09d0XwSnhE8+e6r/hwpp1+PmQ3RZbUqlyEQCVNrWDVmdA1ElIgQgx72XGIkF947kXL53z51puGD2g==",
       "type": "package",
-      "path": "steamworks.net/20.1.0",
+      "path": "steamworks.net/2024.8.0",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
@@ -2493,7 +2657,7 @@
         "runtimes/osx-x86/lib/netstandard2.1/Steamworks.NET.dll",
         "runtimes/win-x64/lib/netstandard2.1/Steamworks.NET.dll",
         "runtimes/win-x86/lib/netstandard2.1/Steamworks.NET.dll",
-        "steamworks.net.20.1.0.nupkg.sha512",
+        "steamworks.net.2024.8.0.nupkg.sha512",
         "steamworks.net.nuspec"
       ]
     },
@@ -2596,25 +2760,32 @@
         "system.collections.nuspec"
       ]
     },
-    "System.Collections.Immutable/6.0.0": {
-      "sha512": "l4zZJ1WU2hqpQQHXz1rvC3etVZN+2DLmQMO79FhOTZHMn8tDRr+WU287sbomD0BETlmKDn0ygUgVy9k5xkkJdA==",
+    "System.Collections.Immutable/8.0.0": {
+      "sha512": "AurL6Y5BA1WotzlEvVaIDpqzpIPvYnnldxru8oXJU2yFxFUy3+pNXjXd1ymO+RA0rq0+590Q8gaz2l3Sr7fmqg==",
       "type": "package",
-      "path": "system.collections.immutable/6.0.0",
+      "path": "system.collections.immutable/8.0.0",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
         "Icon.png",
         "LICENSE.TXT",
+        "PACKAGE.md",
         "THIRD-PARTY-NOTICES.TXT",
+        "buildTransitive/net461/System.Collections.Immutable.targets",
+        "buildTransitive/net462/_._",
+        "buildTransitive/net6.0/_._",
         "buildTransitive/netcoreapp2.0/System.Collections.Immutable.targets",
-        "buildTransitive/netcoreapp3.1/_._",
-        "lib/net461/System.Collections.Immutable.dll",
-        "lib/net461/System.Collections.Immutable.xml",
+        "lib/net462/System.Collections.Immutable.dll",
+        "lib/net462/System.Collections.Immutable.xml",
         "lib/net6.0/System.Collections.Immutable.dll",
         "lib/net6.0/System.Collections.Immutable.xml",
+        "lib/net7.0/System.Collections.Immutable.dll",
+        "lib/net7.0/System.Collections.Immutable.xml",
+        "lib/net8.0/System.Collections.Immutable.dll",
+        "lib/net8.0/System.Collections.Immutable.xml",
         "lib/netstandard2.0/System.Collections.Immutable.dll",
         "lib/netstandard2.0/System.Collections.Immutable.xml",
-        "system.collections.immutable.6.0.0.nupkg.sha512",
+        "system.collections.immutable.8.0.0.nupkg.sha512",
         "system.collections.immutable.nuspec",
         "useSharedDesignerContext.txt"
       ]
@@ -3036,24 +3207,33 @@
         "useSharedDesignerContext.txt"
       ]
     },
-    "System.Formats.Asn1/5.0.0": {
-      "sha512": "MTvUIktmemNB+El0Fgw9egyqT9AYSIk6DTJeoDSpc3GIHxHCMo8COqkWT1mptX5tZ1SlQ6HJZ0OsSvMth1c12w==",
+    "System.Formats.Asn1/8.0.1": {
+      "sha512": "XqKba7Mm/koKSjKMfW82olQdmfbI5yqeoLV/tidRp7fbh5rmHAQ5raDI/7SU0swTzv+jgqtUGkzmFxuUg0it1A==",
       "type": "package",
-      "path": "system.formats.asn1/5.0.0",
+      "path": "system.formats.asn1/8.0.1",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
         "Icon.png",
         "LICENSE.TXT",
         "THIRD-PARTY-NOTICES.TXT",
-        "lib/net461/System.Formats.Asn1.dll",
-        "lib/net461/System.Formats.Asn1.xml",
+        "buildTransitive/net461/System.Formats.Asn1.targets",
+        "buildTransitive/net462/_._",
+        "buildTransitive/net6.0/_._",
+        "buildTransitive/netcoreapp2.0/System.Formats.Asn1.targets",
+        "lib/net462/System.Formats.Asn1.dll",
+        "lib/net462/System.Formats.Asn1.xml",
+        "lib/net6.0/System.Formats.Asn1.dll",
+        "lib/net6.0/System.Formats.Asn1.xml",
+        "lib/net7.0/System.Formats.Asn1.dll",
+        "lib/net7.0/System.Formats.Asn1.xml",
+        "lib/net8.0/System.Formats.Asn1.dll",
+        "lib/net8.0/System.Formats.Asn1.xml",
         "lib/netstandard2.0/System.Formats.Asn1.dll",
         "lib/netstandard2.0/System.Formats.Asn1.xml",
-        "system.formats.asn1.5.0.0.nupkg.sha512",
+        "system.formats.asn1.8.0.1.nupkg.sha512",
         "system.formats.asn1.nuspec",
-        "useSharedDesignerContext.txt",
-        "version.txt"
+        "useSharedDesignerContext.txt"
       ]
     },
     "System.Globalization/4.3.0": {
@@ -4310,135 +4490,41 @@
         "useSharedDesignerContext.txt"
       ]
     },
-    "System.Security.Cryptography.Cng/5.0.0": {
-      "sha512": "jIMXsKn94T9JY7PvPq/tMfqa6GAaHpElRDpmG+SuL+D3+sTw2M8VhnibKnN8Tq+4JqbPJ/f+BwtLeDMEnzAvRg==",
+    "System.Security.Cryptography.Pkcs/6.0.4": {
+      "sha512": "LGbXi1oUJ9QgCNGXRO9ndzBL/GZgANcsURpMhNR8uO+rca47SZmciS3RSQUvlQRwK3QHZSHNOXzoMUASKA+Anw==",
       "type": "package",
-      "path": "system.security.cryptography.cng/5.0.0",
+      "path": "system.security.cryptography.pkcs/6.0.4",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
         "Icon.png",
         "LICENSE.TXT",
         "THIRD-PARTY-NOTICES.TXT",
-        "lib/MonoAndroid10/_._",
-        "lib/MonoTouch10/_._",
-        "lib/net46/System.Security.Cryptography.Cng.dll",
-        "lib/net461/System.Security.Cryptography.Cng.dll",
-        "lib/net461/System.Security.Cryptography.Cng.xml",
-        "lib/net462/System.Security.Cryptography.Cng.dll",
-        "lib/net462/System.Security.Cryptography.Cng.xml",
-        "lib/net47/System.Security.Cryptography.Cng.dll",
-        "lib/net47/System.Security.Cryptography.Cng.xml",
-        "lib/netcoreapp2.1/System.Security.Cryptography.Cng.dll",
-        "lib/netcoreapp3.0/System.Security.Cryptography.Cng.dll",
-        "lib/netcoreapp3.0/System.Security.Cryptography.Cng.xml",
-        "lib/netstandard1.3/System.Security.Cryptography.Cng.dll",
-        "lib/netstandard1.4/System.Security.Cryptography.Cng.dll",
-        "lib/netstandard1.6/System.Security.Cryptography.Cng.dll",
-        "lib/netstandard2.0/System.Security.Cryptography.Cng.dll",
-        "lib/netstandard2.0/System.Security.Cryptography.Cng.xml",
-        "lib/netstandard2.1/System.Security.Cryptography.Cng.dll",
-        "lib/netstandard2.1/System.Security.Cryptography.Cng.xml",
-        "lib/uap10.0.16299/_._",
-        "lib/xamarinios10/_._",
-        "lib/xamarinmac20/_._",
-        "lib/xamarintvos10/_._",
-        "lib/xamarinwatchos10/_._",
-        "ref/MonoAndroid10/_._",
-        "ref/MonoTouch10/_._",
-        "ref/net46/System.Security.Cryptography.Cng.dll",
-        "ref/net461/System.Security.Cryptography.Cng.dll",
-        "ref/net461/System.Security.Cryptography.Cng.xml",
-        "ref/net462/System.Security.Cryptography.Cng.dll",
-        "ref/net462/System.Security.Cryptography.Cng.xml",
-        "ref/net47/System.Security.Cryptography.Cng.dll",
-        "ref/net47/System.Security.Cryptography.Cng.xml",
-        "ref/netcoreapp2.0/System.Security.Cryptography.Cng.dll",
-        "ref/netcoreapp2.0/System.Security.Cryptography.Cng.xml",
-        "ref/netcoreapp2.1/System.Security.Cryptography.Cng.dll",
-        "ref/netcoreapp2.1/System.Security.Cryptography.Cng.xml",
-        "ref/netcoreapp3.0/System.Security.Cryptography.Cng.dll",
-        "ref/netcoreapp3.0/System.Security.Cryptography.Cng.xml",
-        "ref/netstandard1.3/System.Security.Cryptography.Cng.dll",
-        "ref/netstandard1.4/System.Security.Cryptography.Cng.dll",
-        "ref/netstandard1.6/System.Security.Cryptography.Cng.dll",
-        "ref/netstandard2.0/System.Security.Cryptography.Cng.dll",
-        "ref/netstandard2.0/System.Security.Cryptography.Cng.xml",
-        "ref/netstandard2.1/System.Security.Cryptography.Cng.dll",
-        "ref/netstandard2.1/System.Security.Cryptography.Cng.xml",
-        "ref/uap10.0.16299/_._",
-        "ref/xamarinios10/_._",
-        "ref/xamarinmac20/_._",
-        "ref/xamarintvos10/_._",
-        "ref/xamarinwatchos10/_._",
-        "runtimes/win/lib/net46/System.Security.Cryptography.Cng.dll",
-        "runtimes/win/lib/net461/System.Security.Cryptography.Cng.dll",
-        "runtimes/win/lib/net461/System.Security.Cryptography.Cng.xml",
-        "runtimes/win/lib/net462/System.Security.Cryptography.Cng.dll",
-        "runtimes/win/lib/net462/System.Security.Cryptography.Cng.xml",
-        "runtimes/win/lib/net47/System.Security.Cryptography.Cng.dll",
-        "runtimes/win/lib/net47/System.Security.Cryptography.Cng.xml",
-        "runtimes/win/lib/netcoreapp2.0/System.Security.Cryptography.Cng.dll",
-        "runtimes/win/lib/netcoreapp2.1/System.Security.Cryptography.Cng.dll",
-        "runtimes/win/lib/netcoreapp3.0/System.Security.Cryptography.Cng.dll",
-        "runtimes/win/lib/netcoreapp3.0/System.Security.Cryptography.Cng.xml",
-        "runtimes/win/lib/netstandard1.4/System.Security.Cryptography.Cng.dll",
-        "runtimes/win/lib/netstandard1.6/System.Security.Cryptography.Cng.dll",
-        "runtimes/win/lib/uap10.0.16299/_._",
-        "system.security.cryptography.cng.5.0.0.nupkg.sha512",
-        "system.security.cryptography.cng.nuspec",
-        "useSharedDesignerContext.txt",
-        "version.txt"
-      ]
-    },
-    "System.Security.Cryptography.Pkcs/5.0.0": {
-      "sha512": "9TPLGjBCGKmNvG8pjwPeuYy0SMVmGZRwlTZvyPHDbYv/DRkoeumJdfumaaDNQzVGMEmbWtg07zUpSW9q70IlDQ==",
-      "type": "package",
-      "path": "system.security.cryptography.pkcs/5.0.0",
-      "files": [
-        ".nupkg.metadata",
-        ".signature.p7s",
-        "Icon.png",
-        "LICENSE.TXT",
-        "THIRD-PARTY-NOTICES.TXT",
-        "lib/net46/System.Security.Cryptography.Pkcs.dll",
+        "buildTransitive/netcoreapp2.0/System.Security.Cryptography.Pkcs.targets",
+        "buildTransitive/netcoreapp3.1/_._",
         "lib/net461/System.Security.Cryptography.Pkcs.dll",
         "lib/net461/System.Security.Cryptography.Pkcs.xml",
-        "lib/netcoreapp2.1/System.Security.Cryptography.Pkcs.dll",
-        "lib/netcoreapp3.0/System.Security.Cryptography.Pkcs.dll",
-        "lib/netcoreapp3.0/System.Security.Cryptography.Pkcs.xml",
-        "lib/netstandard1.3/System.Security.Cryptography.Pkcs.dll",
+        "lib/net6.0/System.Security.Cryptography.Pkcs.dll",
+        "lib/net6.0/System.Security.Cryptography.Pkcs.xml",
+        "lib/netcoreapp3.1/System.Security.Cryptography.Pkcs.dll",
+        "lib/netcoreapp3.1/System.Security.Cryptography.Pkcs.xml",
         "lib/netstandard2.0/System.Security.Cryptography.Pkcs.dll",
         "lib/netstandard2.0/System.Security.Cryptography.Pkcs.xml",
         "lib/netstandard2.1/System.Security.Cryptography.Pkcs.dll",
         "lib/netstandard2.1/System.Security.Cryptography.Pkcs.xml",
-        "ref/net46/System.Security.Cryptography.Pkcs.dll",
-        "ref/net461/System.Security.Cryptography.Pkcs.dll",
-        "ref/net461/System.Security.Cryptography.Pkcs.xml",
-        "ref/netcoreapp2.1/System.Security.Cryptography.Pkcs.dll",
-        "ref/netcoreapp2.1/System.Security.Cryptography.Pkcs.xml",
-        "ref/netcoreapp3.0/System.Security.Cryptography.Pkcs.dll",
-        "ref/netcoreapp3.0/System.Security.Cryptography.Pkcs.xml",
-        "ref/netstandard1.3/System.Security.Cryptography.Pkcs.dll",
-        "ref/netstandard2.0/System.Security.Cryptography.Pkcs.dll",
-        "ref/netstandard2.0/System.Security.Cryptography.Pkcs.xml",
-        "ref/netstandard2.1/System.Security.Cryptography.Pkcs.dll",
-        "ref/netstandard2.1/System.Security.Cryptography.Pkcs.xml",
-        "runtimes/win/lib/net46/System.Security.Cryptography.Pkcs.dll",
         "runtimes/win/lib/net461/System.Security.Cryptography.Pkcs.dll",
         "runtimes/win/lib/net461/System.Security.Cryptography.Pkcs.xml",
-        "runtimes/win/lib/netcoreapp2.1/System.Security.Cryptography.Pkcs.dll",
-        "runtimes/win/lib/netcoreapp3.0/System.Security.Cryptography.Pkcs.dll",
-        "runtimes/win/lib/netcoreapp3.0/System.Security.Cryptography.Pkcs.xml",
-        "runtimes/win/lib/netstandard1.3/System.Security.Cryptography.Pkcs.dll",
+        "runtimes/win/lib/net6.0/System.Security.Cryptography.Pkcs.dll",
+        "runtimes/win/lib/net6.0/System.Security.Cryptography.Pkcs.xml",
+        "runtimes/win/lib/netcoreapp3.1/System.Security.Cryptography.Pkcs.dll",
+        "runtimes/win/lib/netcoreapp3.1/System.Security.Cryptography.Pkcs.xml",
         "runtimes/win/lib/netstandard2.0/System.Security.Cryptography.Pkcs.dll",
         "runtimes/win/lib/netstandard2.0/System.Security.Cryptography.Pkcs.xml",
         "runtimes/win/lib/netstandard2.1/System.Security.Cryptography.Pkcs.dll",
         "runtimes/win/lib/netstandard2.1/System.Security.Cryptography.Pkcs.xml",
-        "system.security.cryptography.pkcs.5.0.0.nupkg.sha512",
+        "system.security.cryptography.pkcs.6.0.4.nupkg.sha512",
         "system.security.cryptography.pkcs.nuspec",
-        "useSharedDesignerContext.txt",
-        "version.txt"
+        "useSharedDesignerContext.txt"
       ]
     },
     "System.Security.Cryptography.ProtectedData/6.0.0": {
@@ -5014,16 +5100,16 @@
     }
   },
   "projectFileDependencyGroups": {
-    "net6.0": [
+    "net9.0": [
       "Discord.Net >= 3.16.0",
-      "OTAPI.Upcoming >= 3.1.20",
+      "OTAPI.Upcoming >= 3.3.3",
       "TSAPI >= 5.2.1",
       "TShock >= 5.2.3"
     ]
   },
   "packageFolders": {
-    "C:\\Users\\pilap\\.nuget\\packages\\": {},
-    "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
+    "C:\\Users\\xrayr\\.nuget\\packages\\": {},
+    "D:\\Nightklp_Apps\\Visual_Studio_Community\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
@@ -5031,27 +5117,27 @@
       "projectUniqueName": "D:\\Nightklp_KLP\\my_Terraria_Plugins\\GSKLP\\MKLP\\MKLP\\MKLP.csproj",
       "projectName": "MKLP",
       "projectPath": "D:\\Nightklp_KLP\\my_Terraria_Plugins\\GSKLP\\MKLP\\MKLP\\MKLP.csproj",
-      "packagesPath": "C:\\Users\\pilap\\.nuget\\packages\\",
+      "packagesPath": "C:\\Users\\xrayr\\.nuget\\packages\\",
       "outputPath": "D:\\Nightklp_KLP\\my_Terraria_Plugins\\GSKLP\\MKLP\\MKLP\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
-        "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        "D:\\Nightklp_Apps\\Visual_Studio_Community\\Shared\\NuGetPackages"
       ],
       "configFilePaths": [
-        "C:\\Users\\pilap\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\xrayr\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
-        "net6.0"
+        "net9.0"
       ],
       "sources": {
         "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
-        "net6.0": {
-          "targetAlias": "net6.0",
+        "net9.0": {
+          "targetAlias": "net9.0",
           "projectReferences": {}
         }
       },
@@ -5065,11 +5151,11 @@
         "auditLevel": "low",
         "auditMode": "direct"
       },
-      "SdkAnalysisLevel": "9.0.200"
+      "SdkAnalysisLevel": "10.0.100"
     },
     "frameworks": {
-      "net6.0": {
-        "targetAlias": "net6.0",
+      "net9.0": {
+        "targetAlias": "net9.0",
         "dependencies": {
           "Discord.Net": {
             "target": "Package",
@@ -5077,7 +5163,7 @@
           },
           "OTAPI.Upcoming": {
             "target": "Package",
-            "version": "[3.1.20, )"
+            "version": "[3.3.3, )"
           },
           "TSAPI": {
             "target": "Package",
@@ -5104,7 +5190,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.203\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.102/PortableRuntimeIdentifierGraph.json"
       }
     }
   }

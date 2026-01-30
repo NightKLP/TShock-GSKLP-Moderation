@@ -58,13 +58,13 @@ namespace MKLP.Modules
                     for (int armorii = 0; armorii < 10; armorii++)
                     {
                         if (armorii == armori) continue;
-                        if (tsplayer.TPlayer.armor[armorii].IsAir || tsplayer.TPlayer.armor[armorii].netID == 0) continue;
+                        if (tsplayer.TPlayer.armor[armorii].IsAir || tsplayer.TPlayer.armor[armorii].type == 0) continue;
 
-                        if (tsplayer.TPlayer.armor[armorii].netID == tsplayer.TPlayer.armor[armori].netID)
+                        if (tsplayer.TPlayer.armor[armorii].type == tsplayer.TPlayer.armor[armori].type)
                         {
 
-                            tsplayer.GiveItem(tsplayer.TPlayer.armor[armori].netID, tsplayer.TPlayer.armor[armori].stack, tsplayer.TPlayer.armor[armori].prefix);
-                            tsplayer.TPlayer.armor[armori].SetDefaults();
+                            tsplayer.GiveItem(tsplayer.TPlayer.armor[armori].type, tsplayer.TPlayer.armor[armori].stack, tsplayer.TPlayer.armor[armori].prefix);
+                            tsplayer.TPlayer.armor[armori].TurnToAir(true);
                             NetMessage.SendData((int)PacketTypes.PlayerSlot, -1, -1, Terraria.Localization.NetworkText.Empty, tsplayer.Index, NetItem.InventorySlots + armori, 0f, 0f, 0);
 
                         }
@@ -79,7 +79,7 @@ namespace MKLP.Modules
             {
                 checkingifsus1("Inventory", i, tsplayer.TPlayer.inventory[i]);
 
-                if (tsplayer.TPlayer.inventory[i].netID != previnv[i].netID ||
+                if (tsplayer.TPlayer.inventory[i].type != previnv[i].type ||
                     tsplayer.TPlayer.inventory[i].stack != previnv[i].stack ||
                     tsplayer.TPlayer.inventory[i].prefix != previnv[i].prefix)
                 {
@@ -94,19 +94,19 @@ namespace MKLP.Modules
             {
                 for (int i = 0; i < tsplayer.TPlayer.armor.Count(); i++)
                 {
-                    if ((tsplayer.TPlayer.armor[i].value * tsplayer.TPlayer.armor[i].stack) / 5000000 >= maxvalue && tsplayer.TPlayer.armor[i].netID != 74) MKLP.PunishPlayer(MKLP_CodeType.Main, 1, tsplayer, $"Abnormal Item [i/s{tsplayer.TPlayer.armor[i].stack}:{tsplayer.TPlayer.armor[i].netID}]", $"Player **{tsplayer.Name}** has High Value Item Stack `({tsplayer.TPlayer.armor[i].stack}) {tsplayer.TPlayer.armor[i].Name}`", true, true);
+                    if ((tsplayer.TPlayer.armor[i].value * tsplayer.TPlayer.armor[i].stack) / 5000000 >= maxvalue && tsplayer.TPlayer.armor[i].type != 74) MKLP.PunishPlayer(MKLP_CodeType.Main, 1, tsplayer, $"Abnormal Item [i/s{tsplayer.TPlayer.armor[i].stack}:{tsplayer.TPlayer.armor[i].type}]", $"Player **{tsplayer.Name}** has High Value Item Stack `({tsplayer.TPlayer.armor[i].stack}) {tsplayer.TPlayer.armor[i].Name}`", true, true);
                 }
                 for (int i = 0; i < tsplayer.TPlayer.dye.Count(); i++)
                 {
-                    if ((tsplayer.TPlayer.dye[i].value * tsplayer.TPlayer.dye[i].stack) / 5000000 >= maxvalue && tsplayer.TPlayer.dye[i].netID != 74) MKLP.PunishPlayer(MKLP_CodeType.Main, 1, tsplayer, $"Abnormal Item [i/s{tsplayer.TPlayer.dye[i].stack}:{tsplayer.TPlayer.dye[i].netID}]", $"Player **{tsplayer.Name}** has High Value Item Stack `({tsplayer.TPlayer.dye[i].stack}) {tsplayer.TPlayer.dye[i].Name}`", true, true);
+                    if ((tsplayer.TPlayer.dye[i].value * tsplayer.TPlayer.dye[i].stack) / 5000000 >= maxvalue && tsplayer.TPlayer.dye[i].type != 74) MKLP.PunishPlayer(MKLP_CodeType.Main, 1, tsplayer, $"Abnormal Item [i/s{tsplayer.TPlayer.dye[i].stack}:{tsplayer.TPlayer.dye[i].type}]", $"Player **{tsplayer.Name}** has High Value Item Stack `({tsplayer.TPlayer.dye[i].stack}) {tsplayer.TPlayer.dye[i].Name}`", true, true);
                 }
                 for (int i = 0; i < tsplayer.TPlayer.miscEquips.Count(); i++)
                 {
-                    if ((tsplayer.TPlayer.miscEquips[i].value * tsplayer.TPlayer.miscEquips[i].stack) / 5000000 >= maxvalue && tsplayer.TPlayer.miscEquips[i].netID != 74) MKLP.PunishPlayer(MKLP_CodeType.Main, 1, tsplayer, $"Abnormal Item [i/s{tsplayer.TPlayer.miscEquips[i].stack}:{tsplayer.TPlayer.miscEquips[i].netID}]", $"Player **{tsplayer.Name}** has High Value Item Stack `({tsplayer.TPlayer.miscEquips[i].stack}) {tsplayer.TPlayer.miscEquips[i].Name}`", true, true);
+                    if ((tsplayer.TPlayer.miscEquips[i].value * tsplayer.TPlayer.miscEquips[i].stack) / 5000000 >= maxvalue && tsplayer.TPlayer.miscEquips[i].type != 74) MKLP.PunishPlayer(MKLP_CodeType.Main, 1, tsplayer, $"Abnormal Item [i/s{tsplayer.TPlayer.miscEquips[i].stack}:{tsplayer.TPlayer.miscEquips[i].type}]", $"Player **{tsplayer.Name}** has High Value Item Stack `({tsplayer.TPlayer.miscEquips[i].stack}) {tsplayer.TPlayer.miscEquips[i].Name}`", true, true);
                 }
                 for (int i = 0; i < tsplayer.TPlayer.miscDyes.Count(); i++)
                 {
-                    if ((tsplayer.TPlayer.miscDyes[i].value * tsplayer.TPlayer.miscDyes[i].stack) / 5000000 >= maxvalue && tsplayer.TPlayer.miscDyes[i].netID != 74) MKLP.PunishPlayer(MKLP_CodeType.Main, 1, tsplayer, $"Abnormal Item [i/s{tsplayer.TPlayer.miscDyes[i].stack}:{tsplayer.TPlayer.miscDyes[i].netID}]", $"Player **{tsplayer.Name}** has High Value Item Stack `({tsplayer.TPlayer.miscDyes[i].stack}) {tsplayer.TPlayer.miscDyes[i].Name}`", true, true);
+                    if ((tsplayer.TPlayer.miscDyes[i].value * tsplayer.TPlayer.miscDyes[i].stack) / 5000000 >= maxvalue && tsplayer.TPlayer.miscDyes[i].type != 74) MKLP.PunishPlayer(MKLP_CodeType.Main, 1, tsplayer, $"Abnormal Item [i/s{tsplayer.TPlayer.miscDyes[i].stack}:{tsplayer.TPlayer.miscDyes[i].type}]", $"Player **{tsplayer.Name}** has High Value Item Stack `({tsplayer.TPlayer.miscDyes[i].stack}) {tsplayer.TPlayer.miscDyes[i].Name}`", true, true);
                 }
             }
 
@@ -114,19 +114,19 @@ namespace MKLP.Modules
             {
                 for (int i = 0; i < tsplayer.TPlayer.armor.Count(); i++)
                 {
-                    if (illegalitems.ContainsKey(tsplayer.TPlayer.armor[i].netID)) MKLP.PunishPlayer(MKLP_CodeType.Survival, 1, tsplayer, $"{illegalitems[tsplayer.TPlayer.armor[i].netID]} Item Progression", $"Player **{tsplayer.Name}** has a item that is illegal on this progression `Item: {tsplayer.TPlayer.armor[i].Name}` **{illegalitems[tsplayer.TPlayer.armor[i].netID]}**", true, true);
+                    if (illegalitems.ContainsKey(tsplayer.TPlayer.armor[i].type)) MKLP.PunishPlayer(MKLP_CodeType.Survival, 1, tsplayer, $"{illegalitems[tsplayer.TPlayer.armor[i].type]} Item Progression", $"Player **{tsplayer.Name}** has a item that is illegal on this progression `Item: {tsplayer.TPlayer.armor[i].Name}` **{illegalitems[tsplayer.TPlayer.armor[i].type]}**", true, true);
                 }
                 for (int i = 0; i < tsplayer.TPlayer.dye.Count(); i++)
                 {
-                    if (illegalitems.ContainsKey(tsplayer.TPlayer.dye[i].netID)) MKLP.PunishPlayer(MKLP_CodeType.Survival, 1, tsplayer, $"{illegalitems[tsplayer.TPlayer.dye[i].netID]} Item Progression", $"Player **{tsplayer.Name}** has a item that is illegal on this progression `Item: {tsplayer.TPlayer.dye[i].Name}` **{illegalitems[tsplayer.TPlayer.dye[i].netID]}**", true, true);
+                    if (illegalitems.ContainsKey(tsplayer.TPlayer.dye[i].type)) MKLP.PunishPlayer(MKLP_CodeType.Survival, 1, tsplayer, $"{illegalitems[tsplayer.TPlayer.dye[i].type]} Item Progression", $"Player **{tsplayer.Name}** has a item that is illegal on this progression `Item: {tsplayer.TPlayer.dye[i].Name}` **{illegalitems[tsplayer.TPlayer.dye[i].type]}**", true, true);
                 }
                 for (int i = 0; i < tsplayer.TPlayer.miscEquips.Count(); i++)
                 {
-                    if (illegalitems.ContainsKey(tsplayer.TPlayer.miscEquips[i].netID)) MKLP.PunishPlayer(MKLP_CodeType.Survival, 1, tsplayer, $"{illegalitems[tsplayer.TPlayer.miscEquips[i].netID]} Item Progression", $"Player **{tsplayer.Name}** has a item that is illegal on this progression `Item: {tsplayer.TPlayer.miscEquips[i].Name}` **{illegalitems[tsplayer.TPlayer.miscEquips[i].netID]}**", true, true);
+                    if (illegalitems.ContainsKey(tsplayer.TPlayer.miscEquips[i].type)) MKLP.PunishPlayer(MKLP_CodeType.Survival, 1, tsplayer, $"{illegalitems[tsplayer.TPlayer.miscEquips[i].type]} Item Progression", $"Player **{tsplayer.Name}** has a item that is illegal on this progression `Item: {tsplayer.TPlayer.miscEquips[i].Name}` **{illegalitems[tsplayer.TPlayer.miscEquips[i].type]}**", true, true);
                 }
                 for (int i = 0; i < tsplayer.TPlayer.miscDyes.Count(); i++)
                 {
-                    if (illegalitems.ContainsKey(tsplayer.TPlayer.miscDyes[i].netID)) MKLP.PunishPlayer(MKLP_CodeType.Survival, 1, tsplayer, $"{illegalitems[tsplayer.TPlayer.miscDyes[i].netID]} Item Progression", $"Player **{tsplayer.Name}** has a item that is illegal on this progression `Item: {tsplayer.TPlayer.miscDyes[i].Name}` **{illegalitems[tsplayer.TPlayer.miscDyes[i].netID]}**", true, true);
+                    if (illegalitems.ContainsKey(tsplayer.TPlayer.miscDyes[i].type)) MKLP.PunishPlayer(MKLP_CodeType.Survival, 1, tsplayer, $"{illegalitems[tsplayer.TPlayer.miscDyes[i].type]} Item Progression", $"Player **{tsplayer.Name}** has a item that is illegal on this progression `Item: {tsplayer.TPlayer.miscDyes[i].Name}` **{illegalitems[tsplayer.TPlayer.miscDyes[i].type]}**", true, true);
                 }
             }
 
@@ -148,11 +148,11 @@ namespace MKLP.Modules
                         //checkingifsus1("Chest", i, Main.chest[tsplayer.ActiveChest].item[i]);
                         if (checkingifsus1e1("Chest", indexchestcheck, Main.chest[tsplayer.ActiveChest].item[indexchestcheck]) || checkingifsus1e2("Chest", indexchestcheck, Main.chest[tsplayer.ActiveChest].item[indexchestcheck]))
                         {
-                            Main.chest[tsplayer.ActiveChest].item[indexchestcheck].SetDefaults();
+                            Main.chest[tsplayer.ActiveChest].item[indexchestcheck].TurnToAir(true);
                             tsplayer.SendData(PacketTypes.ChestItem, "", tsplayer.ActiveChest, indexchestcheck, 0, 0, 0);
                         }
 
-                        if (Main.chest[tsplayer.ActiveChest].item[indexchestcheck].netID != prevchestopen.NetId ||
+                        if (Main.chest[tsplayer.ActiveChest].item[indexchestcheck].type != prevchestopen.NetId ||
                             Main.chest[tsplayer.ActiveChest].item[indexchestcheck].stack != prevchestopen.Stack ||
                             Main.chest[tsplayer.ActiveChest].item[indexchestcheck].prefix != prevchestopen.PrefixId)
                         {
@@ -215,7 +215,7 @@ namespace MKLP.Modules
                         continue;
                     }
 
-                    chestitem.Add(new NetItem(item.netID, item.stack, item.prefix));
+                    chestitem.Add(new NetItem(item.type, item.stack, item.prefix));
                     //Console.Write(item.netID + "-");
 
                 }
@@ -253,7 +253,7 @@ namespace MKLP.Modules
                 {
                     checkingifsus1("PiggyBank", i, tsplayer.TPlayer.bank.item[i]);
 
-                    if (tsplayer.TPlayer.bank.item[i].netID != prevpig[i].netID ||
+                    if (tsplayer.TPlayer.bank.item[i].type != prevpig[i].type ||
                         tsplayer.TPlayer.bank.item[i].stack != prevpig[i].stack ||
                         tsplayer.TPlayer.bank.item[i].prefix != prevpig[i].prefix)
                     {
@@ -267,7 +267,7 @@ namespace MKLP.Modules
                 {
                     checkingifsus1("Safe", i, tsplayer.TPlayer.bank2.item[i]);
 
-                    if (tsplayer.TPlayer.bank2.item[i].netID != prevsafe[i].netID ||
+                    if (tsplayer.TPlayer.bank2.item[i].type != prevsafe[i].type ||
                         tsplayer.TPlayer.bank2.item[i].stack != prevsafe[i].stack ||
                         tsplayer.TPlayer.bank2.item[i].prefix != prevsafe[i].prefix)
                     {
@@ -281,7 +281,7 @@ namespace MKLP.Modules
                 {
                     checkingifsus1("DefenderForge", i, tsplayer.TPlayer.bank3.item[i]);
 
-                    if (tsplayer.TPlayer.bank3.item[i].netID != prevforge[i].netID ||
+                    if (tsplayer.TPlayer.bank3.item[i].type != prevforge[i].type ||
                         tsplayer.TPlayer.bank3.item[i].stack != prevforge[i].stack ||
                         tsplayer.TPlayer.bank3.item[i].prefix != prevforge[i].prefix)
                     {
@@ -295,7 +295,7 @@ namespace MKLP.Modules
                 {
                     checkingifsus1("VoidVault", i, tsplayer.TPlayer.bank4.item[i]);
 
-                    if (tsplayer.TPlayer.bank4.item[i].netID != prevvault[i].netID ||
+                    if (tsplayer.TPlayer.bank4.item[i].type != prevvault[i].type ||
                         tsplayer.TPlayer.bank4.item[i].stack != prevvault[i].stack ||
                         tsplayer.TPlayer.bank4.item[i].prefix != prevvault[i].prefix)
                     {
@@ -309,20 +309,20 @@ namespace MKLP.Modules
             bool checkingifsus1(string type, int slot, Item now)
             {
 
-                if (illegalitems.ContainsKey(now.netID) &&
+                if (illegalitems.ContainsKey(now.type) &&
                     (bool)MKLP.Config.Main.DisableNode.Using_Survival_Code1 &&
                     !tsplayer.HasPermission(MKLP.Config.Permissions.IgnoreSurvivalCode_1))
                 {
-                    MKLP.PunishPlayer(MKLP_CodeType.Survival, 1, tsplayer, $"{illegalitems[now.netID]} Item Progression", $"Player **{tsplayer.Name}** has a item that is illegal on this progression `Item: {now.Name}` **{illegalitems[now.netID]}**", true, true);
+                    MKLP.PunishPlayer(MKLP_CodeType.Survival, 1, tsplayer, $"{illegalitems[now.type]} Item Progression", $"Player **{tsplayer.Name}** has a item that is illegal on this progression `Item: {now.Name}` **{illegalitems[now.type]}**", true, true);
                     return true;
                 }
 
                 if ((now.value * now.stack) / 5000000 >= maxvalue &&
-                    now.netID != 74
+                    now.type != 74
                     && (bool)MKLP.Config.Main.DisableNode.Using_Main_Code1 &&
                     !tsplayer.HasPermission(MKLP.Config.Permissions.IgnoreMainCode_1))
                 {
-                    MKLP.PunishPlayer(MKLP_CodeType.Main, 1, tsplayer, $"Abnormal Item [i/s{now.stack}:{now.netID}]", $"Player **{tsplayer.Name}** has High Value Item Stack `({now.stack}) {now.Name}`", true, true);
+                    MKLP.PunishPlayer(MKLP_CodeType.Main, 1, tsplayer, $"Abnormal Item [i/s{now.stack}:{now.type}]", $"Player **{tsplayer.Name}** has High Value Item Stack `({now.stack}) {now.Name}`", true, true);
                     return true;
                 }
 
@@ -331,7 +331,7 @@ namespace MKLP.Modules
             bool checkingifsus1e1(string type, int slot, Item now)
             {
 
-                if (illegalitems.ContainsKey(now.netID) &&
+                if (illegalitems.ContainsKey(now.type) &&
                     (bool)MKLP.Config.Main.DisableNode.Using_Survival_Code1)
                 {
                     return true;
@@ -343,7 +343,7 @@ namespace MKLP.Modules
             {
 
                 if ((now.value * now.stack) / 5000000 >= maxvalue &&
-                    now.netID != 74
+                    now.type != 74
                     && (bool)MKLP.Config.Main.DisableNode.Using_Main_Code1)
                 {
                     return true;
@@ -358,76 +358,76 @@ namespace MKLP.Modules
 
                 if (!(bool)MKLP.Config.Main.DisableNode.Use_SuspiciousDupe) return;
 
-                if (MKLP.Config.Main.DisableNode.WhiteList_Dupe_Code1.Contains(prev.netID) ||
-                    MKLP.Config.Main.DisableNode.WhiteList_Dupe_Code1.Contains(now.netID)) return;
+                if (MKLP.Config.Main.DisableNode.WhiteList_Dupe_Code1.Contains(prev.type) ||
+                    MKLP.Config.Main.DisableNode.WhiteList_Dupe_Code1.Contains(now.type)) return;
 
                 if (now.stack == 255)
                 {
                     if (prev.stack > 240) return;
-                    if (prev.netID != now.netID) return;
-                    if (prev.netID == 0 || prev.stack == 0) return;
+                    if (prev.type != now.type) return;
+                    if (prev.type == 0 || prev.stack == 0) return;
 
                     if (confirmedREV()) return;
 
                     MKLP.PunishPlayer(MKLP_CodeType.Dupe, 0, tsplayer, "Split Duplicating", $"Player **{tsplayer.Account.Name}** has suspicious activity for **Split Dupe** `( {prev.stack} ) {prev.Name}` to `( {now.stack} ) {now.Name}` `ActiveChest: {tsplayer.ActiveChest}`" +
                         $"\n- Please Check this player if they are duping", true, true);
-                    MKLP.SendStaffMessage($"[MKLP] Player [c/8911f1:{tsplayer.Account.Name}]  has suspicious activity for Dupe [i/s{prev.stack}:{prev.netID}] to [i/s{now.stack}:{now.netID}]" +
+                    MKLP.SendStaffMessage($"[MKLP] Player [c/8911f1:{tsplayer.Account.Name}]  has suspicious activity for Dupe [i/s{prev.stack}:{prev.type}] to [i/s{now.stack}:{now.type}]" +
                         $"\nPlease Check this player if they are duping", Microsoft.Xna.Framework.Color.MediumPurple);
 
                 }
                 if (now.stack == 500)
                 {
                     if (prev.stack > 485) return;
-                    if (prev.netID != now.netID) return;
-                    if (prev.netID == 0 || prev.stack == 0) return;
+                    if (prev.type != now.type) return;
+                    if (prev.type == 0 || prev.stack == 0) return;
 
                     if (confirmedREV()) return;
 
                     MKLP.PunishPlayer(MKLP_CodeType.Dupe, 0, tsplayer, "Duplicating", $"Player **{tsplayer.Account.Name}** has suspicious activity for **Dupe** `( {prev.stack} ) {prev.Name}` to `( {now.stack} ) {now.Name}` `ActiveChest: {tsplayer.ActiveChest}`" +
                         $"\n- Please Check this player if they are duping", true, true);
-                    MKLP.SendStaffMessage($"[MKLP] Player [c/8911f1:{tsplayer.Account.Name}]  has suspicious activity for Dupe [i/s{prev.stack}:{prev.netID}] to [i/s{now.stack}:{now.netID}]" +
+                    MKLP.SendStaffMessage($"[MKLP] Player [c/8911f1:{tsplayer.Account.Name}]  has suspicious activity for Dupe [i/s{prev.stack}:{prev.type}] to [i/s{now.stack}:{now.type}]" +
                         $"\nPlease Check this player if they are duping", Microsoft.Xna.Framework.Color.MediumPurple);
 
                 }
                 if (now.stack == 1000)
                 {
                     if (prev.stack > 950) return;
-                    if (prev.netID != now.netID) return;
-                    if (prev.netID == 0 || prev.stack == 0) return;
+                    if (prev.type != now.type) return;
+                    if (prev.type == 0 || prev.stack == 0) return;
 
                     if (confirmedREV()) return;
 
                     MKLP.PunishPlayer(MKLP_CodeType.Dupe, 0, tsplayer, "Duplicating", $"Player **{tsplayer.Account.Name}** has suspicious activity for **Dupe** `( {prev.stack} ) {prev.Name}` to `( {now.stack} ) {now.Name}` `ActiveChest: {tsplayer.ActiveChest}`" +
                         $"\n- Please Check this player if they are duping", true, true);
-                    MKLP.SendStaffMessage($"[MKLP] Player [c/8911f1:{tsplayer.Account.Name}]  has suspicious activity for Dupe [i/s{prev.stack}:{prev.netID}] to [i/s{now.stack}:{now.netID}]" +
+                    MKLP.SendStaffMessage($"[MKLP] Player [c/8911f1:{tsplayer.Account.Name}]  has suspicious activity for Dupe [i/s{prev.stack}:{prev.type}] to [i/s{now.stack}:{now.type}]" +
                         $"\nPlease Check this player if they are duping", Microsoft.Xna.Framework.Color.MediumPurple);
 
                 }
                 if (now.stack == 5000)
                 {
                     if (prev.stack > 4905) return;
-                    if (prev.netID != now.netID) return;
-                    if (prev.netID == 0 || prev.stack == 0) return;
+                    if (prev.type != now.type) return;
+                    if (prev.type == 0 || prev.stack == 0) return;
 
                     if (confirmedREV()) return;
 
                     MKLP.PunishPlayer(MKLP_CodeType.Dupe, 0, tsplayer, "Duplicating", $"Player **{tsplayer.Account.Name}** has suspicious activity for **Dupe** `( {prev.stack} ) {prev.Name}` to `( {now.stack} ) {now.Name}` `ActiveChest: {tsplayer.ActiveChest}`" +
                         $"\n- Please Check this player if they are duping", true, true);
-                    MKLP.SendStaffMessage($"[MKLP] Player [c/8911f1:{tsplayer.Account.Name}]  has suspicious activity for Dupe [i/s{prev.stack}:{prev.netID}] to [i/s{now.stack}:{now.netID}]" +
+                    MKLP.SendStaffMessage($"[MKLP] Player [c/8911f1:{tsplayer.Account.Name}]  has suspicious activity for Dupe [i/s{prev.stack}:{prev.type}] to [i/s{now.stack}:{now.type}]" +
                         $"\nPlease Check this player if they are duping", Microsoft.Xna.Framework.Color.MediumPurple);
 
                 }
                 if (now.stack == 9999)
                 {
                     if (prev.stack > 9905) return;
-                    if (prev.netID != now.netID) return;
-                    if (prev.netID == 0 || prev.stack == 0) return;
+                    if (prev.type != now.type) return;
+                    if (prev.type == 0 || prev.stack == 0) return;
 
                     if (confirmedREV()) return;
 
                     MKLP.PunishPlayer(MKLP_CodeType.Dupe, 0, tsplayer, "Duplicating", $"Player **{tsplayer.Account.Name}** has suspicious activity for **Dupe** `( {prev.stack} ) {prev.Name}` to `( {now.stack} ) {now.Name}` `ActiveChest: {tsplayer.ActiveChest}`" +
                         $"\n- Please Check this player if they are duping", true, true);
-                    MKLP.SendStaffMessage($"[MKLP] Player [c/8911f1:{tsplayer.Account.Name}]  has suspicious activity for Dupe [i/s{prev.stack}:{prev.netID}] to [i/s{now.stack}:{now.netID}]" +
+                    MKLP.SendStaffMessage($"[MKLP] Player [c/8911f1:{tsplayer.Account.Name}]  has suspicious activity for Dupe [i/s{prev.stack}:{prev.type}] to [i/s{now.stack}:{now.type}]" +
                         $"\nPlease Check this player if they are duping", Microsoft.Xna.Framework.Color.MediumPurple);
 
                 }
@@ -442,70 +442,70 @@ namespace MKLP.Modules
                 if (now.stack == 255)
                 {
                     if (prev.Stack > 240) return;
-                    if (prev.NetId != now.netID) return;
+                    if (prev.NetId != now.type) return;
                     if (prev.NetId == 0 || prev.Stack == 0) return;
 
                     if (confirmedREV()) return;
                     revertchest2();
                     MKLP.PunishPlayer(MKLP_CodeType.Dupe, 0, tsplayer, "Split Duplicating", $"Player **{tsplayer.Account.Name}** has suspicious activity for **Split Dupe** `( {prev.Stack} ) {Lang.GetItemName(prev.NetId)}` to `( {now.stack} ) {now.Name}` `ActiveChest: {tsplayer.ActiveChest}`" +
                         $"\n- Please Check this player if they are duping", true, true);
-                    MKLP.SendStaffMessage($"[MKLP] Player [c/8911f1:{tsplayer.Account.Name}]  has suspicious activity for Dupe [i/s{prev.Stack}:{prev.NetId}] to [i/s{now.stack}:{now.netID}]" +
+                    MKLP.SendStaffMessage($"[MKLP] Player [c/8911f1:{tsplayer.Account.Name}]  has suspicious activity for Dupe [i/s{prev.Stack}:{prev.NetId}] to [i/s{now.stack}:{now.type}]" +
                         $"\nPlease Check this player if they are duping", Microsoft.Xna.Framework.Color.MediumPurple);
 
                 }
                 if (now.stack == 500)
                 {
                     if (prev.Stack > 485) return;
-                    if (prev.NetId != now.netID) return;
+                    if (prev.NetId != now.type) return;
                     if (prev.NetId == 0 || prev.Stack == 0) return;
 
                     if (confirmedREV()) return;
                     revertchest2();
                     MKLP.PunishPlayer(MKLP_CodeType.Dupe, 0, tsplayer, "Duplicating", $"Player **{tsplayer.Account.Name}** has suspicious activity for **Dupe** `( {prev.Stack} ) {Lang.GetItemName(prev.NetId)}` to `( {now.stack} ) {now.Name}` `ActiveChest: {tsplayer.ActiveChest}`" +
                         $"\n- Please Check this player if they are duping", true, true);
-                    MKLP.SendStaffMessage($"[MKLP] Player [c/8911f1:{tsplayer.Account.Name}]  has suspicious activity for Dupe [i/s{prev.Stack}:{prev.NetId}] to [i/s{now.stack}:{now.netID}]" +
+                    MKLP.SendStaffMessage($"[MKLP] Player [c/8911f1:{tsplayer.Account.Name}]  has suspicious activity for Dupe [i/s{prev.Stack}:{prev.NetId}] to [i/s{now.stack}:{now.type}]" +
                         $"\nPlease Check this player if they are duping", Microsoft.Xna.Framework.Color.MediumPurple);
 
                 }
                 if (now.stack == 1000)
                 {
                     if (prev.Stack > 950) return;
-                    if (prev.NetId != now.netID) return;
+                    if (prev.NetId != now.type) return;
                     if (prev.NetId == 0 || prev.Stack == 0) return;
 
                     if (confirmedREV()) return;
                     revertchest2();
                     MKLP.PunishPlayer(MKLP_CodeType.Dupe, 0, tsplayer, "Duplicating", $"Player **{tsplayer.Account.Name}** has suspicious activity for **Dupe** `( {prev.Stack} ) {Lang.GetItemName(prev.NetId)}` to `( {now.stack} ) {now.Name}` `ActiveChest: {tsplayer.ActiveChest}`" +
                         $"\n- Please Check this player if they are duping", true, true);
-                    MKLP.SendStaffMessage($"[MKLP] Player [c/8911f1:{tsplayer.Account.Name}]  has suspicious activity for Dupe [i/s{prev.Stack}:{prev.NetId}] to [i/s{now.stack}:{now.netID}]" +
+                    MKLP.SendStaffMessage($"[MKLP] Player [c/8911f1:{tsplayer.Account.Name}]  has suspicious activity for Dupe [i/s{prev.Stack}:{prev.NetId}] to [i/s{now.stack}:{now.type}]" +
                         $"\nPlease Check this player if they are duping", Microsoft.Xna.Framework.Color.MediumPurple);
 
                 }
                 if (now.stack == 5000)
                 {
                     if (prev.Stack > 4905) return;
-                    if (prev.NetId != now.netID) return;
+                    if (prev.NetId != now.type) return;
                     if (prev.NetId == 0 || prev.Stack == 0) return;
 
                     if (confirmedREV()) return;
                     revertchest2();
                     MKLP.PunishPlayer(MKLP_CodeType.Dupe, 0, tsplayer, "Duplicating", $"Player **{tsplayer.Account.Name}** has suspicious activity for **Dupe** `( {prev.Stack} ) {Lang.GetItemName(prev.NetId)}` to `( {now.stack} ) {now.Name}` `ActiveChest: {tsplayer.ActiveChest}`" +
                         $"\n- Please Check this player if they are duping", true, true);
-                    MKLP.SendStaffMessage($"[MKLP] Player [c/8911f1:{tsplayer.Account.Name}]  has suspicious activity for Dupe [i/s{prev.Stack}:{prev.NetId}] to [i/s{now.stack}:{now.netID}]" +
+                    MKLP.SendStaffMessage($"[MKLP] Player [c/8911f1:{tsplayer.Account.Name}]  has suspicious activity for Dupe [i/s{prev.Stack}:{prev.NetId}] to [i/s{now.stack}:{now.type}]" +
                         $"\nPlease Check this player if they are duping", Microsoft.Xna.Framework.Color.MediumPurple);
 
                 }
                 if (now.stack == 9999)
                 {
                     if (prev.Stack > 9905) return;
-                    if (prev.NetId != now.netID) return;
+                    if (prev.NetId != now.type) return;
                     if (prev.NetId == 0 || prev.Stack == 0) return;
 
                     if (confirmedREV()) return;
                     revertchest2();
                     MKLP.PunishPlayer(MKLP_CodeType.Dupe, 0, tsplayer, "Duplicating", $"Player **{tsplayer.Account.Name}** has suspicious activity for **Dupe** `( {prev.Stack} ) {Lang.GetItemName(prev.NetId)}` to `( {now.stack} ) {now.Name}` `ActiveChest: {tsplayer.ActiveChest}`" +
                         $"\n- Please Check this player if they are duping", true, true);
-                    MKLP.SendStaffMessage($"[MKLP] Player [c/8911f1:{tsplayer.Account.Name}]  has suspicious activity for Dupe [i/s{prev.Stack}:{prev.NetId}] to [i/s{now.stack}:{now.netID}]" +
+                    MKLP.SendStaffMessage($"[MKLP] Player [c/8911f1:{tsplayer.Account.Name}]  has suspicious activity for Dupe [i/s{prev.Stack}:{prev.NetId}] to [i/s{now.stack}:{now.type}]" +
                         $"\nPlease Check this player if they are duping", Microsoft.Xna.Framework.Color.MediumPurple);
 
                 }
@@ -1207,7 +1207,7 @@ namespace MKLP.Modules
                 {
                     case Summon_Armor.Head:
                         {
-                            if (head.netID == getarmor.Item1)
+                            if (head.type == getarmor.Item1)
                             {
                                 maxsummons += getarmor.Item3;
                             }
@@ -1215,7 +1215,7 @@ namespace MKLP.Modules
                         }
                     case Summon_Armor.Body:
                         {
-                            if (body.netID == getarmor.Item1)
+                            if (body.type == getarmor.Item1)
                             {
                                 maxsummons += getarmor.Item3;
                             }
@@ -1223,7 +1223,7 @@ namespace MKLP.Modules
                         }
                     case Summon_Armor.Leggings:
                         {
-                            if (leggings.netID == getarmor.Item1)
+                            if (leggings.type == getarmor.Item1)
                             {
                                 maxsummons += getarmor.Item3;
                             }
@@ -1236,7 +1236,7 @@ namespace MKLP.Modules
             #region [ Armor Set ]
             foreach (var getarmorset in setbonussummonarmor)
             {
-                if (getarmorset.Item1.Item1.Contains(head.netID) && getarmorset.Item1.Item2.Contains(head.netID) && getarmorset.Item1.Item3.Contains(head.netID))
+                if (getarmorset.Item1.Item1.Contains(head.type) && getarmorset.Item1.Item2.Contains(head.type) && getarmorset.Item1.Item3.Contains(head.type))
                 {
                     maxsummons += getarmorset.Item2;
                 }
@@ -1345,7 +1345,7 @@ namespace MKLP.Modules
                 {
                     case Summon_Armor.Head:
                         {
-                            if (head.netID == getarmor.Item1)
+                            if (head.type == getarmor.Item1)
                             {
                                 maxsentry += getarmor.Item3;
                             }
@@ -1353,7 +1353,7 @@ namespace MKLP.Modules
                         }
                     case Summon_Armor.Body:
                         {
-                            if (body.netID == getarmor.Item1)
+                            if (body.type == getarmor.Item1)
                             {
                                 maxsentry += getarmor.Item3;
                             }
@@ -1361,7 +1361,7 @@ namespace MKLP.Modules
                         }
                     case Summon_Armor.Leggings:
                         {
-                            if (leggings.netID == getarmor.Item1)
+                            if (leggings.type == getarmor.Item1)
                             {
                                 maxsentry += getarmor.Item3;
                             }
@@ -1374,7 +1374,7 @@ namespace MKLP.Modules
             #region [ Armor Set ]
             foreach (var getarmorset in setbonussummonarmor)
             {
-                if (getarmorset.Item1.Item1.Contains(head.netID) && getarmorset.Item1.Item2.Contains(head.netID) && getarmorset.Item1.Item3.Contains(head.netID))
+                if (getarmorset.Item1.Item1.Contains(head.type) && getarmorset.Item1.Item2.Contains(head.type) && getarmorset.Item1.Item3.Contains(head.type))
                 {
                     maxsentry += getarmorset.Item2;
                 }

@@ -900,7 +900,7 @@ namespace MKLP
             {
                 if (Main.item[i].value < MKLP.Config.Main.Ignore_Value_ClearLag && Main.item[i].active)
                 {
-                    Main.item[i].active = false;
+                    Main.item[i].TurnToAir(true);
                     TSPlayer.All.SendData(PacketTypes.ItemDrop, "", i);
                     ClearedItems++;
                 }

@@ -330,29 +330,7 @@ namespace MKLP
                 {
                     if (!(bool)Config.Main.Use_OnUpdate_Func)
                     {
-                        int maxvalue = 10;
-
-                        if (Main.hardMode) maxvalue = 100;
-
-                        if ((bool)Config.Main.DisableNode.AutoClear_IllegalItemDrops_SurvivalCode1 || (bool)Config.Main.DisableNode.AutoClear_IllegalItemDrops_MainCode1)
-                        {
-                            for (int i = 0; i < Main.maxItems; i++)
-                            {
-                                if (IllegalItemProgression.ContainsKey(Main.item[i].netID) &&
-                                    (bool)MKLP.Config.Main.DisableNode.Using_Survival_Code1 && (bool)Config.Main.DisableNode.AutoClear_IllegalItemDrops_SurvivalCode1 && Main.item[i].active)
-                                {
-                                    Main.item[i].active = false;
-                                    TSPlayer.All.SendData(PacketTypes.ItemDrop, "", i);
-                                }
-                                if ((Main.item[i].value * Main.item[i].stack) / 5000000 >= maxvalue &&
-                                    Main.item[i].netID != 74
-                                    && (bool)MKLP.Config.Main.DisableNode.Using_Main_Code1 && (bool)Config.Main.DisableNode.AutoClear_IllegalItemDrops_MainCode1 && Main.item[i].active)
-                                {
-                                    Main.item[i].active = false;
-                                    TSPlayer.All.SendData(PacketTypes.ItemDrop, "", i);
-                                }
-                            }
-                        }
+                        CheckItemDrops();
                     }
                 } catch (Exception e)
                 {
@@ -648,30 +626,8 @@ namespace MKLP
             }
 
             if (!(bool)Config.Main.Use_OnUpdate_Func) return;
-            
-            int maxvalue = 10;
 
-            if (Main.hardMode) maxvalue = 100;
-
-            if ((bool)Config.Main.DisableNode.AutoClear_IllegalItemDrops_SurvivalCode1 || (bool)Config.Main.DisableNode.AutoClear_IllegalItemDrops_MainCode1)
-            {
-                for (int i = 0; i < Main.maxItems; i++)
-                {
-                    if (IllegalItemProgression.ContainsKey(Main.item[i].netID) &&
-                        (bool)MKLP.Config.Main.DisableNode.Using_Survival_Code1 && (bool)Config.Main.DisableNode.AutoClear_IllegalItemDrops_SurvivalCode1 && Main.item[i].active)
-                    {
-                        Main.item[i].active = false;
-                        TSPlayer.All.SendData(PacketTypes.ItemDrop, "", i);
-                    }
-                    if ((Main.item[i].value * Main.item[i].stack) / 5000000 >= maxvalue &&
-                        Main.item[i].netID != 74
-                        && (bool)MKLP.Config.Main.DisableNode.Using_Main_Code1 && (bool)Config.Main.DisableNode.AutoClear_IllegalItemDrops_MainCode1 && Main.item[i].active)
-                    {
-                        Main.item[i].active = false;
-                        TSPlayer.All.SendData(PacketTypes.ItemDrop, "", i);
-                    }
-                }
-            }
+            CheckItemDrops();
 
             foreach (TSPlayer player in TShock.Players)
             {
@@ -780,6 +736,50 @@ namespace MKLP
             }
 
             #endregion
+        }
+
+
+        void CheckItemDrops()
+        {
+            try
+            {
+                int maxvalue = 10;
+
+                if (Main.hardMode) maxvalue = 100;
+
+                if ((bool)Config.Main.DisableNode.AutoClear_IllegalItemDrops_SurvivalCode1 || (bool)Config.Main.DisableNode.AutoClear_IllegalItemDrops_MainCode1)
+                {
+                    for (int i = 0; i < Main.maxItems; i++)
+                    {
+                        if (Main.item[i].type == ItemID.Heart ||
+                            Main.item[i].type == ItemID.CandyApple ||
+                            Main.item[i].type == ItemID.CandyCane ||
+                            Main.item[i].type == ItemID.Star ||
+                            Main.item[i].type == ItemID.SoulCake ||
+                            Main.item[i].type == ItemID.SugarPlum ||
+                            Main.item[i].type == ItemID.ManaCloakStar) continue;
+                        if (IllegalItemProgression.ContainsKey(Main.item[i].type) &&
+                            (bool)MKLP.Config.Main.DisableNode.Using_Survival_Code1 && (bool)Config.Main.DisableNode.AutoClear_IllegalItemDrops_SurvivalCode1 && Main.item[i].active)
+                        {
+                            Main.item[i].TurnToAir(true);
+                            TSPlayer.All.SendData(PacketTypes.ItemDrop, "", i);
+                        }
+                        if ((Main.item[i].value * Main.item[i].stack) / 5000000 >= maxvalue &&
+                            Main.item[i].type != 74
+                            && (bool)MKLP.Config.Main.DisableNode.Using_Main_Code1 && (bool)Config.Main.DisableNode.AutoClear_IllegalItemDrops_MainCode1 && Main.item[i].active)
+                        {
+                            Main.item[i].TurnToAir(true);
+                            TSPlayer.All.SendData(PacketTypes.ItemDrop, "", i);
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                MKLP_Console.SendLog_Exception("Error on ItemDrop");
+                MKLP_Console.SendLog_Exception(e);
+            }
+
         }
 
         #endregion
@@ -1697,7 +1697,7 @@ namespace MKLP
                 };
                 foreach (Item check in args.Player.TPlayer.armor)
                 {
-                    if (boost.Contains(check.netID))
+                    if (boost.Contains(check.type))
                     {
                         max = (int)Config.Main.DisableNode.default_code1_maxboost;
                         break;
@@ -1713,7 +1713,7 @@ namespace MKLP
                 };
                 foreach (Item check in args.Player.Inventory)
                 {
-                    if (bomb.Contains(check.netID))
+                    if (bomb.Contains(check.type))
                     {
                         max = (int)Config.Main.DisableNode.default_code1_maxbomb;
                         break;
@@ -1727,7 +1727,7 @@ namespace MKLP
                 };
                 foreach (Item check in args.Player.Inventory)
                 {
-                    if (dynamite.Contains(check.netID))
+                    if (dynamite.Contains(check.type))
                     {
                         max = (int)Config.Main.DisableNode.default_code1_maxdynamite;
                         break;
@@ -1736,7 +1736,7 @@ namespace MKLP
 
                 if (args.Player.TileKillThreshold >= max)
                 {
-                    if (PunishPlayer(MKLP_CodeType.Default, 1, args.Player, $"Breaking blocks to fast", $"Player **{args.Player.Name}** has exceeded TileKill Threshold `itemheld: {args.Player.SelectedItem.netID}` `Threshold: {max}`"))
+                    if (PunishPlayer(MKLP_CodeType.Default, 1, args.Player, $"Breaking blocks to fast", $"Player **{args.Player.Name}** has exceeded TileKill Threshold `itemheld: {args.Player.SelectedItem.type}` `Threshold: {max}`"))
                     {
                         args.Player.SendTileSquareCentered(tileX, tileY, 4);
                         args.Handled = true;
@@ -1763,7 +1763,7 @@ namespace MKLP
                 };
                 foreach (Item check in args.Player.TPlayer.armor)
                 {
-                    if (boost.Contains(check.netID))
+                    if (boost.Contains(check.type))
                     {
                         max = (int)Config.Main.DisableNode.default_code2_maxboost;
                         break;
@@ -1777,7 +1777,7 @@ namespace MKLP
                 };
                 foreach (Item check in args.Player.Inventory)
                 {
-                    if (bomb.Contains(check.netID))
+                    if (bomb.Contains(check.type))
                     {
                         max = (int)Config.Main.DisableNode.default_code2_maxbomb;
                         break;
@@ -1787,7 +1787,7 @@ namespace MKLP
 
                 if (args.Player.TilePlaceThreshold >= max)
                 {
-                    if (PunishPlayer(MKLP_CodeType.Default, 2, args.Player, $"Placing blocks too fast", $"Player **{args.Player.Name}** has exceeded TilePlace Threshold `itemheld: {args.Player.SelectedItem.netID}` `Threshold: {max}`"))
+                    if (PunishPlayer(MKLP_CodeType.Default, 2, args.Player, $"Placing blocks too fast", $"Player **{args.Player.Name}** has exceeded TilePlace Threshold `itemheld: {args.Player.SelectedItem.type}` `Threshold: {max}`"))
                     {
                         args.Player.SendTileSquareCentered(tileX, tileY, 4);
                         args.Handled = true;
@@ -1924,7 +1924,7 @@ namespace MKLP
                 };
                 foreach (Item check in args.Player.TPlayer.armor)
                 {
-                    if (boost.Contains(check.netID))
+                    if (boost.Contains(check.type))
                     {
                         max = (int)Config.Main.DisableNode.default_code2_maxboost;
                         break;
@@ -1938,7 +1938,7 @@ namespace MKLP
                 };
                 foreach (Item check in args.Player.Inventory)
                 {
-                    if (bomb.Contains(check.netID))
+                    if (bomb.Contains(check.type))
                     {
                         max = (int)Config.Main.DisableNode.default_code2_maxbomb;
                         break;
@@ -1948,7 +1948,7 @@ namespace MKLP
 
                 if (args.Player.TilePlaceThreshold >= max)
                 {
-                    if (PunishPlayer(MKLP_CodeType.Default, 2, args.Player, $"Placing blocks to fast", $"Player **{args.Player.Name}** has exceeded TilePlace Threshold `itemheld: {args.Player.SelectedItem.netID}` `Threshold: {max}`"))
+                    if (PunishPlayer(MKLP_CodeType.Default, 2, args.Player, $"Placing blocks to fast", $"Player **{args.Player.Name}** has exceeded TilePlace Threshold `itemheld: {args.Player.SelectedItem.type}` `Threshold: {max}`"))
                     {
                         args.Player.SendTileSquareCentered(tileX, tileY, 4);
                         args.Handled = true;
@@ -1997,7 +1997,7 @@ namespace MKLP
                 };
                 foreach (Item check in args.Player.TPlayer.armor)
                 {
-                    if (boost.Contains(check.netID))
+                    if (boost.Contains(check.type))
                     {
                         max = (int)Config.Main.DisableNode.default_code3_maxboost;
                         break;
@@ -2006,7 +2006,7 @@ namespace MKLP
 
                 if (args.Player.PaintThreshold >= max)
                 {
-                    if (PunishPlayer(MKLP_CodeType.Default, 3, args.Player, $"Painting too fast", $"Player **{args.Player.Name}** has exceeded Paint Threshold `itemheld: {args.Player.SelectedItem.netID}` `Threshold {max}`"))
+                    if (PunishPlayer(MKLP_CodeType.Default, 3, args.Player, $"Painting too fast", $"Player **{args.Player.Name}** has exceeded Paint Threshold `itemheld: {args.Player.SelectedItem.type}` `Threshold {max}`"))
                     {
                         args.Player.SendTileSquareCentered(tileX, tileY, 4);
                         args.Handled = true;
@@ -2055,7 +2055,7 @@ namespace MKLP
                 };
                 foreach (Item check in args.Player.TPlayer.armor)
                 {
-                    if (boost.Contains(check.netID))
+                    if (boost.Contains(check.type))
                     {
                         max = (int)Config.Main.DisableNode.default_code3_maxboost;
                         break;
@@ -2064,7 +2064,7 @@ namespace MKLP
 
                 if (args.Player.PaintThreshold >= max)
                 {
-                    if (PunishPlayer(MKLP_CodeType.Default, 3, args.Player, $"Painting too fast", $"Player **{args.Player.Name}** has exceeded Paint Threshold `itemheld: {args.Player.SelectedItem.netID}` `Threshold {max}`"))
+                    if (PunishPlayer(MKLP_CodeType.Default, 3, args.Player, $"Painting too fast", $"Player **{args.Player.Name}** has exceeded Paint Threshold `itemheld: {args.Player.SelectedItem.type}` `Threshold {max}`"))
                     {
                         args.Player.SendTileSquareCentered(tileX, tileY, 4);
                         args.Handled = true;
@@ -2158,7 +2158,7 @@ namespace MKLP
                 };
                 foreach (Item check in args.Player.TPlayer.armor)
                 {
-                    if (boost.Contains(check.netID))
+                    if (boost.Contains(check.type))
                     {
                         max = (int)Config.Main.DisableNode.default_code4_maxboost;
                         break;
@@ -2173,7 +2173,7 @@ namespace MKLP
                 };
                 foreach (Item check in args.Player.Inventory)
                 {
-                    if (bomb.Contains(check.netID))
+                    if (bomb.Contains(check.type))
                     {
                         max = (int)Config.Main.DisableNode.default_code4_maxbomb;
                         break;
@@ -2182,7 +2182,7 @@ namespace MKLP
 
                 if (args.Player.TileLiquidThreshold >= max)
                 {
-                    if (PunishPlayer(MKLP_CodeType.Default, 4, args.Player, $"Exceeded Liquid place", $"Player **{args.Player.Name}** has exceeded TileLiquid Threshold `itemheld: {args.Player.SelectedItem.netID}` `Threshold: {max}`"))
+                    if (PunishPlayer(MKLP_CodeType.Default, 4, args.Player, $"Exceeded Liquid place", $"Player **{args.Player.Name}** has exceeded TileLiquid Threshold `itemheld: {args.Player.SelectedItem.type}` `Threshold: {max}`"))
                     {
                         args.Player.SendTileSquareCentered(TileX, TileY, 4);
                         args.Handled = true;
@@ -2226,7 +2226,7 @@ namespace MKLP
                     !args.Player.HasPermission(Config.Permissions.IgnoreSurvivalCode_2) &&
                     (bool)Config.Main.DisableNode.Using_Survival_Code2)
                 {
-                    if (PunishPlayer(MKLP_CodeType.Survival, 2, args.Player, $"{GetIllegalProj[type]} Projectile", $"Player **{args.Player.Name}** spawned illegal Projectile progression `itemheld: {args.Player.SelectedItem.netID} projectile: {Lang.GetProjectileName(type)}` **{GetIllegalProj[type]}**"))
+                    if (PunishPlayer(MKLP_CodeType.Survival, 2, args.Player, $"{GetIllegalProj[type]} Projectile", $"Player **{args.Player.Name}** spawned illegal Projectile progression `itemheld: {args.Player.SelectedItem.type} projectile: {Lang.GetProjectileName(type)}` **{GetIllegalProj[type]}**"))
                     {
                         argsHandled();
                         return;
@@ -2464,10 +2464,41 @@ namespace MKLP
                             }
                         }
 
-                        Console.WriteLine($"plrmax: {ManagePlayer.GetPlayerMaxSummons(args.Player)} | minions: {numberofsummons}");
 
                         if (ManagePlayer.GetPlayerMaxSummons(args.Player) <= numberofsummons)
                         {
+                            if (type == ProjectileID.StormTigerGem ||
+                                type == ProjectileID.StormTigerTier1 ||
+                                type == ProjectileID.StormTigerTier2 ||
+                                type == ProjectileID.StormTigerTier3)
+                            {
+                                foreach (var get in Main.projectile)
+                                {
+                                    if (get.identity == ident) continue;
+                                    if (get.owner != owner) continue;
+                                    if (!get.active) continue;
+                                    if (type == ProjectileID.StormTigerTier1 ||
+                                        type == ProjectileID.StormTigerTier2 ||
+                                        type == ProjectileID.StormTigerTier3)
+                                    {
+                                        RemoveProj(get.whoAmI);
+                                    }
+                                }
+                            }
+                            if (type == ProjectileID.AbigailCounter ||
+                                type == ProjectileID.AbigailMinion)
+                            {
+                                foreach (var get in Main.projectile)
+                                {
+                                    if (get.identity == ident) continue;
+                                    if (get.owner != owner) continue;
+                                    if (!get.active) continue;
+                                    if (type == ProjectileID.AbigailMinion)
+                                    {
+                                        RemoveProj(get.whoAmI);
+                                    }
+                                }
+                            }
                             argsHandled();
                             return;
                         }
@@ -2536,7 +2567,7 @@ namespace MKLP
 
                     if (args.Player.ProjectileThreshold >= max)
                     {
-                        if (PunishPlayer(MKLP_CodeType.Default, 5, args.Player, $"Spawning too many projectiles at onces!", $"Player **{args.Player.Name}** Spawned to many projectile at onces! `itemheld: {args.Player.SelectedItem.netID} projectile id: {type}` `Threshold: {max}`"))
+                        if (PunishPlayer(MKLP_CodeType.Default, 5, args.Player, $"Spawning too many projectiles at onces!", $"Player **{args.Player.Name}** Spawned to many projectile at onces! `itemheld: {args.Player.SelectedItem.type} projectile id: {type}` `Threshold: {max}`"))
                         {
                             argsHandled();
                             return true;
@@ -2552,6 +2583,15 @@ namespace MKLP
                     args.Player.RemoveProjectile(ident, owner);
                     Main.projectile[ident].active = false;
                     TSPlayer.All.SendData(PacketTypes.ProjectileNew, "", ident);
+                    //TSPlayer.All.SendData(PacketTypes.ProjectileDestroy, "", ident, owner);
+                    args.Handled = true;
+                }
+                void RemoveProj(int projindex)
+                {
+
+                    args.Player.RemoveProjectile(projindex, owner);
+                    Main.projectile[projindex].active = false;
+                    TSPlayer.All.SendData(PacketTypes.ProjectileNew, "", projindex);
                     //TSPlayer.All.SendData(PacketTypes.ProjectileDestroy, "", ident, owner);
                     args.Handled = true;
                 }
@@ -2586,9 +2626,9 @@ namespace MKLP
                     bool head = false; bool chestplate = false; bool leggings = false;
                     foreach (Item check in player.TPlayer.armor)
                     {
-                        if (check.netID == ItemID.SpectreHood) head = true;
-                        if (check.netID == ItemID.SpectreRobe) chestplate = true;
-                        if (check.netID == ItemID.SpectrePants) leggings = true;
+                        if (check.type == ItemID.SpectreHood) head = true;
+                        if (check.type == ItemID.SpectreRobe) chestplate = true;
+                        if (check.type == ItemID.SpectrePants) leggings = true;
 
                     }
                     if (head && chestplate && leggings)
@@ -2599,7 +2639,7 @@ namespace MKLP
 
                 if (args.Player.HealOtherThreshold >= max)
                 {
-                    if (PunishPlayer(MKLP_CodeType.Default, 6, args.Player, $"Healing others to fast!", $"Player **{args.Player.Name}** has exceeded HealOther Threshold `itemheld: {args.Player.SelectedItem.netID}` `Threshold: {max}`"))
+                    if (PunishPlayer(MKLP_CodeType.Default, 6, args.Player, $"Healing others to fast!", $"Player **{args.Player.Name}** has exceeded HealOther Threshold `itemheld: {args.Player.SelectedItem.type}` `Threshold: {max}`"))
                     {
                         args.Handled = true;
                         return true;

@@ -10,27 +10,27 @@
         "projectUniqueName": "D:\\Nightklp_KLP\\my_Terraria_Plugins\\GSKLP\\MKLP\\MKLP\\MKLP.csproj",
         "projectName": "MKLP",
         "projectPath": "D:\\Nightklp_KLP\\my_Terraria_Plugins\\GSKLP\\MKLP\\MKLP\\MKLP.csproj",
-        "packagesPath": "C:\\Users\\pilap\\.nuget\\packages\\",
+        "packagesPath": "C:\\Users\\xrayr\\.nuget\\packages\\",
         "outputPath": "D:\\Nightklp_KLP\\my_Terraria_Plugins\\GSKLP\\MKLP\\MKLP\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+          "D:\\Nightklp_Apps\\Visual_Studio_Community\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\pilap\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\xrayr\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
-          "net6.0"
+          "net9.0"
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
-          "net6.0": {
-            "targetAlias": "net6.0",
+          "net9.0": {
+            "targetAlias": "net9.0",
             "projectReferences": {}
           }
         },
@@ -44,11 +44,11 @@
           "auditLevel": "low",
           "auditMode": "direct"
         },
-        "SdkAnalysisLevel": "9.0.200"
+        "SdkAnalysisLevel": "10.0.100"
       },
       "frameworks": {
-        "net6.0": {
-          "targetAlias": "net6.0",
+        "net9.0": {
+          "targetAlias": "net9.0",
           "dependencies": {
             "Discord.Net": {
               "target": "Package",
@@ -56,7 +56,7 @@
             },
             "OTAPI.Upcoming": {
               "target": "Package",
-              "version": "[3.1.20, )"
+              "version": "[3.3.3, )"
             },
             "TSAPI": {
               "target": "Package",
@@ -83,7 +83,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.203\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.102/PortableRuntimeIdentifierGraph.json"
         }
       }
     }
