@@ -5,18 +5,18 @@
     <RestoreTool Condition=" '$(RestoreTool)' == '' ">NuGet</RestoreTool>
     <ProjectAssetsFile Condition=" '$(ProjectAssetsFile)' == '' ">$(MSBuildThisFileDirectory)project.assets.json</ProjectAssetsFile>
     <NuGetPackageRoot Condition=" '$(NuGetPackageRoot)' == '' ">$(UserProfile)\.nuget\packages\</NuGetPackageRoot>
-    <NuGetPackageFolders Condition=" '$(NuGetPackageFolders)' == '' ">C:\Users\xrayr\.nuget\packages\;D:\Nightklp_Apps\Visual_Studio_Community\Shared\NuGetPackages</NuGetPackageFolders>
+    <NuGetPackageFolders Condition=" '$(NuGetPackageFolders)' == '' ">C:\Users\xrayr\.nuget\packages\;D:\NightKLP_Apps\Microsoft_Visual_Studio\Shared\NuGetPackages</NuGetPackageFolders>
     <NuGetProjectStyle Condition=" '$(NuGetProjectStyle)' == '' ">PackageReference</NuGetProjectStyle>
     <NuGetToolVersion Condition=" '$(NuGetToolVersion)' == '' ">7.0.0</NuGetToolVersion>
   </PropertyGroup>
   <ItemGroup Condition=" '$(ExcludeRestorePackageImports)' != 'true' ">
     <SourceRoot Include="C:\Users\xrayr\.nuget\packages\" />
-    <SourceRoot Include="D:\Nightklp_Apps\Visual_Studio_Community\Shared\NuGetPackages\" />
+    <SourceRoot Include="D:\NightKLP_Apps\Microsoft_Visual_Studio\Shared\NuGetPackages\" />
   </ItemGroup>
   <ItemGroup Condition=" '$(ExcludeRestorePackageImports)' != 'true' ">
-    <None Include="$(NuGetPackageRoot)tshock\5.2.3\contentFiles\any\net6.0\HttpServer.dll" Condition="Exists('$(NuGetPackageRoot)tshock\5.2.3\contentFiles\any\net6.0\HttpServer.dll')">
+    <None Include="$(NuGetPackageRoot)tshock\6.1.0\contentFiles\any\net9.0\HttpServer.dll" Condition="Exists('$(NuGetPackageRoot)tshock\6.1.0\contentFiles\any\net9.0\HttpServer.dll')">
       <NuGetPackageId>TShock</NuGetPackageId>
-      <NuGetPackageVersion>5.2.3</NuGetPackageVersion>
+      <NuGetPackageVersion>6.1.0</NuGetPackageVersion>
       <NuGetItemType>None</NuGetItemType>
       <Pack>false</Pack>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

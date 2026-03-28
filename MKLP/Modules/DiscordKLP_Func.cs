@@ -692,25 +692,12 @@ namespace MKLP.Modules
                                 .WithButton(MKLP.GetText("Void Vault"), "MKLP_EditMsg_PlayerViewInventory_VoidVault_".Replace('_', S_) + target, ButtonStyle.Secondary, row: 2)
                                 .WithButton(MKLP.GetText("Inventory Logs"), "XXX" + target, ButtonStyle.Secondary, row: 3, disabled: true)
                                 .Build();
-                            int total = 0;
-                            foreach (string invlog in InventoryManager.InventoryLogs)
-                            {
-                                if (invlog.Split(S_)[0] == target)
-                                {
-                                    total++;
-                                }
-                            }
                             int count = 0;
-                            foreach (string invlog in InventoryManager.InventoryLogs)
+                            foreach (var invlog in LogKLP.GetLog_Inventory(LogKLP.GetPath(LogKLP.LogPath_Inventory, LogKLP.Currentlogfile), target))
                             {
-                                if (invlog.Split(S_)[0] == target)
-                                {
-                                    count++;
-                                    string previtem = $"{Lang.GetItemNameValue(int.Parse(invlog.Split(S_)[3].Split(",")[0]))} ({invlog.Split(S_)[3].Split(",")[1]})";
-                                    string item = $"{Lang.GetItemNameValue(int.Parse(invlog.Split(S_)[4].Split(",")[0]))} ({invlog.Split(S_)[4].Split(",")[1]})";
-                                    if (count < (total - 20)) continue;
-                                    EmbedDescription += $"{invlog.Split(S_)[1]}{invlog.Split(S_)[2]}: {previtem} => {item}\n";
-                                }
+                                count++;
+                                if (count > 20) break;
+                                EmbedDescription += $"{invlog.Item1}| {invlog.Item5} {invlog.Item4} | {invlog.Item2.ItemTagText()} => {invlog.Item3.ItemTagText()}\n";
                             }
                             break;
                         }

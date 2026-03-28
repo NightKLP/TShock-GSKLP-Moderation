@@ -14,7 +14,7 @@
         "outputPath": "D:\\Nightklp_KLP\\my_Terraria_Plugins\\GSKLP\\MKLP\\MKLP\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
-          "D:\\Nightklp_Apps\\Visual_Studio_Community\\Shared\\NuGetPackages"
+          "D:\\NightKLP_Apps\\Microsoft_Visual_Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
           "C:\\Users\\xrayr\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -26,6 +26,7 @@
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -44,7 +45,7 @@
           "auditLevel": "low",
           "auditMode": "direct"
         },
-        "SdkAnalysisLevel": "10.0.100"
+        "SdkAnalysisLevel": "10.0.200"
       },
       "frameworks": {
         "net9.0": {
@@ -56,15 +57,15 @@
             },
             "OTAPI.Upcoming": {
               "target": "Package",
-              "version": "[3.3.3, )"
+              "version": "[3.3.11, )"
             },
             "TSAPI": {
               "target": "Package",
-              "version": "[5.2.1, )"
+              "version": "[6.1.0, )"
             },
             "TShock": {
               "target": "Package",
-              "version": "[5.2.3, )"
+              "version": "[6.1.0, )"
             }
           },
           "imports": [
@@ -83,7 +84,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.102/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.201/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

@@ -196,7 +196,7 @@ namespace MKLP
 
             #region { Inspect }
 
-            Commands.ChatCommands.Add(new Command(MKLP.Config.Permissions.CMD_InventoryView, InventoryManager.InventoryView, "inventoryview", "invview", "inview")
+            Commands.ChatCommands.Add(new Command(MKLP.Config.Permissions.CMD_InventoryView, InventoryManager.CMD_InventoryView, "inventoryview", "invview", "inview")
             {
                 HelpText = MKLP.GetText("View's inventory of a player")
             });
@@ -267,40 +267,40 @@ namespace MKLP
 
             string GetDefeatedEvents = "";
 
-            foreach (var get in BossManager.GetDefeatedBoss())
+            foreach (var get in BossEventManager.GetDefeatedBoss())
             {
                 if ((bool)MKLP.Config.Main.Simplified_DefeatedBossEventList)
                 {
                     if (get.Value)
                     {
-                        GetDefeatedBoss += BossManager.GetBossIconFromName(get.Key) + ",";
+                        GetDefeatedBoss += BossEventManager.GetBossIconFromName(get.Key) + ",";
                     }
                     else
                     {
-                        GetEnableBoss += BossManager.GetBossIconFromName(get.Key) + ",";
+                        GetEnableBoss += BossEventManager.GetBossIconFromName(get.Key) + ",";
                     }
                 }
                 else
                 {
                     if (get.Value)
                     {
-                        GetDefeatedBoss += $"- {BossManager.GetBossIconFromName(get.Key)} [c/87ff74:{MKLP.GetText(get.Key)}]\n";
+                        GetDefeatedBoss += $"- {BossEventManager.GetBossIconFromName(get.Key)} [c/87ff74:{MKLP.GetText(get.Key)}]\n";
                     }
                     else
                     {
-                        GetEnableBoss += $"- {BossManager.GetBossIconFromName(get.Key)} [c/fefe6a:{MKLP.GetText(get.Key)}]\n";
+                        GetEnableBoss += $"- {BossEventManager.GetBossIconFromName(get.Key)} [c/fefe6a:{MKLP.GetText(get.Key)}]\n";
                     }
                 }
             }
-            foreach (var get in BossManager.GetDefeatedEvents())
+            foreach (var get in BossEventManager.GetDefeatedEvents())
             {
                 if ((bool)MKLP.Config.Main.Simplified_DefeatedBossEventList)
                 {
-                    GetDefeatedEvents += BossManager.GetEventsIconFromName(get.Key) + ",";
+                    GetDefeatedEvents += BossEventManager.GetEventsIconFromName(get.Key) + ",";
                     
                 } else
                 {
-                    GetDefeatedEvents += $"- {BossManager.GetEventsIconFromName(get.Key)} [c/8dfdf1:{MKLP.GetText(get.Key)}]\n";
+                    GetDefeatedEvents += $"- {BossEventManager.GetEventsIconFromName(get.Key)} [c/8dfdf1:{MKLP.GetText(get.Key)}]\n";
                     
                 }
             }
@@ -318,7 +318,7 @@ namespace MKLP
                 GetDefeatedEvents = GetDefeatedEvents == "" ? $"[c/00fde2:{MKLP.GetText("No Defeated Events...")}]\n\n" : $"[c/00fde2:{MKLP.GetText("Defeated Events:")}]\n" + ((bool)MKLP.Config.Main.Simplified_DefeatedBossEventList ? $"- {GetDefeatedEvents}\n" : GetDefeatedEvents);
             }
 
-            var getnextbosssched = BossManager.GetNextBossSchedule();
+            var getnextbosssched = BossEventManager.GetNextBossSchedule();
             args.Player.SendMessage(
                     $"{MKLP.GetText("List Of Bosses:")}\n" +
                     $"{GetDefeatedBoss}" +
@@ -981,7 +981,7 @@ namespace MKLP
 
             if (!(bool)MKLP.Config.BossManager.UsingBossManager)
             {
-                args.Player.SendErrorMessage("MKLP BossManager isn't used");
+                args.Player.SendErrorMessage(MKLP.GetText("MKLP BossManager isn't used"));
                 return;
             }
 

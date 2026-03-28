@@ -8,9 +8,9 @@
 
   <ItemGroup>
     <PackageReference Include="Discord.Net" Version="3.16.0" />
-    <PackageReference Include="OTAPI.Upcoming" Version="3.3.3" />
-    <PackageReference Include="TSAPI" Version="5.2.1" />
-    <PackageReference Include="TShock" Version="5.2.3" />
+    <PackageReference Include="OTAPI.Upcoming" Version="3.3.11" />
+    <PackageReference Include="TSAPI" Version="6.1.0" />
+    <PackageReference Include="TShock" Version="6.1.0" />
   </ItemGroup>
 
   <ItemGroup>

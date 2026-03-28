@@ -3,8 +3,6 @@ using MKLP.Modules;
 using MySql.Data.MySqlClient;
 using Newtonsoft.Json;
 using NuGet.Protocol.Plugins;
-using Org.BouncyCastle.Asn1.X509;
-using Org.BouncyCastle.Bcpg.Sig;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -13,6 +11,8 @@ using System.Text;
 using System.Threading.Tasks;
 using TShockAPI;
 using TShockAPI.DB;
+using TShockAPI.DB.Queries;
+
 namespace MKLP
 {
     public class MKLP_DB
@@ -53,7 +53,7 @@ namespace MKLP
                 throw new Exception("Invalid storage type");
             }
 
-            var sqlCreator = new SqlTableCreator(_db, new SqliteQueryCreator());
+            var sqlCreator = new SqlTableCreator(_db, _db.GetSqlQueryBuilder());
 
             sqlCreator.EnsureTableStructure(new SqlTable("Reports",
                 new SqlColumn("ID", MySqlDbType.Int32) { AutoIncrement = true, Primary = true },

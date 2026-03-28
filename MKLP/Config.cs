@@ -956,9 +956,7 @@ namespace MKLP
             public bool? LogTile = true;
             public bool? LogSign = true;
             public string S_4 = "▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬";
-            public bool? Save_Inventory_Log = false;
-            public int? Save_InvLog_Max = 70;
-            public int? Remove_InvLog_IfMax = 40;
+            public bool? LogInventory = true;
             public CONFIG_LOGGING() { }
 
             #region FixNull
@@ -983,9 +981,7 @@ namespace MKLP
                 if (LogTile == null) LogTile = getdefault.LogTile;
                 if (LogSign == null) LogSign = getdefault.LogSign;
 
-                if (Save_Inventory_Log == null) Save_Inventory_Log = getdefault.Save_Inventory_Log;
-                if (Save_InvLog_Max == null) Save_InvLog_Max = getdefault.Save_InvLog_Max;
-                if (Remove_InvLog_IfMax == null) Remove_InvLog_IfMax = getdefault.Remove_InvLog_IfMax;
+                if (LogInventory == null) LogInventory = getdefault.LogInventory;
             }
             #endregion
         }
@@ -1648,13 +1644,10 @@ namespace MKLP
                 newconfig.Main.Prevent_IllegalWire_Progression = oldconfig.Main.Prevent_IllegalWire_Progression;
                 newconfig.Main.Prevent_Place_BastStatueNearDoor = oldconfig.Main.Prevent_Place_BastStatueNearDoor;
                 newconfig.Main.ReceivedWarning_WirePlaceUnderground = oldconfig.Main.ReceivedWarning_WirePlaceUnderground;
-                newconfig.Main.Logging.Remove_InvLog_IfMax = oldconfig.Main.Remove_InvLog_IfMax;
                 newconfig.Main.Replace_AccountInfo_TShockCommand = oldconfig.Main.Replace_AccountInfo_TShockCommand;
                 newconfig.Main.Replace_Ban_TShockCommand = oldconfig.Main.Replace_Ban_TShockCommand;
                 newconfig.Main.Replace_Mute_TShockCommand = oldconfig.Main.Replace_Mute_TShockCommand;
                 newconfig.Main.Replace_Who_TShockCommand = oldconfig.Main.Replace_Who_TShockCommand;
-                newconfig.Main.Logging.Save_Inventory_Log = oldconfig.Main.Save_Inventory_Log;
-                newconfig.Main.Logging.Save_InvLog_Max = oldconfig.Main.Save_InvLog_Max;
                 newconfig.Main.Seperator = oldconfig.Main.Seperator;
                 newconfig.Main.StaffChat.StaffChat_HexColor_Discord_Mention_Channel = oldconfig.Main.StaffChat_HexColor_Discord_Mention_Channel;
                 newconfig.Main.StaffChat.StaffChat_HexColor_Discord_Mention_Role = oldconfig.Main.StaffChat_HexColor_Discord_Mention_Role;

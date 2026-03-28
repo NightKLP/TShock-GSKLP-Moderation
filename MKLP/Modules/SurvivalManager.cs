@@ -22,56 +22,6 @@ namespace MKLP.Modules
     {
         public static Dictionary<int, string> GetIllegalItem()
         {
-            /*
-            * Note ItemIDs UnCheck:
-            * 
-            * - 5487
-            * - 5500 
-            * - 5502 
-            * - 5503 
-            * - 5505 
-            * - 5507
-            * - 5508 
-            * - 5530
-            * - 5531
-            * 
-            * altar?
-            * - 5532
-            * - 5533
-            * 
-            * - 5577 
-            * 
-            * dev set...
-            * - 5583
-            * - 5584
-            * - 5585
-            * - 5586 ( wing )
-            * - 5587
-            * 
-            * - 5598
-            * - 5599
-            * - 5630
-            * - 5633
-            * - 5636
-            * - 5643
-            * - 5646
-            * - 5647
-            * - 5655
-            * - 5929
-            * 
-            * another altar but icon?
-            * - 6135
-            * - 6136
-            * 
-            * vanity set??
-            * - 6137
-            * - 6138
-            * - 6139
-            * - 6140
-            * - 6141
-            * 
-            * - 6143
-            */
             #region [ get Illegal Items ]
             Dictionary<int, string> getillegalitems = new();
             
@@ -99,7 +49,7 @@ namespace MKLP.Modules
             int[] unobtainableids = { 2772, 2773, 2775, 2777, 2778, 2780, 2782, 2783,
                 2785, 2881, 3453, 3454, 3455, 3462, 3463, 3465, 3705, 3706, 3847, 3848,
                 3849, 3850, 3851, 3853, 3861, 3862, 3978, 4010, 4058, 4143, 5013, 5437,
-                5668 };
+                5668, 6135, 6136, 6143 };
 
             foreach (int add in unobtainableids)
             {
@@ -294,7 +244,7 @@ namespace MKLP.Modules
 
                 int[] addin = {
                     //planter boxes
-                    3215, 3216, 3217, 3218, 3219, 3220, 3221, 3222,
+                    3215, 3216, 3217, 3218, 3219, 3220, 3221, 3222, 5532, 5533,
 
 
                     114, 1299, 1360, 1853, 1854, 2112, 3097, 3215, 3216, 3262,
@@ -445,7 +395,7 @@ namespace MKLP.Modules
                 int[] addin = { 346, 509, 510, 513, 541, 849, 850, 851, 852, 853, 1263, 1273,
                     1313, 1363, 2295, 2296, 2739, 2799, 3085, 3205, 3245, 3282,
                     3323, 3619, 3620, 3625, 3629, 3707, 3725, 4264, 4484, 4485, 4703, 4801,
-                    4818, 4927, 4993, 5672, 5673 };
+                    4818, 4927, 4993, 5672, 5673, 5577, 5630 };
 
                 int[] dungeonrushids = { 112, 113, 155, 156, 157, 163, 164, 218, 220, 273,
                     274, 328, 329, 1613, 3019, 3317, 5010, 5126, 5465, 5504, 5669 };
@@ -882,14 +832,14 @@ namespace MKLP.Modules
                     3663, 3726, 3727, 3728, 3729, 3751, 3819, 3823, 3825, 3830, 3833, 3835, 3836, 3852,
                     3854, 3856, 3865, 3868, 3924, 3928, 4060, 4102, 4114, 4126, 4142, 4678, 4730, 4746,
                     4750, 4754, 4790, 4816, 4873, 4896, 4897, 4898, 4899, 4900, 4901, 4947, 5338, 5496,
-                    5540, 5541, 5660, 5662, 5683, 5684, 5685, 5686 };
+                    5540, 5541, 5660, 5662, 5683, 5684, 5685, 5686, 5586, 6140 };
 
                 int[] vanityids = { 666, 667, 668, 839, 840, 841, 1554, 1555, 1556, 1557, 1558, 1559, 1560,
                     1561, 1562, 1563, 1564, 1565, 1566, 1567, 1568, 1580, 1581, 1582, 1587, 1588,
                     1742, 1986, 2869, 2870, 2873, 2883, 3024, 3226, 3227, 3578, 3579, 3581, 3583, 3585,
                     3586, 3587, 3589, 3590, 3591, 3599, 3921, 3922, 3923, 3925, 3926, 3927,
                     3929, 4732, 4733, 4734, 4747, 4748, 4749, 4751, 4752, 4753, 4755, 4756,
-                    4757 };
+                    4757, 5583, 5584, 5585, 5587, 6137, 6138, 6139, 6141 };
 
                 if (!allowvanity)
                 {
@@ -1068,7 +1018,7 @@ namespace MKLP.Modules
                     4934, 4941, 4942, 4943, 4944, 4945, 4961, 4964, 4985, 5065, 5227, 5237, 5288,
                     5291, 5292, 5344, 5345, 5451, 5452, 5477, 5738 };
 
-                int[] blockvanity = { 5928 };
+                int[] blockvanity = { 5928, 5598, 5599 };
 
                 int[] vanityids = { 1514, 1743, 1744, 1745, 1788, 1789, 1790, 1857, 1943, 1944,
                     1945, 2878, 2879, 2884, 2885, 4738, 4739, 4740, 4741, 4742, 5071, 5072, 5073,
@@ -1592,7 +1542,8 @@ namespace MKLP.Modules
                 581, 592, 593, 594, 596, 605, 607, 608, 622, 654, 657, 658, 670,
                 671, 672, 673, 674, 675, 676, 682, 683, 686, 687, 719, 727, 811,
                 813, 814, 836, 871, 872, 873, 874, 909, 919, 920, 921, 922, 923,
-                926, 961, 962, 965, 980, 1001, 1002, 1005, 1007, 1013, 1014, 1021 };
+                926, 961, 962, 965, 980, 1001, 1002, 1005, 1007, 1013, 1014, 1021,
+                1049, 1073, 1091, 1092, 1099 };
 
             short[] unobtainableids = { 39, 111, 132, 156, 157, 427, 428, 429, 430, 431,
                 432, 457, 458, 582, 583, 584, 585, 586, 589, 590, 609, 610, 624, 857,
@@ -1631,13 +1582,26 @@ namespace MKLP.Modules
             #region [ king Slime ]
             if (!NPC.downedSlimeKing) //king slime
             {
-                short[] addin = { 406, 881 };
+                short[] addin = { 406, 881, 1042 };
                 foreach (short add in addin)
                 {
                     if (!getillegalprojectile.ContainsKey(add))
                     {
                         getillegalprojectile.Add(add, "King Slime");
                     }
+                }
+
+                short[] solidifier = { 1103, 1104 };
+                if (true)
+                {
+                    foreach (short add in solidifier)
+                    {
+                        if (!getillegalprojectile.ContainsKey(add))
+                        {
+                            getillegalprojectile.Add(add, "King Slime");
+                        }
+                    }
+
                 }
             }
             #endregion
@@ -1676,7 +1640,7 @@ namespace MKLP.Modules
                     }
                 }
 
-                short[] addin = { 20, 175, 534, 564, 677, 678, 679, 680, 883, 884, 955 };
+                short[] addin = { 20, 175, 534, 564, 677, 678, 679, 680, 883, 884, 955, 1022, 1031, 1037 };
                 foreach (short add in addin)
                 {
                     if (!getillegalprojectile.ContainsKey(add))
@@ -1704,7 +1668,8 @@ namespace MKLP.Modules
 
             if ((bool)MKLP.Config.BossManager.AllowEaterOfWorlds || (bool)MKLP.Config.BossManager.AllowBrainOfCthulhu)
             { //     true if its eow/boc enabled    |    false if its not enabled
-                short[] hellstoneid = { 19, 36, 41, 154, 375, 376, 734, 972, 973, 978 };
+                short[] hellstoneid = { 19, 36, 41, 154, 375, 376, 734, 972, 973, 978, 1022,
+                    1037 };
 
                 foreach (short remove in hellstoneid) // hellstone are breakable from bombs on hm
                 {
@@ -1724,7 +1689,7 @@ namespace MKLP.Modules
             #region [ Skeletron ]
             if (!NPC.downedBoss3)
             {
-                short[] addin = { 256, 270, 532, 545, 837, 885, 902, };
+                short[] addin = { 256, 270, 532, 545, 837, 885, 902, 1085 };
 
                 short[] dungeonrushids = { 15, 16, 22, 26, 34, 35, 46, 485, 565, 972, 973, 977 };
 
@@ -1836,7 +1801,8 @@ namespace MKLP.Modules
                     394, 395, 424, 425, 426, 486, 488, 489, 491, 493, 494, 495, 496, 497, 521, 522,
                     523, 524, 535, 536, 546, 552, 553, 562, 563, 656, 659, 660, 661, 723, 724, 725,
                     726, 755, 756, 757, 823, 826, 838, 852, 853, 858, 859, 866, 877, 908, 912, 913,
-                    917, 918, 928, 957 };
+                    917, 918, 928, 957, 1023, 5461, 1025, 1026, 1040, 1041, 1043, 1059, 1060, 1061,
+                    1062, 1063, 1064, 1071, 1076, 1086, 1087, 1102, 1107, 1108, 1109 };
 
                 foreach (short add in addin)
                 {
@@ -2009,7 +1975,8 @@ namespace MKLP.Modules
                     301, 304, 305, 306, 307, 308, 309, 311, 312, 313, 314, 316, 317, 321, 322,
                     323, 324, 353, 356, 483, 484, 487, 504, 509, 510, 511, 512, 513, 514, 533,
                     554, 555, 567, 568, 569, 570, 571, 831, 832, 833, 834, 848, 849, 854, 862,
-                    863, 878, 890, 896, 897, 898, 907, 916, 930, 984, 985, 997, 1020 };
+                    863, 878, 890, 896, 897, 898, 907, 916, 930, 984, 985, 997, 1020, 1032, 1038,
+                    1074, 1105 };
 
                 foreach (short add in addin)
                 {
@@ -2061,7 +2028,7 @@ namespace MKLP.Modules
 
                 short[] addin = { 182, 246, 249, 260, 261, 423, 433, 434, 451, 459,
                     460, 461, 606, 667, 668, 679, 684, 690, 693, 696, 707, 708,
-                    709, 710, 711, 891, 899, 901 };
+                    709, 710, 711, 891, 899, 901, 1110 };
 
                 foreach (short add in addin)
                 {
@@ -2078,7 +2045,7 @@ namespace MKLP.Modules
 
             if (!NPC.downedFishron)
             {
-                short[] addin = { 404, 405, 407, 408, 409, 410, 892 };
+                short[] addin = { 404, 405, 407, 408, 409, 410, 892, 1033, 1058 };
                 foreach (short add in addin)
                 {
                     if (!getillegalprojectile.ContainsKey(add))
@@ -2111,7 +2078,7 @@ namespace MKLP.Modules
 
             if (!NPC.downedAncientCultist)
             {
-                short[] addin = { 625, 626, 627, 630, 631, 634, 635, 636, 893, 953 };
+                short[] addin = { 625, 626, 627, 630, 631, 634, 635, 636, 893, 953, 1034, 1039 };
 
                 foreach (short add in addin)
                 {
@@ -2137,7 +2104,7 @@ namespace MKLP.Modules
                 }
                 short[] addin = { 502, 503, 600, 601, 602, 603, 604, 611, 612, 613,
                     614, 615, 616, 617, 618, 619, 620, 623, 632, 633, 714, 715,
-                    716, 717, 718, 894, 933, 1015, 1016, 1017 };
+                    716, 717, 718, 894, 933, 1015, 1016, 1017, 1035, 1045, 1100 };
 
 
                 foreach (short add in addin)
@@ -2629,7 +2596,7 @@ namespace MKLP.Modules
 
             bool allowmusicbox = (bool)MKLP.Config.Main.Progression.AllowMusicBox;
 
-            //530
+            //current: 735
 
             #region | unobtainable |
 
@@ -2872,7 +2839,7 @@ namespace MKLP.Modules
             #region [ Eye of Cthulhu ]
             if (!NPC.downedBoss1)
             {
-                MKLP_Tile[] addin = { new(240, 0), new(380, 0, true) };
+                MKLP_Tile[] addin = { new(240, 0), new(380, 0, true) , new(695, 0, true) };
 
                 foreach (MKLP_Tile add in addin)
                 {
@@ -2892,7 +2859,7 @@ namespace MKLP.Modules
                     new(33, 27), new(34, 34), new(37, 0), new(42, 34), new(79, 28), new(87, 27), new(88, 25), new(89, 30),
                     new(90, 28), new(93, 28), new(100, 28), new(101, 29), new(104, 25), new(172, 29), new(239, 9), new(240, 1),
                     new(240, 2), new(240, 60), new(240, 61), new(240, 62), new(370, 0), new(380, 2), new(380, 3), new(441, 49),
-                    new(463, 0), new(464, 0), new(465, 0), new(466, 0), new(497, 32) };
+                    new(463, 0), new(464, 0), new(465, 0), new(466, 0), new(497, 32), new(696, 0, true) };
 
                 foreach (MKLP_Tile add in addin)
                 {
@@ -2922,7 +2889,7 @@ namespace MKLP.Modules
 
             if ((bool)MKLP.Config.BossManager.AllowEaterOfWorlds || (bool)MKLP.Config.BossManager.AllowBrainOfCthulhu)
             { //     true if its eow/boc enabled    |    false if its not enabled
-                MKLP_Tile[] hellstoneid = { new(58, 0), new(77, 0), new(239, 10), new(491, 0) };
+                MKLP_Tile[] hellstoneid = { new(58, 0), new(77, 0), new(239, 10), new(491, 0), new(696, 0, true) };
 
                 foreach (MKLP_Tile remove in hellstoneid) // hellstone are breakable from bombs on hm
                 {
@@ -3012,7 +2979,7 @@ namespace MKLP.Modules
 
             if (!NPC.downedDeerclops)
             {
-                MKLP_Tile[] addin = { new(240, 75) };
+                MKLP_Tile[] addin = { new(240, 75), new(733, 75) };
 
                 foreach (MKLP_Tile add in addin)
                 {
@@ -3050,7 +3017,7 @@ namespace MKLP.Modules
                     new(367, 13), new(367, 14), new(367, 15), new(367, 16), new(367, 17), new(367, 19), new(367, 21), new(367, 23),
                     new(367, 25), new(379, 0), new(380, 7), new(385, 0), new(402, 0), new(403, 0), new(423, 0, true), new(458, 0),
                     new(459, 0), new(461, 0), new(462, 0), new(474, 0), new(480, 0), new(496, 0), new(497, 28), new(497, 29),
-                    new(498, 0), new(507, 0), new(508, 0), new(663, 0) };
+                    new(498, 0), new(507, 0), new(508, 0), new(663, 0) , new(708, 0), new(709, 0), new(711, 0), new(726, 0) };
 
                 // new(373, 0), new(374, 0), new(375, 0) [ water drop bugged ]
 
@@ -3120,7 +3087,8 @@ namespace MKLP.Modules
                     new(100, 5), new(100, 33), new(101, 8), new(101, 34), new(104, 5), new(104, 15), new(104, 34), new(172, 5),
                     new(172, 18), new(172, 34), new(198, 0), new(217, 0), new(239, 18), new(240, 62), new(240, 81), new(272, 0),
                     new(301, 0), new(307, 0), new(419, 0, true), new(420, 0, true), new(421, 0), new(422, 0), new(441, 43),
-                    new(467, 3), new(468, 3), new(469, 2), new(497, 6), new(497, 18), new(497, 30), new(499, 0), new(642, 0) };
+                    new(467, 3), new(468, 3), new(469, 2), new(497, 6), new(497, 18), new(497, 30), new(499, 0), new(642, 0),
+                    new(702, 0), new(735, 0) };
 
                 foreach (MKLP_Tile add in addin)
                 {
@@ -3218,7 +3186,8 @@ namespace MKLP.Modules
                     new(93, 10), new(100, 12), new(101, 14), new(104, 22), new(172, 20), new(210, 0), new(239, 20), new(239, 21),
                     new(240, 36), new(240, 37), new(240, 38), new(240, 39), new(240, 40), new(240, 85), new(242, 53), new(247, 0),
                     new(253, 0), new(348, 0), new(441, 11), new(441, 18), new(441, 19), new(441, 20), new(441, 21), new(441, 46),
-                    new(467, 12), new(467, 13), new(468, 12), new(497, 20), new(497, 39), new(541, 0), new(620, 0), new(657, 0) };
+                    new(467, 12), new(467, 13), new(468, 12), new(497, 20), new(497, 39), new(541, 0), new(620, 0), new(657, 0),
+                    new(720, 0), new(721, 0) };
 
                 foreach (MKLP_Tile add in addin)
                 {

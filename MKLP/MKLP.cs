@@ -83,7 +83,7 @@ namespace MKLP
 
         public static Dictionary<ushort, string> IllegalWallProgression = new();
 
-        public static bool HasBanGuardPlugin = false;
+        public static bool HasBanGuardPlugin = File.Exists(Path.Combine("ServerPlugins", "BanGuard.dll"));
         #endregion
 
         #region [ Main Var ]
@@ -94,7 +94,6 @@ namespace MKLP
         public MKLP(Main game) : base(game)
         {
             //amogus
-            HasBanGuardPlugin = File.Exists(Path.Combine("ServerPlugins", "BanGuard.dll"));
         }
 
         #region [ Initialize ]
@@ -113,7 +112,7 @@ namespace MKLP
 
             //=====================Player===================
             GetDataHandlers.PlayerUpdate += OnPlayerUpdate;
-            GetDataHandlers.PlayerUpdate += BossManager.Hooks_OnPlayerUpdate;
+            GetDataHandlers.PlayerUpdate += BossEventManager.Hooks_OnPlayerUpdate;
 
             //GetDataHandlers.player
 
@@ -153,7 +152,7 @@ namespace MKLP
 
             //GetDataHandlers.ItemDrop
 
-            ServerApi.Hooks.NpcSpawn.Register(this, BossManager.Hooks_OnNPCSpawn);
+            ServerApi.Hooks.NpcSpawn.Register(this, BossEventManager.Hooks_OnNPCSpawn);
 
             ServerApi.Hooks.NpcKilled.Register(this, OnNPCKilled);
 
@@ -169,7 +168,7 @@ namespace MKLP
             //ServerApi.Hooks.GameUpdate.Register(this, OnUpdate);
 
             ServerApi.Hooks.ServerBroadcast.Register(this, OnServerBroadcast);
-            ServerApi.Hooks.ServerBroadcast.Register(this, BossManager.Hooks_OnServerBroadcast);
+            ServerApi.Hooks.ServerBroadcast.Register(this, BossEventManager.Hooks_OnServerBroadcast);
 
             ServerApi.Hooks.WorldSave.Register(this, OnWorldSave);
 
@@ -188,7 +187,11 @@ namespace MKLP
                 MKLP_Console.SendLog_Message_DiscordBot(GetText("Discord bot token has not been set!"), " {Setup} ");
             }
 
+
             LogKLP.InitializeLogging();
+
+            InventoryLogHandler.Initialize(this);
+            InventoryManager.Initialize(this);
         }
 
         #endregion
@@ -200,7 +203,7 @@ namespace MKLP
             {
                 //=====================Player===================
                 GetDataHandlers.PlayerUpdate -= OnPlayerUpdate;
-                GetDataHandlers.PlayerUpdate -= BossManager.Hooks_OnPlayerUpdate;
+                GetDataHandlers.PlayerUpdate -= BossEventManager.Hooks_OnPlayerUpdate;
 
                 ServerApi.Hooks.NetGreetPlayer.Deregister(this, OnNetGreetPlayer);
 
@@ -236,7 +239,7 @@ namespace MKLP
 
                 GetDataHandlers.HealOtherPlayer -= OnHealOtherPlayer;
 
-                ServerApi.Hooks.NpcSpawn.Deregister(this, BossManager.Hooks_OnNPCSpawn);
+                ServerApi.Hooks.NpcSpawn.Deregister(this, BossEventManager.Hooks_OnNPCSpawn);
 
                 ServerApi.Hooks.NpcKilled.Deregister(this, OnNPCKilled);
 
@@ -255,13 +258,17 @@ namespace MKLP
                 //ServerApi.Hooks.GameUpdate.Deregister(this, OnUpdate);
 
                 ServerApi.Hooks.ServerBroadcast.Deregister(this, OnServerBroadcast);
-                ServerApi.Hooks.ServerBroadcast.Deregister(this, BossManager.Hooks_OnServerBroadcast);
+                ServerApi.Hooks.ServerBroadcast.Deregister(this, BossEventManager.Hooks_OnServerBroadcast);
 
                 ServerApi.Hooks.WorldSave.Deregister(this, OnWorldSave);
 
                 ServerApi.Hooks.GamePostInitialize.Deregister(this, OnServerStart);
 
                 GeneralHooks.ReloadEvent -= OnReload;
+
+
+                InventoryLogHandler.Dispose(this);
+                InventoryManager.Dispose(this);
             }
             base.Dispose(disposing);
         }
@@ -477,77 +484,6 @@ namespace MKLP
 
             #endregion
 
-            #region ( Inventory Checking )
-            if (args.MsgID == PacketTypes.PlayerSlot)
-            {
-                try
-                {
-                    if (!player.IsLoggedIn) return;
-
-                    if (player.HasPermission(Config.Permissions.IgnoreDupeCode_0)) return;
-
-                    if ((bool)Config.Main.Use_OnUpdate_Func) return;
-                    if (!(bool)Config.Main.DisableNode.Use_SuspiciousDupe) return;
-
-                    if ((bool)Config.Main.DetectAllPlayerInv)
-                    {
-                        if (player.ContainsData("MKLP_PrevInventory") &&
-                        player.ContainsData("MKLP_PrevPiggyBank") &&
-                        player.ContainsData("MKLP_PrevSafe") &&
-                        player.ContainsData("MKLP_PrevDefenderForge") &&
-                        player.ContainsData("MKLP_PrevVoidVault"))
-                        {
-                            ManagePlayer.CheckPlayerInventory(player,
-                                player.GetData<Item[]>("MKLP_PrevInventory"),
-                                player.GetData<Item[]>("MKLP_PrevPiggyBank"),
-                                player.GetData<Item[]>("MKLP_PrevSafe"),
-                                player.GetData<Item[]>("MKLP_PrevDefenderForge"),
-                                player.GetData<Item[]>("MKLP_PrevVoidVault"));
-                            /*
-                            if (Main.chest[player.ActiveChest] != null)
-                            {
-                                if (player.ActiveChest != -1) player.SetData("MKLP_PrevChestOpen", Main.chest[player.ActiveChest].item.Clone());
-                            }
-                            */
-                            player.SetData("MKLP_PrevInventory", player.TPlayer.inventory.Clone());
-                            player.SetData("MKLP_PrevPiggyBank", player.TPlayer.bank.item.Clone());
-                            player.SetData("MKLP_PrevSafe", player.TPlayer.bank2.item.Clone());
-                            player.SetData("MKLP_PrevDefenderForge", player.TPlayer.bank3.item.Clone());
-                            player.SetData("MKLP_PrevVoidVault", player.TPlayer.bank4.item.Clone());
-                        }
-                        else
-                        {
-                            player.SetData("MKLP_PrevInventory", player.TPlayer.inventory.Clone());
-                            player.SetData("MKLP_PrevPiggyBank", player.TPlayer.bank.item.Clone());
-                            player.SetData("MKLP_PrevSafe", player.TPlayer.bank2.item.Clone());
-                            player.SetData("MKLP_PrevDefenderForge", player.TPlayer.bank3.item.Clone());
-                            player.SetData("MKLP_PrevVoidVault", player.TPlayer.bank4.item.Clone());
-                        }
-                    }
-                    else
-                    {
-                        if (player.ContainsData("MKLP_PrevInventory"))
-                        {
-
-                            ManagePlayer.CheckPlayerInventory(player,
-                                player.GetData<Item[]>("MKLP_PrevInventory"));
-
-                            player.SetData("MKLP_PrevInventory", player.TPlayer.inventory.Clone());
-                        }
-                        else
-                        {
-                            player.SetData("MKLP_PrevInventory", player.TPlayer.inventory.Clone());
-                        }
-                    }
-                }
-                catch (Exception e)
-                {
-                    MKLP_Console.SendLog_Exception("Error on PlayerSlot");
-                    MKLP_Console.SendLog_Exception(e);
-                }
-            }
-            #endregion
-
             #region { spawn boss/invasion }
             if (args.MsgID == PacketTypes.SpawnBossorInvasion)
             {
@@ -643,99 +579,6 @@ namespace MKLP
 
                 }
             }
-
-            #region inventory checking
-            if (!(bool)Config.Main.DisableNode.Use_SuspiciousDupe) return;
-
-            foreach (var player in TShock.Players)
-            {
-                if (player == null) continue;
-                if (player.HasPermission(Config.Permissions.IgnoreDupeCode_0)) continue;
-
-                if ((bool)Config.Main.DetectAllPlayerInv)
-                {
-                    if (player.ContainsData("MKLP_PrevInventory") &&
-                    player.ContainsData("MKLP_PrevPiggyBank") &&
-                    player.ContainsData("MKLP_PrevSafe") &&
-                    player.ContainsData("MKLP_PrevDefenderForge") &&
-                    player.ContainsData("MKLP_PrevVoidVault"))
-                    {
-                        ManagePlayer.CheckPlayerInventory(player,
-                            player.GetData<Item[]>("MKLP_PrevInventory"),
-                            player.GetData<Item[]>("MKLP_PrevPiggyBank"),
-                            player.GetData<Item[]>("MKLP_PrevSafe"),
-                            player.GetData<Item[]>("MKLP_PrevDefenderForge"),
-                            player.GetData<Item[]>("MKLP_PrevVoidVault"));
-                        /*
-                        if (player.ActiveChest != -1)
-                        {
-                            try
-                            {
-                                List<Item> chestitem = new();
-
-                                foreach (Item item in Main.chest[player.ActiveChest].item)
-                                {
-                                    chestitem.Add(item);
-                                }
-                                //player.SetData("MKLP_PrevChestOpen", Main.chest[player.ActiveChest].item);
-                                player.SetData("MKLP_PrevChestOpen", chestitem.ToArray());
-                            }
-                            catch { }
-                        }
-                        */
-                        player.SetData("MKLP_PrevInventory", player.TPlayer.inventory.Clone());
-                        player.SetData("MKLP_PrevPiggyBank", player.TPlayer.bank.item.Clone());
-                        player.SetData("MKLP_PrevSafe", player.TPlayer.bank2.item.Clone());
-                        player.SetData("MKLP_PrevDefenderForge", player.TPlayer.bank3.item.Clone());
-                        player.SetData("MKLP_PrevVoidVault", player.TPlayer.bank4.item.Clone());
-                    }
-                    else
-                    {
-                        /*
-                        if (player.ActiveChest != -1)
-                        {
-                            try
-                            {
-                                List<Item> chestitem = new();
-
-                                foreach (Item item in Main.chest[player.ActiveChest].item)
-                                {
-                                    chestitem.Add(item);
-                                }
-                                //player.SetData("MKLP_PrevChestOpen", Main.chest[player.ActiveChest].item);
-                                player.SetData("MKLP_PrevChestOpen", chestitem.ToArray());
-                            } catch { }
-                        }
-                        */
-                        player.SetData("MKLP_PrevInventory", player.TPlayer.inventory.Clone());
-                        player.SetData("MKLP_PrevPiggyBank", player.TPlayer.bank.item.Clone());
-                        player.SetData("MKLP_PrevSafe", player.TPlayer.bank2.item.Clone());
-                        player.SetData("MKLP_PrevDefenderForge", player.TPlayer.bank3.item.Clone());
-                        player.SetData("MKLP_PrevVoidVault", player.TPlayer.bank4.item.Clone());
-                    }
-                }
-                else
-                {
-                    if (player.ContainsData("MKLP_PrevInventory"))
-                    {
-
-                        ManagePlayer.CheckPlayerInventory(player,
-                            player.GetData<Item[]>("MKLP_PrevInventory"),
-                            null,
-                            null,
-                            null,
-                            null);
-
-                        player.SetData("MKLP_PrevInventory", player.TPlayer.inventory.Clone());
-                    }
-                    else
-                    {
-                        player.SetData("MKLP_PrevInventory", player.TPlayer.inventory.Clone());
-                    }
-                }
-            }
-
-            #endregion
         }
 
 
@@ -2358,11 +2201,12 @@ namespace MKLP
                     short[] SummonProjectiles =
                     {
                         //Pre-HM
-                        //require checking
+
                         ProjectileID.AbigailCounter,
                         ProjectileID.AbigailMinion,
 
                         ProjectileID.BabyBird,
+                        ProjectileID.DeadCellsMushroomBoiMinion,
                         ProjectileID.FlinxMinion,
                         ProjectileID.BabySlime,
                         ProjectileID.VampireFrog,
@@ -2522,6 +2366,7 @@ namespace MKLP
                         ProjectileID.FrostHydra,
                         ProjectileID.MoonlordTurret,
                         ProjectileID.RainbowCrystal,
+                        ProjectileID.DeadCellsBarnacle,
 
                         //OOA
                         ProjectileID.DD2LightningAuraT2,
@@ -2655,7 +2500,6 @@ namespace MKLP
         private void OnNPCKilled(NpcKilledEventArgs args)
         {
             #region code
-            OnCheckIllegal = true;
             int[] BossIDs =
             {
                 50, // King Slime
@@ -2689,8 +2533,6 @@ namespace MKLP
 
                 IllegalWallProgression = SurvivalManager.GetIllegalWall();
             }
-
-            OnCheckIllegal = false;
             #endregion
         }
 
@@ -3454,6 +3296,7 @@ namespace MKLP
         public static void check_bosssched()
         {
             #region code
+            if (!(bool)Config.BossManager.UseBossSchedule) { return; }
             bool changed = false;
             if (DateTime.UtcNow > (DateTime)Config.BossManager.ScheduleAllowKingSlime && !(bool)Config.BossManager.AllowKingSlime)
             {
@@ -3706,11 +3549,8 @@ namespace MKLP
             #endregion
         }
 
-        private static DateTime OnCheckIllegalSince = DateTime.MinValue;
-        private static bool OnCheckIllegal = false;
-        private static void ReCheckBosses()
+        public static void SyncProgression()
         {
-            OnCheckIllegal = true;
             IllegalItemProgression = SurvivalManager.GetIllegalItem();
 
             IllegalProjectileProgression = SurvivalManager.GetIllegalProjectile();
@@ -3718,7 +3558,6 @@ namespace MKLP
             IllegalTileProgression = SurvivalManager.GetIllegalTile();
 
             IllegalWallProgression = SurvivalManager.GetIllegalWall();
-            OnCheckIllegal = false;
         }
         public static bool PunishPlayer(MKLP_CodeType CodeType, byte CodeNumber, TSPlayer player, string getReason, string getWarningMessage, bool RevertInventory = false, bool IsItemRelated = false)
         {
@@ -3746,13 +3585,7 @@ namespace MKLP
             }
             if (CodeType == MKLP_CodeType.Survival)
             {
-                if (OnCheckIllegal) return true;
-                if ((DateTime.Now - OnCheckIllegalSince).TotalHours >= 1)
-                {
-                    OnCheckIllegal = true;
-                    ReCheckBosses();
-                    return true;
-                }
+                
                 if (Action((PunishmentType)Config.Main.DisableNode.Survival_Code_PunishmentType, IsItemRelated))
                 {
                     return true;
@@ -4113,180 +3946,5 @@ namespace MKLP
     }
     #endregion
 
-    #region LogKLP
-    public static class LogKLP
-    {
-        public static string LogPath_ModLog = Path.Combine(TShock.SavePath, "logs", "MKLP", "MKLP-ModLogs");
-        public static string LogPath_ReportLog = Path.Combine(TShock.SavePath, "logs", "MKLP", "MKLP-ReportLogs");
-
-        public static string LogPath_Tile = Path.Combine(TShock.SavePath, "logs", "MKLP", "Log-Tile");
-        public static string LogPath_Sign = Path.Combine(TShock.SavePath, "logs", "MKLP", "Log-Sign");
-        public static DateTime Currentlogfile = DateTime.Now;
-
-        public static void InitializeLogging()
-        {
-            Currentlogfile = DateTime.Now;
-
-            if (!Directory.Exists(LogPath_ModLog) && (bool)MKLP.Config.Main.Logging.ModLogTXT_Enable) Directory.CreateDirectory(LogPath_ModLog);
-            if (!Directory.Exists(LogPath_ReportLog) && (bool)MKLP.Config.Main.Logging.ReportLogTXT_Enable) Directory.CreateDirectory(LogPath_ReportLog);
-
-            if (!Directory.Exists(LogPath_Tile) && (bool)MKLP.Config.Main.Logging.LogTile) Directory.CreateDirectory(LogPath_Tile);
-            if (!Directory.Exists(LogPath_Sign) && (bool)MKLP.Config.Main.Logging.LogSign) Directory.CreateDirectory(LogPath_Sign);
-
-
-        }
-
-        public static string GetPath(string path, DateTime time)
-        {
-            return Path.Combine(path, $"{time.ToString("yyyy-MM-dd")}.log");
-        }
-
-        public static string TileLogS = "";
-        public static string SignLogS = "";
-
-        #region Main
-        public static void Log_ModLog(string text)
-        {
-            if (!(bool)MKLP.Config.Main.Logging.ModLogTXT_Enable) return;
-
-            using (StreamWriter writer = new StreamWriter(GetPath(LogPath_ModLog, Currentlogfile), true))
-            {
-                writer.WriteLine($"{text}");
-            }
-        }
-        public static void Log_Report(string text)
-        {
-            if (!(bool)MKLP.Config.Main.Logging.ReportLogTXT_Enable) return;
-
-            using (StreamWriter writer = new StreamWriter(GetPath(LogPath_ReportLog, Currentlogfile), true))
-            {
-                writer.WriteLine($"{text}");
-            }
-        }
-        #endregion
-
-        #region server
-        public static void Log_Tile(string text)
-        {
-            if (!(bool)MKLP.Config.Main.Logging.LogTile) return;
-
-            using (StreamWriter writer = new StreamWriter(GetPath(LogPath_Tile, Currentlogfile), true))
-            {
-                writer.WriteLine($"{text}");
-            }
-        }
-        public static void Log_Sign(string text)
-        {
-            if (!(bool)MKLP.Config.Main.Logging.LogSign) return;
-
-            using (StreamWriter writer = new StreamWriter(GetPath(LogPath_Sign, Currentlogfile), true))
-            {
-                writer.WriteLine($"{text}");
-            }
-        }
-        #endregion
-
-
-        #region GetLog
-
-        public static List<(string, string, string)> GetLog_Sign(string filepath, Vector2 pos)
-        {
-            string filecontext = File.ReadAllText(filepath);
-
-            List<(string, string, string)> log = new();
-
-            foreach (string gcontext in filecontext.Split("\n"))
-            {
-                if (gcontext == "" || gcontext == " ") continue;
-
-                string playername = gcontext.Split("|")[0].Split(" ")[1];
-                string edittype = gcontext.Split("|")[1].Trim();
-
-                string X = gcontext.Split("|")[2].Split(":")[1];
-                string Y = gcontext.Split("|")[3].Split(":")[1];
-                Vector2 getposlog = new(int.Parse(X), int.Parse(Y));
-
-                if (pos != getposlog) continue;
-
-                Regex regex = new Regex(@"text\s*:\s*(.*?)(?=\s*\||$)", RegexOptions.IgnoreCase);
-
-                MatchCollection matches = regex.Matches(gcontext);
-
-                if (matches.Count > 0)
-                {
-                    string gettext = matches[matches.Count - 1].Groups[1].Value.Trim();
-
-                    log.Add((playername, edittype, gettext));
-                }
-
-            }
-
-            return log;
-        }
-        public static Dictionary<string, Dictionary<Vector2, int>> GetLog_Tile(string filepath, Vector2 pos, int getdistance)
-        {
-            string filecontext = File.ReadAllText(filepath);
-
-            Dictionary<string, Dictionary<Vector2, int>> log = new();
-
-            foreach (string gcontext in filecontext.Split("\n"))
-            {
-                if (gcontext == "" || gcontext == " ") continue;
-
-                string playername = gcontext.Split("|")[0].Split(" ")[1];
-                string edittype = gcontext.Split("|")[1].Trim();
-
-                string title = $"{playername}, {edittype}";
-
-                string X = gcontext.Split("|")[2].Split(":")[1];
-                string Y = gcontext.Split("|")[3].Split(":")[1];
-                Vector2 getposlog = new(int.Parse(X), int.Parse(Y));
-
-                if (pos.Distance(getposlog) <= getdistance)
-                {
-                    if (log.ContainsKey(title))
-                    {
-                        if (log[title].ContainsKey(getposlog))
-                        {
-                            log[title][getposlog]++;
-                            continue;
-                        }
-                        log[title].Add(getposlog, 1);
-                    }
-                    else
-                    {
-                        Dictionary<Vector2, int> temp = new();
-                        temp.Add(getposlog, 1);
-                        log.Add(title, temp);
-                    }
-                }
-            }
-
-            return log;
-        }
-
-
-        #endregion
-
-        #region SaveLog
-
-        public static void SaveLog()
-        {
-            if ((bool)MKLP.Config.Main.Logging.LogTile && TileLogS != "")
-            {
-                LogKLP.Log_Tile(TileLogS);
-            }
-            TileLogS = "";
-            if ((bool)MKLP.Config.Main.Logging.LogSign && SignLogS != "")
-            {
-                LogKLP.Log_Sign(SignLogS);
-            }
-            SignLogS = "";
-            Currentlogfile = DateTime.Now;
-        }
-
-        #endregion
-    }
-    #endregion
 
 }

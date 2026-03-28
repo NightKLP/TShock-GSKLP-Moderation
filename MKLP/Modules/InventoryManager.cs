@@ -1,48 +1,203 @@
-﻿using System;
+﻿using Microsoft.Xna.Framework;
+using MKLP.Functions;
+using Org.BouncyCastle.Asn1.X509;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using TShockAPI;
 using Terraria;
 using TerrariaApi.Server;
-using Microsoft.Xna.Framework;
+using TShockAPI;
 using TShockAPI;
 using TShockAPI.DB;
-using Org.BouncyCastle.Asn1.X509;
+using static MKLP.Functions.InventoryLogHandler;
 
 namespace MKLP.Modules
 {
     public static class InventoryManager
     {
 
-        public static List<string> InventoryLogs = new();
-        static int InvLog_index = 0;
-
-        public static void TryAddInvLog(TSPlayer tsplayer, Item prevplayerinv, Item playerinv, int slot, string Type)
+        public static void Initialize(TerrariaPlugin plg)
         {
-            if (!(bool)MKLP.Config.Main.Logging.Save_Inventory_Log) return;
+            InventoryLogHandler.InventoryLogEvent += OnInventoryLog;
+        }
+        public static void Dispose(TerrariaPlugin plg)
+        {
+            InventoryLogHandler.InventoryLogEvent -= OnInventoryLog;
+        }
 
-            InvLog_index++;
 
-            if (InventoryLogs.Count >= (int)MKLP.Config.Main.Logging.Save_InvLog_Max)
+        private static DateTime OnCheckIllegalSince = DateTime.MinValue;
+        private static void OnInventoryLog(InventoryLogArgs args)
+        {
+            if (!args.Player.IsLoggedIn) return;
+
+            //debug
+
+            if (false)
             {
-                InventoryLogs.RemoveRange(0, (int)MKLP.Config.Main.Logging.Remove_InvLog_IfMax);
+                Console.WriteLine($"inv" +
+                    $"{args.PreviousItem.type} {args.PreviousItem.stack}" +
+                    $"\n====> {args.CurrentItem.type} {args.CurrentItem.stack}");
             }
-            //OutOfMemoryException
 
-            string log = $"{tsplayer.Name}{DiscordKLP.S_}{Type}{DiscordKLP.S_}{slot}{DiscordKLP.S_}" +
-                $"{prevplayerinv.type},{prevplayerinv.stack},{prevplayerinv.prefix}" +
-                DiscordKLP.S_ +
-                $"{playerinv.type},{playerinv.stack},{playerinv.prefix}|{InvLog_index}";
 
-            SendLog_ToInvTrackPlayers(tsplayer,
-                $"[c/FF8E59:{tsplayer.Name}] [c/FFFC59:{Type} Slot {slot}] has change from {TShock.Utils.ItemTag(prevplayerinv)} to {TShock.Utils.ItemTag(playerinv)}"
+            //prevent same accessory stack
+            if (!(bool)MKLP.Config.Main.Allow_Players_StackSameAccessory)
+            {
+                for (int armori = 0; armori < 10; armori++)
+                {
+                    for (int armorii = 0; armorii < 10; armorii++)
+                    {
+                        if (armorii == armori) continue;
+                        if (args.Player.TPlayer.armor[armorii].IsAir || args.Player.TPlayer.armor[armorii].type == 0) continue;
+
+                        if (args.Player.TPlayer.armor[armorii].type == args.Player.TPlayer.armor[armori].type)
+                        {
+
+                            args.Player.GiveItem(args.Player.TPlayer.armor[armori].type, args.Player.TPlayer.armor[armori].stack, args.Player.TPlayer.armor[armori].prefix);
+                            args.Player.TPlayer.armor[armori].TurnToAir(true);
+                            NetMessage.SendData((int)PacketTypes.PlayerSlot, -1, -1, Terraria.Localization.NetworkText.Empty, args.Player.Index, NetItem.InventorySlots + armori, 0f, 0f, 0);
+
+                        }
+                    }
+                }
+            }
+
+            Dictionary<int, string> illegalitems = MKLP.IllegalItemProgression;
+
+            int maxvalue = 10;
+
+            if (Main.hardMode) maxvalue = 100;
+
+            if ((bool)MKLP.Config.Main.DisableNode.Using_Main_Code1 && !args.Player.HasPermission(MKLP.Config.Permissions.IgnoreMainCode_1))
+            {
+                if (GetItemValue_PlatinumCoin(args.CurrentItem) >= maxvalue)
+                {
+                    MKLP.PunishPlayer(MKLP_CodeType.Main, 1, args.Player,
+                        $"Abnormal Item [i/s{args.CurrentItem.stack}:{args.CurrentItem.type}]", $"Player **{args.Player.Name}** has High Value Item Stack `({args.CurrentItem.stack}) {args.CurrentItem.Name()}`"
+                        , true, true);
+                }
+            }
+
+            if ((bool)MKLP.Config.Main.DisableNode.Using_Survival_Code1 && !args.Player.HasPermission(MKLP.Config.Permissions.IgnoreSurvivalCode_1))
+            {
+                if ((DateTime.UtcNow - OnCheckIllegalSince).TotalHours >= 1)
+                {
+                    MKLP.SyncProgression();
+                    OnCheckIllegalSince = DateTime.UtcNow;
+                } else if (illegalitems.ContainsKey(args.CurrentItem.type))
+                {
+                    MKLP.PunishPlayer(MKLP_CodeType.Survival, 1, args.Player, $"{illegalitems[args.CurrentItem.type]} Item Progression", $"Player **{args.Player.Name}** has a item that is illegal on this progression `Item: {args.CurrentItem.Name()}` **{illegalitems[args.CurrentItem.type]}**"
+                        , true, true);
+                }
+            }
+
+            if ((bool)MKLP.Config.Main.DisableNode.Use_SuspiciousDupe && !args.Player.HasPermission(MKLP.Config.Permissions.IgnoreDupeCode_0))
+            {
+                checkingifsus(args.Player, args.ItemSlotType.ToString(), args.ActualItemSlot, args.PreviousItem, args.CurrentItem);
+            }
+
+            // those who did /inventoryview log
+            SendLog_ToInvTrackPlayers(args.Player,
+                $"[c/FF8E59:{args.Player.Name}] [c/FFFC59:{args.ItemSlotType.ToString()} Slot {args.ItemSlot}] has change from {args.PreviousItem.ItemTag()} to {args.CurrentItem.ItemTag()}"
                 );
 
-            if (!InventoryLogs.Contains(log))
+            //log file
+            LogKLP.InventoryLogS += $"<{DateTime.Now.ToString("s")}> {args.Player.Name} |" +
+                $"|PreviousItem:{args.PreviousItem.type},{args.PreviousItem.stack},{args.PreviousItem.prefix}" +
+                $"|CurrentItem:{args.CurrentItem.type},{args.CurrentItem.stack},{args.CurrentItem.prefix}" +
+                $"|Slot:{args.ActualItemSlot}" +
+                $"|SlotType:{args.ItemSlotType.ToString()}" +
+                $"\n";
+
+            #region Misc
+            void checkingifsus(TSPlayer player, string type, int slot, NetItemKLP prev, NetItemKLP now)
             {
-                InventoryLogs.Add(log);
+                if (type == "Inventory" && slot == 58) return;
+
+                if (MKLP.Config.Main.DisableNode.WhiteList_Dupe_Code1.Contains(prev.type) ||
+                    MKLP.Config.Main.DisableNode.WhiteList_Dupe_Code1.Contains(now.type)) return;
+
+                if (now.stack == 255 && prev.stack <= 240 && prev.type == now.type && !prev.IsAir()
+                    && confirmedREV())
+                {
+                    MKLP.PunishPlayer(MKLP_CodeType.Dupe, 0, player, "Split Duplicating", $"Player **{player.Account.Name}** has suspicious activity for **Split Dupe** `( {prev.stack} ) {prev.Name()}` to `( {now.stack} ) {now.Name()}` `ActiveChest: {player.ActiveChest}`" +
+                        $"\n- Please Check this player if they are duping", true, true);
+                    MKLP.SendStaffMessage($"[MKLP] Player [c/8911f1:{player.Account.Name}]  has suspicious activity for Dupe [i/s{prev.stack}:{prev.type}] to [i/s{now.stack}:{now.type}]" +
+                        $"\nPlease Check this player if they are duping", Microsoft.Xna.Framework.Color.MediumPurple);
+
+                } else if (now.stack == 500 && prev.stack <= 485 && prev.type == now.type && !prev.IsAir()
+                    && confirmedREV())
+                {
+                    MKLP.PunishPlayer(MKLP_CodeType.Dupe, 0, player, "Duplicating", $"Player **{player.Account.Name}** has suspicious activity for **Dupe** `( {prev.stack} ) {prev.Name()}` to `( {now.stack} ) {now.Name()}` `ActiveChest: {player.ActiveChest}`" +
+                        $"\n- Please Check this player if they are duping", true, true);
+                    MKLP.SendStaffMessage($"[MKLP] Player [c/8911f1:{player.Account.Name}]  has suspicious activity for Dupe [i/s{prev.stack}:{prev.type}] to [i/s{now.stack}:{now.type}]" +
+                        $"\nPlease Check this player if they are duping", Microsoft.Xna.Framework.Color.MediumPurple);
+
+                } else if (now.stack == 1000 && prev.stack <= 950 && prev.type == now.type && !prev.IsAir()
+                    && confirmedREV())
+                {
+                    MKLP.PunishPlayer(MKLP_CodeType.Dupe, 0, player, "Duplicating", $"Player **{player.Account.Name}** has suspicious activity for **Dupe** `( {prev.stack} ) {prev.Name()}` to `( {now.stack} ) {now.Name()}` `ActiveChest: {player.ActiveChest}`" +
+                        $"\n- Please Check this player if they are duping", true, true);
+                    MKLP.SendStaffMessage($"[MKLP] Player [c/8911f1:{player.Account.Name}]  has suspicious activity for Dupe [i/s{prev.stack}:{prev.type}] to [i/s{now.stack}:{now.type}]" +
+                        $"\nPlease Check this player if they are duping", Microsoft.Xna.Framework.Color.MediumPurple);
+
+                } else if (now.stack == 5000 && prev.stack <= 4905 && prev.type == now.type && !prev.IsAir()
+                    && confirmedREV())
+                {
+                    MKLP.PunishPlayer(MKLP_CodeType.Dupe, 0, player, "Duplicating", $"Player **{player.Account.Name}** has suspicious activity for **Dupe** `( {prev.stack} ) {prev.Name()}` to `( {now.stack} ) {now.Name()}` `ActiveChest: {player.ActiveChest}`" +
+                        $"\n- Please Check this player if they are duping", true, true);
+                    MKLP.SendStaffMessage($"[MKLP] Player [c/8911f1:{player.Account.Name}]  has suspicious activity for Dupe [i/s{prev.stack}:{prev.type}] to [i/s{now.stack}:{now.type}]" +
+                        $"\nPlease Check this player if they are duping", Microsoft.Xna.Framework.Color.MediumPurple);
+
+                } else if (now.stack == 9999 && prev.stack <= 9905 && prev.type == now.type && !prev.IsAir()
+                    && confirmedREV())
+                {
+                    MKLP.PunishPlayer(MKLP_CodeType.Dupe, 0, player, "Duplicating", $"Player **{player.Account.Name}** has suspicious activity for **Dupe** `( {prev.stack} ) {prev.Name()}` to `( {now.stack} ) {now.Name()}` `ActiveChest: {player.ActiveChest}`" +
+                        $"\n- Please Check this player if they are duping", true, true);
+                    MKLP.SendStaffMessage($"[MKLP] Player [c/8911f1:{player.Account.Name}]  has suspicious activity for Dupe [i/s{prev.stack}:{prev.type}] to [i/s{now.stack}:{now.type}]" +
+                        $"\nPlease Check this player if they are duping", Microsoft.Xna.Framework.Color.MediumPurple);
+
+                }
+                bool confirmedREV()
+                {
+                    if (player.ContainsData("MKLP_Confirmed_InvRev"))
+                    {
+                        /*
+                        switch (tsplayer.GetData<int>("MKLP_Confirmed_InvRev"))
+                        {
+                            case 4:
+                                tsplayer.SetData("MKLP_Confirmed_InvRev", 3);
+                                return true;
+                            case 3:
+                                tsplayer.SetData("MKLP_Confirmed_InvRev", 2);
+                                return true;
+                            case 2:
+                                tsplayer.SetData("MKLP_Confirmed_InvRev", 1);
+                                return true;
+                            case 1:
+                                tsplayer.SetData("MKLP_Confirmed_InvRev", 0);
+                                return true;
+                        }
+                        */
+                        if (player.GetData<int>("MKLP_Confirmed_InvRev") > 0)
+                        {
+                            player.SetData("MKLP_Confirmed_InvRev", player.GetData<int>("MKLP_Confirmed_InvRev") - 1);
+                            return false;
+                        }
+                    }
+                    return true;
+                }
             }
+            int GetItemValue_PlatinumCoin(NetItemKLP item)
+            {
+                Item getitem = new Item();
+                getitem.SetDefaults(item.type);
+
+                return (int)((long)(getitem.value * item.stack) / 5000000);
+            }
+            #endregion
         }
 
         public static void SendLog_ToInvTrackPlayers(TSPlayer target, string message)
@@ -79,30 +234,9 @@ namespace MKLP.Modules
             }
         }
 
-        public static void TryAddInvLog(TSPlayer tsplayer, NetItem prevplayerinv, Item playerinv, int slot, string Type)
-        {
-            if (!(bool)MKLP.Config.Main.Logging.Save_Inventory_Log) return;
 
-            InvLog_index++;
-
-            if (InventoryLogs.Count >= (int)MKLP.Config.Main.Logging.Save_InvLog_Max)
-            {
-                InventoryLogs.RemoveRange(0, (int)MKLP.Config.Main.Logging.Remove_InvLog_IfMax);
-            }
-            //OutOfMemoryException
-
-            string log = $"{tsplayer.Account.Name}{DiscordKLP.S_}{Type}{DiscordKLP.S_}{slot}{DiscordKLP.S_}" +
-                $"{prevplayerinv.NetId},{prevplayerinv.Stack},{prevplayerinv.PrefixId}" +
-                DiscordKLP.S_ +
-                $"{playerinv.type},{playerinv.stack},{playerinv.prefix}|{InvLog_index}";
-
-            if (!InventoryLogs.Contains(log))
-            {
-                InventoryLogs.Add(log);
-            }
-        }
-
-        public static void InventoryView(CommandArgs args)
+        #region [ Commands ]
+        public static void CMD_InventoryView(CommandArgs args)
         {
             TSPlayer Player = args.Player;
             if (args.Parameters.Count == 0)
@@ -317,10 +451,12 @@ namespace MKLP.Modules
             #endregion
         }
 
+        #endregion
     }
 
     #region OBJECTS
 
+    #region [ InvData_PLR ]
     public class InvData_PLR
     {
         public int AccountID;
@@ -707,6 +843,84 @@ namespace MKLP.Modules
             }
         }
         #endregion
+    }
+
+    #endregion
+
+    public struct NetItemKLP
+    {
+        public int type;
+        public int stack;
+        public int prefix;
+
+        public static NetItemKLP Empty()
+        {
+            return new(0, 0, 0);
+        }
+        public static NetItemKLP Air()
+        {
+            return new(0, 0, 0);
+        }
+        public bool IsAir() { return type == 0 || stack == 0; }
+
+        public static NetItemKLP Convert_TItem(Item item)
+        {
+            return new(item.type, item.stack, item.prefix);
+        }
+        public static NetItemKLP[] Convert_TItemArray(Item[] items)
+        {
+            NetItemKLP[] result = new NetItemKLP[items.Length];
+
+            for (int i = 0; i < items.Length; i++)
+            {
+                if (items[i].IsAir)
+                {
+                    result[i] = Empty();
+                } else
+                {
+                    result[i] = Convert_TItem(items[i]);
+                }
+            }
+            return result;
+        }
+        public static List<NetItemKLP> Convert_TItemArrayList(Item[] items)
+        {
+            List<NetItemKLP> result = new();
+
+            foreach (Item item in items)
+            {
+                if (item.IsAir)
+                {
+                    result.Add(Empty());
+                } else
+                {
+                    result.Add(Convert_TItem(item));
+                }
+            }
+            return result;
+        }
+
+        public string Name()
+        {
+            return Lang.GetItemName(type).Value;
+        }
+        public string ItemTag()
+        {
+            string arg = ((stack > 1) ? ("/s" + stack) : ((prefix != 0) ? ("/p" + prefix) : ""));
+            return $"[i{arg}:{type}]";
+        }
+        public string ItemTagText()
+        {
+            string arg = ((stack > 1) ? ($"({stack})") : ((prefix != 0) ? (InvData_PLR.prefixlist[prefix]) : ""));
+            return $"{arg} {Name()}";
+        }
+
+        public NetItemKLP(int type, int stack, int prefix)
+        {
+            this.type = type;
+            this.stack = stack;
+            this.prefix = prefix;
+        }
     }
 
     #endregion
