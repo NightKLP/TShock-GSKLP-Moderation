@@ -59,7 +59,7 @@ namespace MKLP
         public override string Author => "Nightklp";
         public override string Description => "Makes Moderating a bit easy";
         public override string Name => "MKLP";
-        public override System.Version Version => new System.Version(1, 6);
+        public override System.Version Version => new System.Version(2, 0);
         #endregion
 
         #region [ Variables ]
