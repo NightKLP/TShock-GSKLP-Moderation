@@ -260,7 +260,7 @@ namespace MKLP
         {
             #region code
 
-            MKLP.check_bosssched();
+            HooksKLP.check_bosssched();
 
             string GetDefeatedBoss = "";
             string GetEnableBoss = "";
@@ -821,25 +821,28 @@ namespace MKLP
         private static void CMD_LockDown(CommandArgs args)
         {
             #region code
-            if (!MKLP.LockDown)
+            if (!(bool)MKLP.Config.Main.AntiRaid.LockDown)
             {
                 if (args.Parameters.Count == 0)
                 {
-                    MKLP.LockDown = true;
+                    MKLP.Config.Main.AntiRaid.LockDown = true;
+                    MKLP.Config.Changeall();
                     TShock.Utils.Broadcast(MKLP.GetText("Server is on LockDown!"), Color.OrangeRed);
                     MKLP.Discordklp.KLPBotSendMessageMainLog($"**🔒{args.Player.Name}🔒** " + MKLP.GetText("Server is on lockdown!"));
                 }
                 else
                 {
-                    MKLP.LockDown = true;
-                    MKLP.LockDownReason = string.Join(" ", args.Parameters.ToArray(), 0, args.Parameters.Count);
-                    TShock.Utils.Broadcast(MKLP.GetText("Server is on LockDown by the reason of") + " " + MKLP.LockDownReason, Color.OrangeRed);
-                    MKLP.Discordklp.KLPBotSendMessageMainLog($"**🔒{args.Player.Name}🔒** " + MKLP.GetText("Server is on lockdown! `reason: {0}`", MKLP.LockDownReason));
+                    MKLP.Config.Main.AntiRaid.LockDown = true;
+                    MKLP.Config.Changeall();
+                    MKLP.Config.Main.AntiRaid.LockDownReason = string.Join(" ", args.Parameters.ToArray(), 0, args.Parameters.Count);
+                    TShock.Utils.Broadcast(MKLP.GetText("Server is on LockDown by the reason of") + " " + MKLP.Config.Main.AntiRaid.LockDownReason, Color.OrangeRed);
+                    MKLP.Discordklp.KLPBotSendMessageMainLog($"**🔒{args.Player.Name}🔒** " + MKLP.GetText("Server is on lockdown! `reason: {0}`", MKLP.Config.Main.AntiRaid.LockDownReason));
                 }
             }
             else
             {
-                MKLP.LockDown = false;
+                MKLP.Config.Main.AntiRaid.LockDown = false;
+                MKLP.Config.Changeall();
                 TShock.Utils.Broadcast(MKLP.GetText("Server is no longer on LockDown!"), Color.LightGreen);
                 MKLP.Discordklp.KLPBotSendMessageMainLog($"**🔓{args.Player.Name}🔓** " + MKLP.GetText("Server is no longer on lockdown!"));
             }
@@ -851,15 +854,17 @@ namespace MKLP
         private static void CMD_LockDownRegister(CommandArgs args)
         {
             #region code
-            if (!MKLP.LockDownRegister)
+            if (!(bool)MKLP.Config.Main.AntiRaid.RegisterUserLockDown)
             {
-                MKLP.LockDownRegister = true;
+                MKLP.Config.Main.AntiRaid.RegisterUserLockDown = true;
+                MKLP.Config.Changeall();
                 args.Player.SendSuccessMessage(MKLP.GetText("Guest can no longer resgister!"));
                 MKLP.Discordklp.KLPBotSendMessageMainLog($"**🔒{args.Player.Name}🔒** " + MKLP.GetText("Guest can no longer register!"));
             }
             else
             {
-                MKLP.LockDownRegister = false;
+                MKLP.Config.Main.AntiRaid.RegisterUserLockDown = false;
+                MKLP.Config.Changeall();
                 args.Player.SendSuccessMessage(MKLP.GetText("Guest can now resgister!"));
                 MKLP.Discordklp.KLPBotSendMessageMainLog($"**🔓{args.Player.Name}🔓** " + MKLP.GetText("Guest can now register!"));
             }

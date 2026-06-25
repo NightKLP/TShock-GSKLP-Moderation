@@ -1003,7 +1003,7 @@ namespace MKLP.Modules
 
             HasInvData = InvData.Init(account.ID);
 
-            IsMuted = MKLP.DBManager.PlayerIsMuted(account);
+            IsMuted = MuteKLP.PlayerIsMuted(account.Name).muted;
             IsDisabled = ManagePlayer.PlayerIsDisable(account.Name, GetIPs[GetIPs.Count() - 1], account.UUID);
         }
         public string GetName()

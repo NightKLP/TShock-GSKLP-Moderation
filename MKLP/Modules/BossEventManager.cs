@@ -727,7 +727,7 @@ namespace MKLP.Modules
             {
                 if (NPC.downedQueenSlime)
                 {
-                    defeatedbosses.Add(" Queen Slime", true);
+                    defeatedbosses.Add("Queen Slime", true);
                 }
                 else
                 {

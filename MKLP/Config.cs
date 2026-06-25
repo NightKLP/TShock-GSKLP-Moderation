@@ -187,6 +187,7 @@ namespace MKLP
             //public string Language = "en";
             public byte? Minimum_CharacterName = 1;
             public byte? Maximum_CharacterName = 255;
+            public bool? AllowEmptyWhiteSpaceName = false;
             public string[] Ban_NameContains = { "fuck", "卍" };
             public string[] IllegalNames = { "ServerConsole", "Server" };
             public bool? Allow_PlayerName_On_BannedWords = false;
@@ -235,6 +236,7 @@ namespace MKLP
             public CONFIG_PROGRESSION Progression = new();
             public CONFIG_ANTIGRIEF AntiGrief = new();
             public CONFIG_ANTIRAID AntiRaid = new();
+            public CONFIG_ANTIVPN AntiVPN = new();
             public CONFIG_MANAGEPACKET ManagePackets = new();
             public CONFIG_STAFFCHAT StaffChat = new();
             public CONFIG_LOGGING Logging = new();
@@ -269,6 +271,7 @@ namespace MKLP
                 //if (Language == null) Language = getdefault.Language;
                 if (Minimum_CharacterName == null) Minimum_CharacterName = getdefault.Minimum_CharacterName;
                 if (Maximum_CharacterName == null) Maximum_CharacterName = getdefault.Maximum_CharacterName;
+                if (AllowEmptyWhiteSpaceName == null) AllowEmptyWhiteSpaceName = getdefault.AllowEmptyWhiteSpaceName;
                 if (IllegalNames == null) IllegalNames = getdefault.IllegalNames;
                 if (Allow_PlayerName_On_BannedWords == null) Allow_PlayerName_On_BannedWords = getdefault.Allow_PlayerName_On_BannedWords;
                 if (Allow_PlayerName_Symbols == null) Allow_PlayerName_Symbols = getdefault.Allow_PlayerName_Symbols;
@@ -330,6 +333,9 @@ namespace MKLP
 
                 if (AntiRaid == null) AntiRaid = new();
                 AntiRaid.FixNull();
+
+                if (AntiVPN == null) AntiVPN = new();
+                AntiVPN.FixNull();
 
                 if (ManagePackets == null) ManagePackets = new();
                 ManagePackets.FixNull();
@@ -772,12 +778,23 @@ namespace MKLP
             public bool? DeathMessage_OnlyToLoginUser = false;
 
             public string S_1 = "▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬";
+            public bool? RegisterUserLockDown = false;
+            public bool? LockDown = false;
+            public string LockDownReason = "";
+
+            public string S_2 = "▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬";
 
             public bool? Using_PlayerJoin_ThreshHold = false;
             public int? Disable_PlayerJoin_ThreshHold_Until_Minutes = 10;
             public int? PlayerJoin_ThreshHold_Seconds = 40;
             public int? PlayerJoin_ThreshHold = 7;
             public string PlayerJoin_ThreshHold_LockdownReason = "Multiple Player's Join At the Same Time";
+
+            public string S_3 = "▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬";
+
+            public bool? Using_PriorityConnection = false;
+            public int? PriorityConnection_Max = 3;
+            public string PriorityConnection_Max_Reason = "Cannot Join At the moment!";
 
             public CONFIG_ANTIRAID() { }
 
@@ -787,10 +804,16 @@ namespace MKLP
                 CONFIG_ANTIRAID getdefault = new();
 
                 S_1 = getdefault.S_1;
+                S_2 = getdefault.S_2;
+                S_3 = getdefault.S_3;
 
                 if (JoinMessage_OnlyToLoginUser == null) JoinMessage_OnlyToLoginUser = getdefault.JoinMessage_OnlyToLoginUser;
                 if (LeaveMessage_OnlyToLoginUser == null) LeaveMessage_OnlyToLoginUser = getdefault.LeaveMessage_OnlyToLoginUser;
                 if (DeathMessage_OnlyToLoginUser == null) DeathMessage_OnlyToLoginUser = getdefault.DeathMessage_OnlyToLoginUser;
+
+                if (RegisterUserLockDown == null) RegisterUserLockDown = getdefault.RegisterUserLockDown;
+                if (LockDown == null) LockDown = getdefault.LockDown;
+                if (LockDownReason == null) LockDownReason = getdefault.LockDownReason;
 
                 if (Using_PlayerJoin_ThreshHold == null) Using_PlayerJoin_ThreshHold = getdefault.Using_PlayerJoin_ThreshHold;
                 if (Disable_PlayerJoin_ThreshHold_Until_Minutes == null) Disable_PlayerJoin_ThreshHold_Until_Minutes = getdefault.Disable_PlayerJoin_ThreshHold_Until_Minutes;
@@ -798,6 +821,53 @@ namespace MKLP
                 if (PlayerJoin_ThreshHold == null) PlayerJoin_ThreshHold = getdefault.PlayerJoin_ThreshHold;
                 if (PlayerJoin_ThreshHold_LockdownReason == null) PlayerJoin_ThreshHold_LockdownReason = getdefault.PlayerJoin_ThreshHold_LockdownReason;
 
+                return;
+            }
+            #endregion
+        }
+        #endregion
+
+        #region [ ANTIVPN ]
+
+        public struct AntiVPNService
+        {
+            public string Name;
+            public string Key;
+            public AntiVPNService(string name, string key1, string key2)
+            {
+                Name = name;
+                Key = key1;
+            }
+        }
+
+        public class CONFIG_ANTIVPN
+        {
+
+            public string S_1 = "▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬";
+            public string S_2 = "▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬";
+            public string S_3 = "▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬";
+            public bool? Using = false;
+            public int? IPDataExpireDay_Trusted = 7;
+            public int? IPDataExpireDay_Untrusted = 14;
+            public AntiVPNService[] Services = new AntiVPNService[] { new("service name", "key1", "key2") };
+            public string KickUsingVPNReason = "You cannot join the server while using a VPN!";
+
+            public CONFIG_ANTIVPN() { }
+
+            #region FixNull
+            public void FixNull()
+            {
+                CONFIG_ANTIVPN getdefault = new();
+
+                S_1 = getdefault.S_1;
+                S_2 = getdefault.S_2;
+                S_3 = getdefault.S_3;
+
+                if (Using == null) Using = getdefault.Using;
+                if (IPDataExpireDay_Trusted == null) IPDataExpireDay_Trusted = getdefault.IPDataExpireDay_Trusted;
+                if (IPDataExpireDay_Untrusted == null) IPDataExpireDay_Untrusted = getdefault.IPDataExpireDay_Untrusted;
+                if (Services == null) Services = getdefault.Services;
+                if (KickUsingVPNReason == null) KickUsingVPNReason = getdefault.KickUsingVPNReason;
                 return;
             }
             #endregion

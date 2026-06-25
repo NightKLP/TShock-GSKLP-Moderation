@@ -17,7 +17,7 @@ namespace MKLP
 {
     public class MKLP_DB
     {
-        private IDbConnection _db;
+        internal IDbConnection _db;
 
         public MKLP_DB()
         {
@@ -67,13 +67,19 @@ namespace MKLP
 
             sqlCreator.EnsureTableStructure(new SqlTable("Mute",
                 new SqlColumn("ID", MySqlDbType.Int32) { AutoIncrement = true, Primary = true },
-                new SqlColumn("Identifier", MySqlDbType.VarChar, 100),
+                new SqlColumn("Identifier", MySqlDbType.Text),
                 new SqlColumn("Reason", MySqlDbType.Text),
+                new SqlColumn("Used", MySqlDbType.Int32),
                 new SqlColumn("Expiration", MySqlDbType.DateTime)));
 
             sqlCreator.EnsureTableStructure(new SqlTable("AccountDLinking",
                 new SqlColumn("Name", MySqlDbType.VarChar, 20) { Primary = true, Unique = true },
                 new SqlColumn("UserID", MySqlDbType.VarChar, 50)));
+
+            sqlCreator.EnsureTableStructure(new SqlTable("IPDataList",
+                new SqlColumn("IP", MySqlDbType.VarChar, 20) { Primary = true, Unique = true },
+                new SqlColumn("IsVPN", MySqlDbType.Int32),
+                new SqlColumn("TimeAdded", MySqlDbType.DateTime)));
 
         }
 
@@ -255,222 +261,7 @@ namespace MKLP
 
         #endregion
 
-        #region [ Mutes ]
 
-        public IEnumerable<Mute> GetMute(string Identifier)
-        {
-            using var reader = _db.QueryReader("SELECT * FROM Mute WHERE Identifier = @0", Identifier);
-            while (reader.Read())
-            {
-                yield return new(
-                    reader.Get<int>("ID"),
-                    reader.Get<string>("Identifier"),
-                    reader.Get<string>("Reason"),
-                    reader.Get<DateTime>("Expiration")
-                    );
-            }
-        }
-
-        public IEnumerable<Mute> GetMute(int ID)
-        {
-            using var reader = _db.QueryReader("SELECT * FROM Mute WHERE ID = @0", ID);
-            while (reader.Read())
-            {
-                yield return new(
-                    reader.Get<int>("ID"),
-                    reader.Get<string>("Identifier"),
-                    reader.Get<string>("Reason"),
-                    reader.Get<DateTime>("Expiration")
-                    );
-            }
-        }
-
-        public Mute GetMuteExpiration(string Identifier)
-        {
-            using var reader = _db.QueryReader("SELECT * FROM Mute WHERE Identifier = @0", Identifier);
-            while (reader.Read())
-            {
-                return new Mute(
-                    reader.Get<int>("ID"),
-                    reader.Get<string>("Identifier"),
-                    reader.Get<string>("Reason"),
-                    reader.Get<DateTime>("Expiration")
-                    );
-            }
-            throw new NullReferenceException();
-        }
-
-        public bool AddMute(string Identifier, DateTime Expiration, string Reason = "No Reason Provided")
-        {
-            return _db.Query("INSERT INTO Mute (" +
-                "ID, " +
-                "Identifier, " +
-                "Reason, " +
-                "Expiration) " +
-                "VALUES (@0, @1, @2, @3)",
-                null,
-                Identifier,
-                Reason,
-                Expiration
-                ) != 0;
-        }
-
-        public bool DeleteMute(string Identifier)
-        {
-            return _db.Query("DELETE FROM Mute WHERE Identifier = @0", Identifier) != 0;
-        }
-
-
-        public bool CheckPlayerMute(TSPlayer player, bool inform_unmuted = false)
-        {
-            bool muted = false;
-            bool itExist = false;
-            try
-            {
-                Mute get = GetMuteExpiration($"{Identifier.Name}{player.Name}");
-                itExist = true;
-                if ((DateTime.UtcNow - get.Expiration).TotalSeconds < 0)
-                {
-                    muted = true;
-                } else
-                {
-                    DeleteMute(Identifier.Name + player.Name);
-                }
-            }
-            catch (NullReferenceException) { }
-
-            try
-            {
-                Mute get = GetMuteExpiration($"{Identifier.Account}{player.Account.Name}");
-                itExist = true;
-                if ((DateTime.UtcNow - get.Expiration).TotalSeconds < 0)
-                {
-                    muted = true;
-                }
-                else
-                {
-                    DeleteMute(Identifier.Account + player.Account.Name);
-                }
-
-            }
-            catch (NullReferenceException) { }
-
-            try
-            {
-                Mute get = GetMuteExpiration($"{Identifier.IP}{player.IP}");
-                itExist = true;
-                if ((DateTime.UtcNow - get.Expiration).TotalSeconds < 0)
-                {
-                    muted = true;
-                }
-                else
-                {
-                    DeleteMute(Identifier.IP + player.IP);
-                }
-
-            }
-            catch (NullReferenceException) { }
-
-            try
-            {
-                Mute get = GetMuteExpiration($"{Identifier.UUID}{player.UUID}");
-                itExist = true;
-                if ((DateTime.UtcNow - get.Expiration).TotalSeconds < 0)
-                {
-                    muted = true;
-                }
-                else
-                {
-                    DeleteMute(Identifier.UUID + player.UUID);
-                }
-
-            }
-            catch (NullReferenceException) { }
-
-            if (muted)
-            {
-                player.mute = true;
-            }
-
-            if (!player.mute && itExist && inform_unmuted)
-            {
-                player.SendSuccessMessage(MKLP.GetText("You're no longer muted"));
-            }
-
-            return player.mute;
-
-        }
-        public bool PlayerIsMuted(UserAccount account)
-        {
-            bool muted = false;
-            try
-            {
-                Mute get = GetMuteExpiration($"{Identifier.Name}{account.Name}");
-                if ((DateTime.UtcNow - get.Expiration).TotalSeconds < 0)
-                {
-                    muted = true;
-                }
-            }
-            catch (NullReferenceException) { }
-
-            try
-            {
-                Mute get = GetMuteExpiration($"{Identifier.Account}{account.Name}");
-                if ((DateTime.UtcNow - get.Expiration).TotalSeconds < 0)
-                {
-                    muted = true;
-                }
-            }
-            catch (NullReferenceException) { }
-
-            try
-            {
-                var GetIPs = JsonConvert.DeserializeObject<List<string>>(account.KnownIps);
-                Mute get = GetMuteExpiration($"{Identifier.IP}{GetIPs[GetIPs.Count() - 1]}");
-                if ((DateTime.UtcNow - get.Expiration).TotalSeconds < 0)
-                {
-                    muted = true;
-                }
-            }
-            catch (NullReferenceException) { }
-
-            try
-            {
-                Mute get = GetMuteExpiration($"{Identifier.UUID}{account.UUID}");
-                if ((DateTime.UtcNow - get.Expiration).TotalSeconds < 0)
-                {
-                    muted = true;
-                }
-            }
-            catch (NullReferenceException) { }
-
-            return muted;
-
-        }
-
-        #endregion
-
-    }
-
-    public class Mute
-    {
-        public int ID;
-        public string Identifier;
-        public string Reason;
-        public DateTime Expiration;
-
-        public Mute(
-            int ID,
-            string Identifier,
-            string Reason,
-            DateTime Expiration
-            )
-        {
-            this.ID = ID;
-            this.Identifier = Identifier;
-            this.Reason = Reason;
-            this.Expiration = Expiration;
-        }
     }
 
     public class MKLP_Report

@@ -20,7 +20,29 @@ namespace MKLP.Modules
 {
     public static class SurvivalManager
     {
-        public static Dictionary<int, string> GetIllegalItem()
+        public enum BossDType
+        {
+            NA,
+            KingSlime,
+            EyeOfCthulhu,
+            EvilBoss,
+            Skeletron,
+            QueenBee,
+            Deerclops,
+            WallOfFlesh,
+            QueenSlime,
+            TheDestroyer,
+            TheTwins,
+            SkeletronPrime,
+            Plantera,
+            Golem,
+            DukeFishron,
+            EmpressOfLight,
+            LunaticCultist,
+            MoonLord
+        }
+
+        public static Dictionary<int, string> GetIllegalItem(BossDType currentbossdefeated = BossDType.NA)
         {
             #region [ get Illegal Items ]
             Dictionary<int, string> getillegalitems = new();
@@ -70,7 +92,11 @@ namespace MKLP.Modules
                 getillegalitems.Add(5382, "Unobtainable");
             }
 
-            if ((NPC.downedMechBoss1 || NPC.downedMechBoss2 || NPC.downedMechBoss3) && (Main.zenithWorld || Main.remixWorld))
+            if ((
+                NPC.downedMechBoss1 || NPC.downedMechBoss2 || NPC.downedMechBoss3 ||
+                currentbossdefeated == BossDType.TheDestroyer || currentbossdefeated != BossDType.TheTwins || currentbossdefeated != BossDType.SkeletronPrime
+                )
+                && (Main.zenithWorld || Main.remixWorld))
             {
                 getillegalitems.Add(779, "Unobtainable");
                 getillegalitems.Add(780, "Unobtainable");
@@ -79,15 +105,22 @@ namespace MKLP.Modules
                 getillegalitems.Add(783, "Unobtainable");
                 getillegalitems.Add(784, "Unobtainable");
             }
-            if ((NPC.downedMechBoss1 || NPC.downedMechBoss2 || NPC.downedMechBoss3) && (!Main.zenithWorld && !Main.remixWorld))
+            if ((
+                NPC.downedMechBoss1 || NPC.downedMechBoss2 || NPC.downedMechBoss3 ||
+                currentbossdefeated == BossDType.TheDestroyer || currentbossdefeated != BossDType.TheTwins || currentbossdefeated != BossDType.SkeletronPrime
+                )
+                && (!Main.zenithWorld && !Main.remixWorld))
             {
-                if (WorldGen.crimson)
+                if (!NPC.downedMoonlord)
                 {
-                    getillegalitems.Add(782, "Unobtainable");
-                }
-                else
-                {
-                    getillegalitems.Add(784, "Unobtainable");
+                    if (WorldGen.crimson)
+                    {
+                        getillegalitems.Add(782, "Unobtainable");
+                    }
+                    else
+                    {
+                        getillegalitems.Add(784, "Unobtainable");
+                    }
                 }
             }
 
@@ -99,7 +132,7 @@ namespace MKLP.Modules
 
             if (!allowbanners)
             {
-                if (!NPC.downedBoss2)
+                if (!NPC.downedBoss2 && currentbossdefeated != BossDType.EvilBoss)
                 {
                     int[] addin = { 1669 };
                     foreach (int add in addin)
@@ -108,7 +141,7 @@ namespace MKLP.Modules
                     }
                 }
 
-                if (!Main.hardMode)
+                if (!Main.hardMode && currentbossdefeated != BossDType.WallOfFlesh)
                 {
                     int[] addin = { 1689, 2908, 2976, 2910, 1651, 2938, 2966, 2962, 4977, 1699, 1695,
                         1700, 1620, 2923, 1630, 4965, 2969, 2973, 1615, 3448, 1623, 1650, 2898, 1662,
@@ -124,7 +157,8 @@ namespace MKLP.Modules
                     }
                 }
 
-                if (!NPC.downedMechBoss1 && !NPC.downedMechBoss2 && !NPC.downedMechBoss3) // mech
+                if ((!NPC.downedMechBoss1 && !NPC.downedMechBoss2 && !NPC.downedMechBoss3) &&
+                    (currentbossdefeated != BossDType.TheDestroyer && currentbossdefeated != BossDType.TheTwins && currentbossdefeated != BossDType.SkeletronPrime)) // mech
                 {
                     int[] addin = { 2943, 3446, 1670 };
                     foreach (int add in addin)
@@ -144,7 +178,9 @@ namespace MKLP.Modules
                     }
                 }
 
-                if (!NPC.downedMechBoss1 || !NPC.downedMechBoss2 || !NPC.downedMechBoss3) // post mech
+                if ((!NPC.downedMechBoss1 && currentbossdefeated != BossDType.TheDestroyer) ||
+                    (!NPC.downedMechBoss2 && currentbossdefeated != BossDType.TheTwins) ||
+                    (!NPC.downedMechBoss3 && currentbossdefeated != BossDType.SkeletronPrime)) // post mech
                 {
                     int[] addin = { 1679 };
                     foreach (int add in addin)
@@ -153,7 +189,7 @@ namespace MKLP.Modules
                     }
                 }
 
-                if (!NPC.downedPlantBoss)
+                if (!NPC.downedPlantBoss && currentbossdefeated != BossDType.Plantera)
                 {
                     int[] addin = { 2900, 2970, 2930, 2914, 2956, 2965, 2904, 2974, 2975, 2984, 2917,
                         2924, 2958, 3402, 3396, 3397, 3403, 3401, 3400, 2929, 2931, 2961, 2971, 2982,
@@ -172,7 +208,7 @@ namespace MKLP.Modules
                     }
                 }
 
-                if (!NPC.downedGolemBoss)
+                if (!NPC.downedGolemBoss && currentbossdefeated != BossDType.Golem)
                 {
                     int[] addin = { 2945, 2946, 2947, 2948, 2949, 2950, 2951, 2952, 2953, 3445, 2972,
                         2901, 2902, 3846 };
@@ -182,7 +218,7 @@ namespace MKLP.Modules
                     }
                 }
 
-                if (!NPC.downedAncientCultist)
+                if (!NPC.downedAncientCultist && currentbossdefeated != BossDType.LunaticCultist)
                 {
                     int[] addin = { 3438, 3436, 3437, 3440, 3439, 3433, 3435, 3434, 3432, 3422, 3421,
                         3424, 3425, 3420, 3423, 3426, 3428, 3430, 3429, 3431, 3427 };
@@ -204,7 +240,7 @@ namespace MKLP.Modules
             #region ( Boss )
 
             #region [ king Slime ]
-            if (!NPC.downedSlimeKing) //king slime
+            if (!NPC.downedSlimeKing && currentbossdefeated != BossDType.KingSlime) //king slime
             {
                 int[] addin = { 256, 257, 258, 762, 767, 769, 815, 998, 2430, 2489, 2493,
                     2585, 2610, 3090, 3318, 4120, 4797, 4929, 5131, 5495 };
@@ -232,7 +268,7 @@ namespace MKLP.Modules
             #endregion
 
             #region [ Eye of Cthulhu ]
-            if (!NPC.downedBoss1)
+            if (!NPC.downedBoss1 && currentbossdefeated != BossDType.EyeOfCthulhu)
             {
                 for (int i = 4041; i <= 4048; i++)
                 {
@@ -269,7 +305,7 @@ namespace MKLP.Modules
             #endregion
 
             #region [ Eye of Cthulhu OR King Slime ]
-            if (!NPC.downedBoss1 && !NPC.downedSlimeKing)
+            if (!NPC.downedBoss1 && !NPC.downedSlimeKing && currentbossdefeated != BossDType.KingSlime && currentbossdefeated != BossDType.EyeOfCthulhu)
             {
                 int[] addin = { 5542 };
 
@@ -284,7 +320,7 @@ namespace MKLP.Modules
             #endregion
 
             #region [ Evil Boss ]
-            if (!NPC.downedBoss2)
+            if (!NPC.downedBoss2 && currentbossdefeated != BossDType.EvilBoss)
             {
                 for (int i = 3797; i <= 3883; i++)
                 {
@@ -326,7 +362,7 @@ namespace MKLP.Modules
                     }
                 }
 
-                if (!Main.hardMode)
+                if (!Main.hardMode && currentbossdefeated != BossDType.WallOfFlesh)
                 {
                     int[] hellstoneid = { 119, 120, 121, 122, 174, 175,
                         217, 219, 221, 231, 232, 233, 273, 2365, 4533, 4534, 4535, 4536, 4821 };
@@ -351,7 +387,8 @@ namespace MKLP.Modules
 
             #region ( Evil Boss Enabled )
 
-            if ((bool)MKLP.Config.BossManager.AllowEaterOfWorlds || (bool)MKLP.Config.BossManager.AllowBrainOfCthulhu)
+            if (((bool)MKLP.Config.BossManager.AllowEaterOfWorlds || (bool)MKLP.Config.BossManager.AllowBrainOfCthulhu) ||
+                (currentbossdefeated == BossDType.EvilBoss))
             { //     true if its eow/boc enabled    |    false if its not enabled
                 int[] hellstoneid = { 118, 119, 120, 121, 122, 174, 175,
                     217, 219, 221, 231, 232, 233, 273, 2365, 4533, 4534,
@@ -382,7 +419,7 @@ namespace MKLP.Modules
             #endregion
 
             #region [ Skeletron ]
-            if (!NPC.downedBoss3)
+            if (!NPC.downedBoss3 && currentbossdefeated != BossDType.Skeletron)
             {
                 for (int i = 3611; i <= 3616; i++)
                 {
@@ -469,7 +506,7 @@ namespace MKLP.Modules
 
             #region [ Queen Bee ]
 
-            if (!NPC.downedQueenBee)
+            if (!NPC.downedQueenBee && currentbossdefeated != BossDType.QueenBee)
             {
                 for (int i = 940; i <= 945; i++)
                 {
@@ -508,7 +545,7 @@ namespace MKLP.Modules
 
             #region [ Deerclops ]
 
-            if (!NPC.downedDeerclops)
+            if (!NPC.downedDeerclops && currentbossdefeated != BossDType.Deerclops)
             {
                 int[] addin = { 5090, 5095, 5098, 5100, 5108, 5110, 5111, 5117, 5118, 5119, 5385 };
 
@@ -537,7 +574,7 @@ namespace MKLP.Modules
 
 
             #region [ HardMode | Wall of Flesh ]
-            if (!Main.hardMode)
+            if (!Main.hardMode && currentbossdefeated != BossDType.WallOfFlesh)
             {
                 for (int i = 364; i <= 391; i++)
                 {
@@ -721,7 +758,7 @@ namespace MKLP.Modules
 
                 if (!allowvanity)
                 {
-                    if (!NPC.downedBoss3)
+                    if (!NPC.downedBoss3 && currentbossdefeated != BossDType.Skeletron)
                     {
                         int[] skeletronvanityids = { 864, 865, 869, 873, 874, 875, 4994, 4995,
                             4996, 4997, 4998, 4999 };
@@ -789,7 +826,7 @@ namespace MKLP.Modules
 
             #region [ Queen Slime ]
 
-            if (!NPC.downedQueenSlime)
+            if (!NPC.downedQueenSlime && currentbossdefeated != BossDType.QueenSlime)
             {
                 int[] addin = { 4758, 4950, 4957, 4958, 4959, 4960, 4980, 4981, 4982,
                     4983, 4984, 4986, 4987, 5131 };
@@ -806,7 +843,9 @@ namespace MKLP.Modules
 
             #region ( Mechanical Bosses )
 
-            if (!NPC.downedMechBoss1 && !NPC.downedMechBoss2 && !NPC.downedMechBoss3)
+            #region [ Any Mechanical Bosses ]
+            if ((!NPC.downedMechBoss1 && !NPC.downedMechBoss2 && !NPC.downedMechBoss3) &&
+                (currentbossdefeated != BossDType.TheDestroyer && currentbossdefeated != BossDType.TheTwins && currentbossdefeated != BossDType.SkeletronPrime))
             {
                 for (int i = 3602; i <= 3608; i++)
                 {
@@ -872,9 +911,13 @@ namespace MKLP.Modules
                     }
                 }
             }
+            #endregion
 
+            #region [ Post Mechanical Bosses ]
 
-            if (!NPC.downedMechBoss1 || !NPC.downedMechBoss2 || !NPC.downedMechBoss3)
+            if (((!NPC.downedMechBoss1 && currentbossdefeated != BossDType.TheDestroyer) ||
+                (!NPC.downedMechBoss2 && currentbossdefeated != BossDType.TheTwins) ||
+                (!NPC.downedMechBoss3 && currentbossdefeated != BossDType.SkeletronPrime)))
             {
                 for (int i = 1226; i <= 1235; i++)
                 {
@@ -904,10 +947,11 @@ namespace MKLP.Modules
                     }
                 }
             }
+            #endregion
 
             #region [ The Destroyer ]
 
-            if (!NPC.downedMechBoss1)
+            if (!NPC.downedMechBoss1 && currentbossdefeated != BossDType.TheDestroyer)
             {
                 int[] addin = { 533, 548, 561, 1366, 3325, 3355, 4699, 4803, 4932 };
                 foreach (int add in addin)
@@ -923,7 +967,7 @@ namespace MKLP.Modules
 
             #region [ The Twins ]
 
-            if (!NPC.downedMechBoss2)
+            if (!NPC.downedMechBoss2 && currentbossdefeated != BossDType.TheTwins)
             {
                 int[] addin = { 549, 1368, 1369, 2106, 2535, 3326, 3354,
                     4698, 4804, 4931 };
@@ -949,7 +993,7 @@ namespace MKLP.Modules
 
             #region [ Skeletron Prime ]
 
-            if (!NPC.downedMechBoss3)
+            if (!NPC.downedMechBoss3 && currentbossdefeated != BossDType.SkeletronPrime)
             {
                 int[] addin = { 506, 547, 1367, 2107, 3327, 3356, 4700, 4805, 4933 };
                 foreach (int add in addin)
@@ -963,11 +1007,12 @@ namespace MKLP.Modules
 
             #endregion
 
+            //mech
             #endregion
 
             #region [ Plantera ]
 
-            if (!NPC.downedPlantBoss)
+            if (!NPC.downedPlantBoss && currentbossdefeated != BossDType.Plantera)
             {
                 for (int i = 1155; i <= 1162; i++)
                 {
@@ -1099,7 +1144,7 @@ namespace MKLP.Modules
 
             #region [ Golem ]
 
-            if (!NPC.downedGolemBoss)
+            if (!NPC.downedGolemBoss && currentbossdefeated != BossDType.Golem)
             {
                 for (int i = 2803; i <= 2826; i++)
                 {
@@ -1156,7 +1201,7 @@ namespace MKLP.Modules
 
             #region [ Duke Fishron ]
 
-            if (!NPC.downedFishron)
+            if (!NPC.downedFishron && currentbossdefeated != BossDType.DukeFishron)
             {
                 int[] addin = { 2588, 2589, 2609, 2611, 2621, 2622, 2623, 2624, 3330, 3367,
                     4808, 4936, 5478, 5526 };
@@ -1173,7 +1218,7 @@ namespace MKLP.Modules
 
             #region [ Empress of Light ]
 
-            if (!NPC.downedEmpressOfLight)
+            if (!NPC.downedEmpressOfLight && currentbossdefeated != BossDType.EmpressOfLight)
             {
                 int[] addin = { 4715, 4778, 4782, 4783, 4784, 4811, 4823, 4914, 4923, 4949,
                     4952, 4953, 4989, 5005 };
@@ -1204,7 +1249,7 @@ namespace MKLP.Modules
 
             #region [ Lunatic Cultist ]
 
-            if (!NPC.downedAncientCultist)
+            if (!NPC.downedAncientCultist && currentbossdefeated != BossDType.LunaticCultist)
             {
                 for (int i = 4145; i <= 4236; i++)
                 {
@@ -1253,7 +1298,7 @@ namespace MKLP.Modules
 
             #region [ Moon Lord ]
 
-            if (!NPC.downedMoonlord)
+            if (!NPC.downedMoonlord && currentbossdefeated != BossDType.MoonLord)
             {
                 for (int i = 2757; i <= 2765; i++)
                 {
@@ -1376,7 +1421,7 @@ namespace MKLP.Modules
                         getillegalitems.Add(add, "Goblin Army");
                     }
                 }
-                if (Main.hardMode && (Main.tenthAnniversaryWorld || Main.zenithWorld))
+                if ((Main.hardMode || currentbossdefeated == BossDType.WallOfFlesh) && (Main.tenthAnniversaryWorld || Main.zenithWorld))
                 {
                     if (!getillegalitems.ContainsKey(1724))
                     {
@@ -1447,7 +1492,7 @@ namespace MKLP.Modules
                 }
                 if (getillegalitems.ContainsKey(2623))
                 {
-                    if (allowdungeonrush || NPC.downedBoss3)
+                    if (allowdungeonrush || (NPC.downedBoss3 || currentbossdefeated == BossDType.Skeletron))
                     {
                         getillegalitems.Remove(2623);
                     }
@@ -1455,13 +1500,13 @@ namespace MKLP.Modules
                 }
                 if (getillegalitems.ContainsKey(683))
                 {
-                    if (allowdungeonrush || NPC.downedBoss3)
+                    if (allowdungeonrush || (NPC.downedBoss3 || currentbossdefeated == BossDType.Skeletron))
                     {
                         getillegalitems.Remove(683);
                     }
 
                 }
-                if (!Main.hardMode)
+                if (!Main.hardMode && currentbossdefeated != BossDType.WallOfFlesh)
                 {
                     if (!getillegalitems.ContainsKey(3069))
                     {
@@ -1480,14 +1525,14 @@ namespace MKLP.Modules
                         getillegalitems.Add(1319, "HardMode | Wall of Flesh");
                     }
                 }
-                if (!NPC.downedMechBossAny)
+                if (!NPC.downedMechBossAny && (currentbossdefeated != BossDType.TheDestroyer && currentbossdefeated != BossDType.TheTwins && currentbossdefeated != BossDType.SkeletronPrime))
                 {
                     if (!getillegalitems.ContainsKey(112))
                     {
                         getillegalitems.Add(112, "Mechanical Bosses");
                     }
                 }
-                if (!NPC.downedPlantBoss)
+                if (!NPC.downedPlantBoss && currentbossdefeated != BossDType.Plantera)
                 {
                     if (!getillegalitems.ContainsKey(2273))
                     {
@@ -1495,7 +1540,7 @@ namespace MKLP.Modules
                     }
 
                 }
-                if (!NPC.downedFishron)
+                if (!NPC.downedFishron && currentbossdefeated != BossDType.DukeFishron)
                 {
                     if (!getillegalitems.ContainsKey(157))
                     {
@@ -1518,7 +1563,7 @@ namespace MKLP.Modules
             return getillegalitems;
         }
 
-        public static Dictionary<short, string> GetIllegalProjectile()
+        public static Dictionary<short, string> GetIllegalProjectile(BossDType currentbossdefeated = BossDType.NA)
         {
             #region [ get Illegal Projectile ]
 
@@ -1580,7 +1625,7 @@ namespace MKLP.Modules
             #region ( Boss )
 
             #region [ king Slime ]
-            if (!NPC.downedSlimeKing) //king slime
+            if (!NPC.downedSlimeKing && currentbossdefeated != BossDType.KingSlime) //king slime
             {
                 short[] addin = { 406, 881, 1042 };
                 foreach (short add in addin)
@@ -1607,7 +1652,7 @@ namespace MKLP.Modules
             #endregion
 
             #region [ Eye of Cthulhu ]
-            if (!NPC.downedBoss1)
+            if (!NPC.downedBoss1 && currentbossdefeated != BossDType.EyeOfCthulhu)
             {
                 short[] addin = { 17, 882, 994, 995 };
 
@@ -1623,7 +1668,7 @@ namespace MKLP.Modules
             #endregion
 
             #region [ Evil Boss ]
-            if (!NPC.downedBoss2)
+            if (!NPC.downedBoss2 && currentbossdefeated != BossDType.EvilBoss)
             {
                 for (short i = 663; i <= 669; i++)
                 {
@@ -1687,7 +1732,7 @@ namespace MKLP.Modules
             #endregion
 
             #region [ Skeletron ]
-            if (!NPC.downedBoss3)
+            if (!NPC.downedBoss3 && currentbossdefeated != BossDType.Skeletron)
             {
                 short[] addin = { 256, 270, 532, 545, 837, 885, 902, 1085 };
 
@@ -1731,7 +1776,7 @@ namespace MKLP.Modules
 
             #region [ Queen Bee ]
 
-            if (!NPC.downedQueenBee)
+            if (!NPC.downedQueenBee && currentbossdefeated != BossDType.QueenBee)
             {
                 short[] addin = { 181, 183, 198, 373, 374, 469, 566, 886, 999 };
                 foreach (short add in addin)
@@ -1747,7 +1792,7 @@ namespace MKLP.Modules
 
             #region [ Deerclops ]
 
-            if (!NPC.downedDeerclops)
+            if (!NPC.downedDeerclops && currentbossdefeated != BossDType.Deerclops)
             {
                 short[] addin = { 958, 960, 964, 966, 967, 968, 969 };
 
@@ -1764,7 +1809,7 @@ namespace MKLP.Modules
 
 
             #region [ HardMode | Wall of Flesh ]
-            if (!Main.hardMode)
+            if (!Main.hardMode && currentbossdefeated != BossDType.WallOfFlesh)
             {
                 for (short i = 57; i <= 64; i++)
                 {
@@ -1833,7 +1878,7 @@ namespace MKLP.Modules
 
             #region [ Queen Slime ]
 
-            if (!NPC.downedQueenSlime)
+            if (!NPC.downedQueenSlime && currentbossdefeated != BossDType.QueenSlime)
             {
                 short[] addin = { 864, 934, 935, 936, 937 };
                 foreach (short add in addin)
@@ -1849,7 +1894,9 @@ namespace MKLP.Modules
 
             #region ( Mechanical Bosses )
 
-            if (!NPC.downedMechBoss1 && !NPC.downedMechBoss2 && !NPC.downedMechBoss3)
+            #region [ Any Mechanical Bosses ]
+            if ((!NPC.downedMechBoss1 && !NPC.downedMechBoss2 && !NPC.downedMechBoss3) &&
+                (currentbossdefeated != BossDType.TheDestroyer && currentbossdefeated != BossDType.TheTwins && currentbossdefeated != BossDType.SkeletronPrime))
             {
                 short[] addin = { 105, 114, 268, 274, 547, 549, 550, 551, 595, 652,
                     665, 666, 678, 689, 692, 695, 697, 698, 699, 700, 702, 704,
@@ -1863,9 +1910,12 @@ namespace MKLP.Modules
                     }
                 }
             }
+            #endregion
 
-
-            if (!NPC.downedMechBoss1 || !NPC.downedMechBoss2 || !NPC.downedMechBoss3)
+            #region [ Post Mechanical Bosses ]
+            if ((!NPC.downedMechBoss1 && currentbossdefeated != BossDType.TheDestroyer) ||
+                (!NPC.downedMechBoss2 && currentbossdefeated != BossDType.TheTwins) ||
+                (!NPC.downedMechBoss3 && currentbossdefeated != BossDType.SkeletronPrime))
             {
                 for (short i = 222; i <= 229; i++)
                 {
@@ -1886,10 +1936,11 @@ namespace MKLP.Modules
                     }
                 }
             }
+            #endregion
 
             #region [ The Destroyer ]
 
-            if (!NPC.downedMechBoss1)
+            if (!NPC.downedMechBoss1 && currentbossdefeated != BossDType.TheDestroyer)
             {
                 short[] addin = { 106, 887 };
                 foreach (short add in addin)
@@ -1905,7 +1956,7 @@ namespace MKLP.Modules
 
             #region [ The Twins ]
 
-            if (!NPC.downedMechBoss2)
+            if (!NPC.downedMechBoss2 && currentbossdefeated != BossDType.TheTwins)
             {
                 short[] addin = { 72, 76, 77, 78, 86, 87, 387, 388, 389, 888 };
                 foreach (short add in addin)
@@ -1921,7 +1972,7 @@ namespace MKLP.Modules
 
             #region [ Skeletron Prime ]
 
-            if (!NPC.downedMechBoss3)
+            if (!NPC.downedMechBoss3 && currentbossdefeated != BossDType.SkeletronPrime)
             {
                 short[] addin = { 85, 889 };
                 foreach (short add in addin)
@@ -1935,11 +1986,12 @@ namespace MKLP.Modules
 
             #endregion
 
+            //mechs
             #endregion
 
             #region [ Plantera ]
 
-            if (!NPC.downedPlantBoss)
+            if (!NPC.downedPlantBoss && currentbossdefeated != BossDType.Plantera)
             {
                 for (short i = 133; i <= 144; i++)
                 {
@@ -2016,7 +2068,7 @@ namespace MKLP.Modules
 
             #region [ Golem ]
 
-            if (!NPC.downedGolemBoss)
+            if (!NPC.downedGolemBoss && currentbossdefeated != BossDType.Golem)
             {
                 for (short i = 439; i <= 446; i++)
                 {
@@ -2043,7 +2095,7 @@ namespace MKLP.Modules
 
             #region [ Duke Fishron ]
 
-            if (!NPC.downedFishron)
+            if (!NPC.downedFishron && currentbossdefeated != BossDType.DukeFishron)
             {
                 short[] addin = { 404, 405, 407, 408, 409, 410, 892, 1033, 1058 };
                 foreach (short add in addin)
@@ -2059,7 +2111,7 @@ namespace MKLP.Modules
 
             #region [ Empress of Light ]
 
-            if (!NPC.downedEmpressOfLight)
+            if (!NPC.downedEmpressOfLight && currentbossdefeated != BossDType.EmpressOfLight)
             {
                 short[] addin = { 856, 895, 915, 927, 931, 932, 946 };
 
@@ -2076,7 +2128,7 @@ namespace MKLP.Modules
 
             #region [ Lunatic Cultist ]
 
-            if (!NPC.downedAncientCultist)
+            if (!NPC.downedAncientCultist && currentbossdefeated != BossDType.LunaticCultist)
             {
                 short[] addin = { 625, 626, 627, 630, 631, 634, 635, 636, 893, 953, 1034, 1039 };
 
@@ -2093,7 +2145,7 @@ namespace MKLP.Modules
 
             #region [ Moon Lord ]
 
-            if (!NPC.downedMoonlord)
+            if (!NPC.downedMoonlord && currentbossdefeated != BossDType.MoonLord)
             {
                 for (short i = 638; i <= 650; i++)
                 {
@@ -2198,7 +2250,7 @@ namespace MKLP.Modules
                 }
                 if (getillegalprojectile.ContainsKey(410))
                 {
-                    if (allowdungeonrush || NPC.downedBoss3)
+                    if (allowdungeonrush || (NPC.downedBoss3 || currentbossdefeated == BossDType.Skeletron))
                     {
                         getillegalprojectile.Remove(410);
                     }
@@ -2206,13 +2258,13 @@ namespace MKLP.Modules
                 }
                 if (getillegalprojectile.ContainsKey(114))
                 {
-                    if (allowdungeonrush || NPC.downedBoss3)
+                    if (allowdungeonrush || (NPC.downedBoss3 || currentbossdefeated == BossDType.Skeletron))
                     {
                         getillegalprojectile.Remove(114);
                     }
 
                 }
-                if (!Main.hardMode)
+                if (!Main.hardMode && currentbossdefeated != BossDType.WallOfFlesh)
                 {
                     if (!getillegalprojectile.ContainsKey(954))
                     {
@@ -2227,14 +2279,14 @@ namespace MKLP.Modules
                         getillegalprojectile.Add(273, "HardMode | Wall of Flesh");
                     }
                 }
-                if (!NPC.downedMechBossAny)
+                if (!NPC.downedMechBossAny && (currentbossdefeated != BossDType.TheDestroyer && currentbossdefeated != BossDType.TheTwins && currentbossdefeated != BossDType.SkeletronPrime))
                 {
                     if (!getillegalprojectile.ContainsKey(15))
                     {
                         getillegalprojectile.Add(15, "Mechanical Bosses");
                     }
                 }
-                if (!NPC.downedFishron)
+                if (!NPC.downedFishron && currentbossdefeated != BossDType.DukeFishron)
                 {
                     if (!getillegalprojectile.ContainsKey(22))
                     {
@@ -2583,7 +2635,7 @@ namespace MKLP.Modules
 
             #endregion
         }
-        public static Dictionary<MKLP_Tile, string> GetIllegalTile()
+        public static Dictionary<MKLP_Tile, string> GetIllegalTile(BossDType currentbossdefeated = BossDType.NA)
         {
             #region [ get Illegal Tile ]
 
@@ -2636,7 +2688,7 @@ namespace MKLP.Modules
 
             if (!allowbanners)
             {
-                if (!NPC.downedBoss2)
+                if (!NPC.downedBoss2 && currentbossdefeated != BossDType.EvilBoss)
                 {
                     MKLP_Tile[] addin = { new(91, 76) };
                     foreach (MKLP_Tile add in addin)
@@ -2645,7 +2697,7 @@ namespace MKLP.Modules
                     }
                 }
 
-                if (!NPC.downedBoss3)
+                if (!NPC.downedBoss3 && currentbossdefeated != BossDType.Skeletron)
                 {
                     if (!Main.drunkWorld && !Main.remixWorld)
                     {
@@ -2657,7 +2709,7 @@ namespace MKLP.Modules
                     }
                 }
 
-                if (!Main.hardMode)
+                if (!Main.hardMode && currentbossdefeated != BossDType.WallOfFlesh)
                 {
                     MKLP_Tile[] addin = { new(91, 22), new(91, 23), new(91, 26), new(91, 27), new(91, 30), new(91, 32),
                        new(91, 33), new(91, 36), new(91, 37), new(91, 38), new(91, 43), new(91, 44), new(91, 47),
@@ -2678,7 +2730,8 @@ namespace MKLP.Modules
                     }
                 }
 
-                if (!NPC.downedMechBoss1 && !NPC.downedMechBoss2 && !NPC.downedMechBoss3) // mech
+                if ((!NPC.downedMechBoss1 && !NPC.downedMechBoss2 && !NPC.downedMechBoss3) &&
+                    (currentbossdefeated != BossDType.TheDestroyer && currentbossdefeated != BossDType.TheTwins && currentbossdefeated != BossDType.SkeletronPrime)) // mech
                 {
                     MKLP_Tile[] addin = { new(91, 55), new(91, 77), new(91, 94), new(91, 99), new(91, 132), new(91, 155),
                         new(91, 211), new(91, 212), new(91, 216), new(91, 263) };
@@ -2688,7 +2741,9 @@ namespace MKLP.Modules
                     }
                 }
 
-                if (!NPC.downedMechBoss1 || !NPC.downedMechBoss2 || !NPC.downedMechBoss3) // post mech
+                if ((!NPC.downedMechBoss1 && currentbossdefeated != BossDType.TheDestroyer) ||
+                    (!NPC.downedMechBoss2 && currentbossdefeated != BossDType.TheTwins) ||
+                    (!NPC.downedMechBoss3 && currentbossdefeated != BossDType.SkeletronPrime)) // post mech
                 {
                     MKLP_Tile[] addin = { new(91, 86) };
                     foreach (MKLP_Tile add in addin)
@@ -2697,7 +2752,7 @@ namespace MKLP.Modules
                     }
                 }
 
-                if (!NPC.downedPlantBoss)
+                if (!NPC.downedPlantBoss && currentbossdefeated != BossDType.Plantera)
                 {
                     MKLP_Tile[] addin = { new(91, 112), new(91, 116), new(91, 126), new(91, 129), new(91, 130), new(91, 131),
                         new(91, 133), new(91, 136), new(91, 138), new(91, 141), new(91, 142), new(91, 143), new(91, 153),
@@ -2720,7 +2775,7 @@ namespace MKLP.Modules
                     }
                 }
 
-                if (!NPC.downedGolemBoss)
+                if (!NPC.downedGolemBoss && currentbossdefeated != BossDType.Golem)
                 {
                     MKLP_Tile[] addin = { new(91, 113), new(91, 114), new(91, 184), new(91, 262) };
                     foreach (MKLP_Tile add in addin)
@@ -2729,7 +2784,7 @@ namespace MKLP.Modules
                     }
                 }
 
-                if (!NPC.downedAncientCultist)
+                if (!NPC.downedAncientCultist && currentbossdefeated != BossDType.LunaticCultist)
                 {
                     MKLP_Tile[] addin = { new(91, 237), new(91, 238), new(91, 239), new(91, 240), new(91, 241), new(91, 242),
                         new(91, 243), new(91, 244), new(91, 245), new(91, 246), new(91, 247), new(91, 248), new(91, 249),
@@ -2755,12 +2810,12 @@ namespace MKLP.Modules
 
             if (!allowmusicbox)
             {
-                if (!Main.hardMode)
+                if (!Main.hardMode && currentbossdefeated != BossDType.WallOfFlesh)
                 {
                     getillegaltile.Add(new(139, 0, true), "HardMode | Wall of Flesh");
                 }
 
-                if (!NPC.downedMechBossAny)
+                if (!NPC.downedMechBossAny && (currentbossdefeated != BossDType.TheDestroyer && currentbossdefeated != BossDType.TheTwins && currentbossdefeated != BossDType.SkeletronPrime))
                 {
                     MKLP_Tile[] addin = { new(139, 26) };
 
@@ -2774,7 +2829,9 @@ namespace MKLP.Modules
                     }
                 }
 
-                if (!NPC.downedMechBoss1 || !NPC.downedMechBoss2 || !NPC.downedMechBoss3)
+                if ((!NPC.downedMechBoss1 && currentbossdefeated != BossDType.TheDestroyer) ||
+                    (!NPC.downedMechBoss2 && currentbossdefeated != BossDType.TheTwins) ||
+                    (!NPC.downedMechBoss3 && currentbossdefeated != BossDType.SkeletronPrime))
                 {
                     MKLP_Tile[] addin = { new(139, 23), new(139, 81) };
 
@@ -2787,7 +2844,7 @@ namespace MKLP.Modules
                     }
                 }
 
-                if (!NPC.downedPlantBoss)
+                if (!NPC.downedPlantBoss && currentbossdefeated != BossDType.Plantera)
                 {
                     MKLP_Tile[] addin = { new(139, 16), new(139, 28), new(139, 30), new(139, 53) };
                     foreach (MKLP_Tile add in addin)
@@ -2796,7 +2853,7 @@ namespace MKLP.Modules
                     }
                 }
 
-                if (!NPC.downedGolemBoss)
+                if (!NPC.downedGolemBoss && currentbossdefeated != BossDType.Golem)
                 {
                     MKLP_Tile[] addin = { new(139, 33), new(139, 46) };
                     foreach (MKLP_Tile add in addin)
@@ -2805,7 +2862,7 @@ namespace MKLP.Modules
                     }
                 }
 
-                if (!NPC.downedAncientCultist)
+                if (!NPC.downedAncientCultist && currentbossdefeated != BossDType.LunaticCultist)
                 {
                     MKLP_Tile[] addin = { new(139, 36), new(139, 79), new(139, 32), new(139, 80), new(139, 85) };
                     foreach (MKLP_Tile add in addin)
@@ -2820,7 +2877,7 @@ namespace MKLP.Modules
             #region ( Boss )
 
             #region [ king Slime ]
-            if (!NPC.downedSlimeKing) //king slime
+            if (!NPC.downedSlimeKing && currentbossdefeated != BossDType.KingSlime) //king slime
             {
                 MKLP_Tile[] addin = { new(10, 31), new(11, 32), new(14, 29), new(15, 31), new(18, 8), new(19, 20), new(34, 26),
                     new(42, 30), new(79, 25), new(87, 24), new(88, 19), new(89, 25), new(90, 20), new(93, 21), new(100, 21),
@@ -2837,7 +2894,7 @@ namespace MKLP.Modules
             #endregion
 
             #region [ Eye of Cthulhu ]
-            if (!NPC.downedBoss1)
+            if (!NPC.downedBoss1 && currentbossdefeated != BossDType.EyeOfCthulhu)
             {
                 MKLP_Tile[] addin = { new(240, 0), new(380, 0, true) , new(695, 0, true) };
 
@@ -2853,7 +2910,7 @@ namespace MKLP.Modules
             #endregion
 
             #region [ Evil Boss ]
-            if (!NPC.downedBoss2)
+            if (!NPC.downedBoss2 && currentbossdefeated != BossDType.EvilBoss)
             {
                 MKLP_Tile[] addin = { new(10, 33), new(11, 33), new(14, 32), new(15, 33), new(18, 28), new(19, 27), new(21, 49),
                     new(33, 27), new(34, 34), new(37, 0), new(42, 34), new(79, 28), new(87, 27), new(88, 25), new(89, 30),
@@ -2869,7 +2926,7 @@ namespace MKLP.Modules
                     }
                 }
 
-                if (!Main.hardMode)
+                if (!Main.hardMode && currentbossdefeated != BossDType.WallOfFlesh)
                 {
                     MKLP_Tile[] hellstoneid = { new(58, 0), new(77, 0), new(239, 10), new(491, 0), new(648, 6), new(648, 7),
                         new(648, 8) };
@@ -2907,7 +2964,7 @@ namespace MKLP.Modules
             #endregion
 
             #region [ Skeletron ]
-            if (!NPC.downedBoss3)
+            if (!NPC.downedBoss3 && currentbossdefeated != BossDType.Skeletron)
             {
                 MKLP_Tile[] addin = { new(10, 8), new(11, 8), new(14, 4), new(15, 7), new(18, 4), new(21, 41), new(34, 21),
                     new(42, 25), new(79, 20), new(87, 16), new(88, 10), new(89, 11), new(89, 43), new(93, 16), new(97, 0),
@@ -2961,7 +3018,7 @@ namespace MKLP.Modules
 
             #region [ Queen Bee ]
 
-            if (!NPC.downedQueenBee)
+            if (!NPC.downedQueenBee && currentbossdefeated != BossDType.QueenBee)
             {
                 MKLP_Tile[] addin = { new(96, 1), new(207, 0, true), new(225, 0), new(240, 4), new(380, 1) };
                 foreach (MKLP_Tile add in addin)
@@ -2977,7 +3034,7 @@ namespace MKLP.Modules
 
             #region [ Deerclops ]
 
-            if (!NPC.downedDeerclops)
+            if (!NPC.downedDeerclops && currentbossdefeated != BossDType.Deerclops)
             {
                 MKLP_Tile[] addin = { new(240, 75), new(733, 75) };
 
@@ -2994,7 +3051,7 @@ namespace MKLP.Modules
 
 
             #region [ HardMode | Wall of Flesh ]
-            if (!Main.hardMode)
+            if (!Main.hardMode && currentbossdefeated != BossDType.WallOfFlesh)
             {
 
                 MKLP_Tile[] addin = { new(4, 8), new(4, 11), new(4, 14), new(5, 3), new(10, 21), new(10, 36), new(10, 37),
@@ -3061,7 +3118,7 @@ namespace MKLP.Modules
 
             #region [ Queen Slime ]
 
-            if (!NPC.downedQueenSlime)
+            if (!NPC.downedQueenSlime && currentbossdefeated != BossDType.QueenSlime)
             {
                 MKLP_Tile[] addin = { new(240, 73) };
                 foreach (MKLP_Tile add in addin)
@@ -3077,7 +3134,9 @@ namespace MKLP.Modules
 
             #region ( Mechanical Bosses )
 
-            if (!NPC.downedMechBoss1 && !NPC.downedMechBoss2 && !NPC.downedMechBoss3)
+            #region [ Any Mechanical Bosses ]
+            if ((!NPC.downedMechBoss1 && !NPC.downedMechBoss2 && !NPC.downedMechBoss3) &&
+                (currentbossdefeated != BossDType.TheDestroyer && currentbossdefeated != BossDType.TheTwins && currentbossdefeated != BossDType.SkeletronPrime))
             {
                 MKLP_Tile[] addin = { new(10, 5), new(10, 23), new(11, 5), new(11, 23), new(14, 5), new(14, 20), new(15, 8),
                     new(15, 23), new(18, 6), new(18, 21), new(18, 34), new(19, 21), new(21, 43), new(33, 6), new(33, 23),
@@ -3098,9 +3157,12 @@ namespace MKLP.Modules
                     }
                 }
             }
+            #endregion
 
-
-            if (!NPC.downedMechBoss1 || !NPC.downedMechBoss2 || !NPC.downedMechBoss3)
+            #region [ Post Mechanical Bosses ]
+            if ((!NPC.downedMechBoss1 && currentbossdefeated != BossDType.TheDestroyer) ||
+                (!NPC.downedMechBoss2 && currentbossdefeated != BossDType.TheTwins) ||
+                (!NPC.downedMechBoss3 && currentbossdefeated != BossDType.SkeletronPrime))
             {
                 MKLP_Tile[] addin = { new(211, 0), new(239, 17), new(346, 0) };
 
@@ -3113,10 +3175,11 @@ namespace MKLP.Modules
                     }
                 }
             }
+            #endregion
 
             #region [ The Destroyer ]
 
-            if (!NPC.downedMechBoss1)
+            if (!NPC.downedMechBoss1 && currentbossdefeated != BossDType.TheDestroyer)
             {
                 MKLP_Tile[] addin = { new(240, 6) };
                 foreach (MKLP_Tile add in addin)
@@ -3132,7 +3195,7 @@ namespace MKLP.Modules
 
             #region [ The Twins ]
 
-            if ((bool)MKLP.Config.BossManager.AllowTheTwins)
+            if (!(bool)MKLP.Config.BossManager.AllowTheTwins && !NPC.downedMechBoss2 && currentbossdefeated != BossDType.TheTwins)
             {
                 MKLP_Tile[] addin = { new(240, 8), new(240, 9), new(413, 2) };
                 foreach (MKLP_Tile add in addin)
@@ -3144,7 +3207,7 @@ namespace MKLP.Modules
                 }
             }
 
-            if (!NPC.downedMechBoss2)
+            if (!NPC.downedMechBoss2 && currentbossdefeated != BossDType.TheTwins)
             {
                 MKLP_Tile[] addin = { };
                 foreach (MKLP_Tile add in addin)
@@ -3160,7 +3223,7 @@ namespace MKLP.Modules
 
             #region [ Skeletron Prime ]
 
-            if (!NPC.downedMechBoss3)
+            if (!NPC.downedMechBoss3 && currentbossdefeated != BossDType.SkeletronPrime)
             {
                 MKLP_Tile[] addin = { new(240, 7) };
                 foreach (MKLP_Tile add in addin)
@@ -3174,11 +3237,12 @@ namespace MKLP.Modules
 
             #endregion
 
+            //mechs
             #endregion
 
             #region [ Plantera ]
 
-            if (!NPC.downedPlantBoss)
+            if (!NPC.downedPlantBoss && currentbossdefeated != BossDType.Plantera)
             {
                 MKLP_Tile[] addin = { new(10, 25), new(11, 25), new(14, 22), new(15, 25), new(18, 17), new(19, 16), new(19, 48), new(21, 18),
                     new(21, 19), new(21, 20), new(21, 21), new(21, 22), new(21, 23), new(21, 24), new(21, 25), new(21, 26), new(21, 27),
@@ -3230,7 +3294,7 @@ namespace MKLP.Modules
 
             #region [ Golem ]
 
-            if (!NPC.downedGolemBoss)
+            if (!NPC.downedGolemBoss && currentbossdefeated != BossDType.Golem)
             {
                 MKLP_Tile[] addin = { new(10, 12), new(10, 32), new(11, 12), new(11, 32), new(14, 31), new(15, 32), new(18, 27),
                     new(19, 26), new(19, 33), new(21, 48), new(33, 11), new(33, 26), new(34, 14), new(34, 33), new(42, 19),
@@ -3253,7 +3317,7 @@ namespace MKLP.Modules
 
             #region [ Duke Fishron ]
 
-            if (!NPC.downedFishron)
+            if (!NPC.downedFishron && currentbossdefeated != BossDType.DukeFishron)
             {
                 MKLP_Tile[] addin = { new(240, 55) };
                 foreach (MKLP_Tile add in addin)
@@ -3269,7 +3333,7 @@ namespace MKLP.Modules
 
             #region [ Empress of Light ]
 
-            if (!NPC.downedEmpressOfLight)
+            if (!NPC.downedEmpressOfLight && currentbossdefeated != BossDType.EmpressOfLight)
             {
                 MKLP_Tile[] addin = { new(240, 72) };
 
@@ -3286,7 +3350,7 @@ namespace MKLP.Modules
 
             #region [ Lunatic Cultist ]
 
-            if (!NPC.downedAncientCultist)
+            if (!NPC.downedAncientCultist && currentbossdefeated != BossDType.LunaticCultist)
             {
                 MKLP_Tile[] addin = { new(10, 39), new(10, 40), new(10, 41), new(10, 42), new(11, 39), new(11, 40), new(11, 41),
                     new(11, 42), new(15, 39), new(15, 40), new(15, 41), new(15, 42), new(18, 35), new(18, 36), new(18, 37),
@@ -3315,7 +3379,7 @@ namespace MKLP.Modules
 
             #region [ Moon Lord ]
 
-            if (!NPC.downedMoonlord)
+            if (!NPC.downedMoonlord && currentbossdefeated != BossDType.MoonLord)
             {
                 MKLP_Tile[] addin = { new(209, 3), new(209, 4), new(239, 22), new(240, 59), new(242, 36), new(242, 59),
                     new(408, 0), new(409, 0), new(509, 0), new(597, 8), new(669, 0), new(670, 0), new(671, 0), new(672, 0),
@@ -3405,7 +3469,7 @@ namespace MKLP.Modules
             return getillegaltile;
         }
 
-        public static Dictionary<ushort, string> GetIllegalWall()
+        public static Dictionary<ushort, string> GetIllegalWall(BossDType currentbossdefeated = BossDType.NA)
         {
             #region [ get Illegal Walls ]
             Dictionary<ushort, string> getillegalwalls = new();
@@ -3455,7 +3519,7 @@ namespace MKLP.Modules
             #region ( Boss )
 
             #region [ king Slime ]
-            if (!NPC.downedSlimeKing) //king slime
+            if (!NPC.downedSlimeKing && currentbossdefeated != BossDType.KingSlime) //king slime
             {
                 ushort[] addin = { 76 };
                 foreach (ushort add in addin)
@@ -3469,7 +3533,7 @@ namespace MKLP.Modules
             #endregion
 
             #region [ Evil Boss ]
-            if (!NPC.downedBoss2)
+            if (!NPC.downedBoss2 && currentbossdefeated != BossDType.EvilBoss)
             {
                 ushort[] addin = { 182 };
                 foreach (ushort add in addin)
@@ -3480,7 +3544,7 @@ namespace MKLP.Modules
                     }
                 }
 
-                if (!Main.hardMode)
+                if (!Main.hardMode && currentbossdefeated != BossDType.WallOfFlesh)
                 {
                     ushort[] hellstoneid = { 116, 117, 119, 120, 121, 122, 174, 175,
                         217, 219, 221, 231, 232, 233, 273, 2365, 4533, 4534, 4535, 4536, 4821 };
@@ -3497,7 +3561,7 @@ namespace MKLP.Modules
             #endregion
 
             #region [ Skeletron ]
-            if (!NPC.downedBoss3)
+            if (!NPC.downedBoss3 && currentbossdefeated != BossDType.Skeletron)
             {
 
                 int[] addin = { 346, 509, 510, 513, 541, 849, 850, 851, 852, 853, 1263, 1273,
@@ -3530,7 +3594,7 @@ namespace MKLP.Modules
             #endregion
 
             #region [ HardMode | Wall of Flesh ]
-            if (!Main.hardMode)
+            if (!Main.hardMode && currentbossdefeated != BossDType.WallOfFlesh)
             {
                 ushort[] addin = { 22, 25, 26, 32, 109, 110, 111, 136, 137, 168, 169, 172,
                     186, 226, 227, 236, 242, 243, 248, 265, 288, 289, 290, 291, 310, 339,
@@ -3568,7 +3632,8 @@ namespace MKLP.Modules
 
             #region ( Mechanical Bosses )
 
-            if (!NPC.downedMechBoss1 && !NPC.downedMechBoss2 && !NPC.downedMechBoss3)
+            if ((!NPC.downedMechBoss1 && !NPC.downedMechBoss2 && !NPC.downedMechBoss3) &&
+                (currentbossdefeated != BossDType.TheDestroyer && currentbossdefeated != BossDType.TheTwins && currentbossdefeated != BossDType.SkeletronPrime))
             {
                 ushort[] addin = { 77, 225, 233 };
 
@@ -3582,7 +3647,9 @@ namespace MKLP.Modules
             }
 
 
-            if (!NPC.downedMechBoss1 || !NPC.downedMechBoss2 || !NPC.downedMechBoss3)
+            if ((!NPC.downedMechBoss1 && currentbossdefeated != BossDType.TheDestroyer) ||
+                (!NPC.downedMechBoss2 && currentbossdefeated != BossDType.TheTwins) ||
+                (!NPC.downedMechBoss3 && currentbossdefeated != BossDType.SkeletronPrime))
             {
                 ushort[] addin = { 173 };
 
@@ -3599,7 +3666,7 @@ namespace MKLP.Modules
 
             #region [ Plantera ]
 
-            if (!NPC.downedPlantBoss)
+            if (!NPC.downedPlantBoss && currentbossdefeated != BossDType.Plantera)
             {
                 ushort[] addin = { 115, 175, 318 };
 
@@ -3616,7 +3683,7 @@ namespace MKLP.Modules
 
             #region [ Golem ]
 
-            if (!NPC.downedGolemBoss)
+            if (!NPC.downedGolemBoss && currentbossdefeated != BossDType.Golem)
             {
                 ushort[] addin = { 112, 176 };
 
@@ -3633,7 +3700,7 @@ namespace MKLP.Modules
 
             #region [ Lunatic Cultist ]
 
-            if (!NPC.downedAncientCultist)
+            if (!NPC.downedAncientCultist && currentbossdefeated != BossDType.LunaticCultist)
             {
                 ushort[] addin = { 237, 238, 239, 240 };
 
@@ -3650,7 +3717,7 @@ namespace MKLP.Modules
 
             #region [ Moon Lord ]
 
-            if (!NPC.downedMoonlord)
+            if (!NPC.downedMoonlord && currentbossdefeated != BossDType.MoonLord)
             {
                 ushort[] addin = { 224, 323, 324, 325, 326, 327, 328, 329, 330 };
 

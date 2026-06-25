@@ -109,7 +109,6 @@ namespace MKLP.Modules
         }
         public static DisableResult UnDisablePlayer(string playername, bool UsingOffline, bool specificName, out string TargetPlayerName, out IEnumerable<string> Mplayermatch, string executername = "Unknown")
         {
-            TargetPlayerName = "";
             Mplayermatch = new string[] { };
 
             var getplayers = TSPlayer.FindByNameOrID(playername);
@@ -140,12 +139,17 @@ namespace MKLP.Modules
                 if (getplayers.Count != 1)
                 {
                     Mplayermatch = getplayers.Select(p => p.Name);
+                    TargetPlayerName = "";
                     return DisableResult.MultiplePlayerMatch;
                 }
 
                 TSPlayer player = getplayers[0];
 
-                if (!PlayerIsDisable(player.Name, player.IP, player.UUID)) return DisableResult.AlreadyEnabled;
+                if (!PlayerIsDisable(player.Name, player.IP, player.UUID))
+                {
+                    TargetPlayerName = player.Name;
+                    return DisableResult.AlreadyEnabled;
+                }
 
                 player.SetData("MKLP_IsDisabled", false);
 
@@ -161,9 +165,17 @@ namespace MKLP.Modules
                 return DisableResult.Success;
             }
 
-            if (!PlayerIsDisable(playername, "", "")) return DisableResult.NotFoundOffline;
+            if (!PlayerIsDisable(playername, "", ""))
+            {
+                TargetPlayerName = playername;
+                return DisableResult.NotFoundOffline;
+            }
 
-            if (!UsingOffline) return DisableResult.OfflinePermission;
+            if (!UsingOffline)
+            {
+                TargetPlayerName = "";
+                return DisableResult.OfflinePermission;
+            }
 
             MKLP.DisabledKey.Remove(playername);
 
@@ -427,13 +439,13 @@ namespace MKLP.Modules
         {
             bool MuteSuccess = false;
 
-            if (MKLP.DBManager.AddMute(Identifier.Name + Player.Name, Duration, Reason)) MuteSuccess = true;
+            if (MuteKLP.AddMute(Identifier.Name + Player.Name, Duration, Reason)) MuteSuccess = true;
             if (Player.Account != null)
             {
-                if (MKLP.DBManager.AddMute(Identifier.Account + Player.Account.Name, Duration, Reason)) MuteSuccess = true;
+                if (MuteKLP.AddMute(Identifier.Account + Player.Account.Name, Duration, Reason)) MuteSuccess = true;
             }
-            if (MKLP.DBManager.AddMute(Identifier.IP + Player.IP, Duration, Reason)) MuteSuccess = true;
-            if (MKLP.DBManager.AddMute(Identifier.UUID + Player.UUID, Duration, Reason)) MuteSuccess = true;
+            if (MuteKLP.AddMute(Identifier.IP + Player.IP, Duration, Reason)) MuteSuccess = true;
+            if (MuteKLP.AddMute(Identifier.UUID + Player.UUID, Duration, Reason)) MuteSuccess = true;
 
             if (MuteSuccess)
             {
@@ -484,13 +496,13 @@ namespace MKLP.Modules
         {
             bool UnMuteSuccess = false;
 
-            if (MKLP.DBManager.DeleteMute(Identifier.Name + Player.Name)) UnMuteSuccess = true;
+            if (MuteKLP.DeleteMute(Identifier.Name + Player.Name)) UnMuteSuccess = true;
             if (Player.Account != null)
             {
-                if (MKLP.DBManager.DeleteMute(Identifier.Account + Player.Account.Name)) UnMuteSuccess = true;
+                if (MuteKLP.DeleteMute(Identifier.Account + Player.Account.Name)) UnMuteSuccess = true;
             }
-            if (MKLP.DBManager.DeleteMute(Identifier.IP + Player.IP)) UnMuteSuccess = true;
-            if (MKLP.DBManager.DeleteMute(Identifier.UUID + Player.UUID)) UnMuteSuccess = true;
+            if (MuteKLP.DeleteMute(Identifier.IP + Player.IP)) UnMuteSuccess = true;
+            if (MuteKLP.DeleteMute(Identifier.UUID + Player.UUID)) UnMuteSuccess = true;
 
             if (UnMuteSuccess)
             {
@@ -515,10 +527,10 @@ namespace MKLP.Modules
 
             bool MuteSuccess = false;
 
-            if (MKLP.DBManager.AddMute(Identifier.Account + Account.Name, Duration, Reason)) MuteSuccess = true;
+            if (MuteKLP.AddMute(Identifier.Account + Account.Name, Duration, Reason)) MuteSuccess = true;
             var GetIPs = JsonConvert.DeserializeObject<List<string>>(Account.KnownIps);
-            if (MKLP.DBManager.AddMute(Identifier.IP + GetIPs[GetIPs.Count() - 1], Duration, Reason)) MuteSuccess = true;
-            if (MKLP.DBManager.AddMute(Identifier.UUID + Account.UUID, Duration, Reason)) MuteSuccess = true;
+            if (MuteKLP.AddMute(Identifier.IP + GetIPs[GetIPs.Count() - 1], Duration, Reason)) MuteSuccess = true;
+            if (MuteKLP.AddMute(Identifier.UUID + Account.UUID, Duration, Reason)) MuteSuccess = true;
 
             if (MuteSuccess)
             {
@@ -554,16 +566,24 @@ namespace MKLP.Modules
             }
         }
 
-        public static bool OfflineUnMute(UserAccount Account, string Executer)
+        public static bool OfflineUnMute(UserAccount Account, string Executer, bool deletefully = false)
         {
             bool UnMuteSuccess = false;
-
-            if (MKLP.DBManager.DeleteMute(Identifier.Name + Account.Name)) UnMuteSuccess = true;
-            if (MKLP.DBManager.DeleteMute(Identifier.Account + Account.Name)) UnMuteSuccess = true;
             var GetIPs = JsonConvert.DeserializeObject<List<string>>(Account.KnownIps);
-            if (MKLP.DBManager.DeleteMute(Identifier.IP + GetIPs[GetIPs.Count() - 1])) UnMuteSuccess = true;
-            if (MKLP.DBManager.DeleteMute(Identifier.UUID + Account.UUID)) UnMuteSuccess = true;
 
+            if (deletefully)
+            {
+                if (MuteKLP.DeleteMute(Identifier.Name + Account.Name)) UnMuteSuccess = true;
+                if (MuteKLP.DeleteMute(Identifier.Account + Account.Name)) UnMuteSuccess = true;
+                if (MuteKLP.DeleteMute(Identifier.IP + GetIPs[GetIPs.Count() - 1])) UnMuteSuccess = true;
+                if (MuteKLP.DeleteMute(Identifier.UUID + Account.UUID)) UnMuteSuccess = true;
+            } else
+            {
+                if (MuteKLP.DeleteMuteSafe(Identifier.Name + Account.Name)) UnMuteSuccess = true;
+                if (MuteKLP.DeleteMuteSafe(Identifier.Account + Account.Name)) UnMuteSuccess = true;
+                if (MuteKLP.DeleteMuteSafe(Identifier.IP + GetIPs[GetIPs.Count() - 1])) UnMuteSuccess = true;
+                if (MuteKLP.DeleteMuteSafe(Identifier.UUID + Account.UUID)) UnMuteSuccess = true;
+            }
             if (UnMuteSuccess)
             {
                 MKLP.Discordklp.KLPBotSendMessageMainLog(MKLP.GetText("**{0}** 🔊Unmuted **{1}**", Executer, Account.Name));

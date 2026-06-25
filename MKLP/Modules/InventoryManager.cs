@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Terraria;
+using Terraria.ID;
 using TerrariaApi.Server;
 using TShockAPI;
 using TShockAPI;
@@ -194,6 +195,11 @@ namespace MKLP.Modules
             {
                 Item getitem = new Item();
                 getitem.SetDefaults(item.type);
+
+                if (getitem.type == ItemID.PlatinumCoin)
+                {
+                    return item.stack / 12;
+                }
 
                 return (int)((long)(getitem.value * item.stack) / 5000000);
             }
