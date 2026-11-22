@@ -81,6 +81,9 @@ namespace MKLP
                 new SqlColumn("IsVPN", MySqlDbType.Int32),
                 new SqlColumn("TimeAdded", MySqlDbType.DateTime)));
 
+            sqlCreator.EnsureTableStructure(new SqlTable("MKLP_TestSQLString",
+                new SqlColumn("texttest", MySqlDbType.Text)));
+
         }
 
         #region [ AccountDLinked ]
@@ -96,7 +99,6 @@ namespace MKLP
                 result.Add(reader.Get<string>("Name"), reader.Get<string>("UserID"));
             }
             return result;
-            throw new NullReferenceException();
         }
 
         public bool AddAccountDLinkingUserID(string AccountName, string UserID)

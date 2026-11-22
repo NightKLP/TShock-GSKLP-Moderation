@@ -44,11 +44,28 @@ namespace MKLP.Functions
         public static (bool muted, bool used) PlayerIsMuted(string accountname)
         {
             UserAccount account = TShock.UserAccounts.GetUserAccountByName(accountname);
-            if (account == null) { return (false, true); }
+            if (account == null)
+                return (false, true);
 
-            var GetIPs = JsonConvert.DeserializeObject<List<string>>(account.KnownIps);
+            if (mute == null || mute.Length == 0)
+                return (false, true);
 
-            if (mute.Length == 0) { return (false, true); }
+            List<string> getIPs = new();
+
+            if (!string.IsNullOrWhiteSpace(account.KnownIps))
+            {
+                try
+                {
+                    getIPs = JsonConvert.DeserializeObject<List<string>>(account.KnownIps) ?? new List<string>();
+                }
+                catch
+                {
+                    // Invalid JSON stored in KnownIps.
+                    getIPs = new List<string>();
+                }
+            }
+
+            string lastIP = getIPs.Count > 0 ? getIPs[^1] : string.Empty;
 
             bool used = true;
 
@@ -56,26 +73,29 @@ namespace MKLP.Functions
             {
                 if (gmute.Identifier == $"{Identifier.Name}{account.Name}" ||
                     gmute.Identifier == $"{Identifier.Account}{account.Name}" ||
-                    gmute.Identifier == $"{Identifier.IP}{GetIPs[GetIPs.Count() - 1]}" ||
+                    (!string.IsNullOrEmpty(lastIP) && gmute.Identifier == $"{Identifier.IP}{lastIP}") ||
                     gmute.Identifier == $"{Identifier.UUID}{account.UUID}")
                 {
-                    if ((DateTime.UtcNow - gmute.Expiration).TotalSeconds < 0)
+                    if (DateTime.UtcNow < gmute.Expiration)
                     {
                         return (true, true);
                     }
-                    if (!gmute.Used) { used = false; }
+
+                    if (!gmute.Used)
+                        used = false;
                 }
             }
+
             return (false, used);
         }
 
         public static bool SetMuteUsed(TSPlayer player, bool Used)
         {
-            bool success = true;
-            if (SetMuteUsed($"{Identifier.Name}{player.Name}", Used) == false) { success = false; }
-            if (SetMuteUsed($"{Identifier.Account}{player.Account.Name}", Used) == false) { success = false; }
-            if (SetMuteUsed($"{Identifier.IP}{player.IP}", Used) == false) { success = false; }
-            if (SetMuteUsed($"{Identifier.UUID}{player.UUID}", Used) == false) { success = false; }
+            bool success = false;
+            try { if (SetMuteUsed($"{Identifier.Name}{player.Name}", Used) == true) { success = true; } } catch { }
+            try { if (SetMuteUsed($"{Identifier.Account}{player.Account.Name}", Used) == true) { success = true; } } catch { }
+            try { if (SetMuteUsed($"{Identifier.IP}{player.IP}", Used) == true) { success = true; } } catch { }
+            try { if (SetMuteUsed($"{Identifier.UUID}{player.UUID}", Used) == true) { success = true; } } catch { }
             return success;
         }
 

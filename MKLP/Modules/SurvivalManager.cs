@@ -387,34 +387,36 @@ namespace MKLP.Modules
 
             #region ( Evil Boss Enabled )
 
-            if (((bool)MKLP.Config.BossManager.AllowEaterOfWorlds || (bool)MKLP.Config.BossManager.AllowBrainOfCthulhu) ||
-                (currentbossdefeated == BossDType.EvilBoss))
-            { //     true if its eow/boc enabled    |    false if its not enabled
-                int[] hellstoneid = { 118, 119, 120, 121, 122, 174, 175,
-                    217, 219, 221, 231, 232, 233, 273, 2365, 4533, 4534,
-                    4535, 4536, 4821, 5456, 5467, 5468, 5469, 5470 };
+            //1.4.5.7: obsidian crate
 
-                //meteorite can be obtain from chest pre boss | 116, 117, 123, 124, 125, 197, 198, 199, 200, 201, 202, 203, 204,
+            //if (((bool)MKLP.Config.BossManager.AllowEaterOfWorlds || (bool)MKLP.Config.BossManager.AllowBrainOfCthulhu) ||
+            //    (currentbossdefeated == BossDType.EvilBoss))
+            //{ //     true if its eow/boc enabled    |    false if its not enabled
+            //    int[] hellstoneid = { 118, 119, 120, 121, 122, 174, 175,
+            //        217, 219, 221, 231, 232, 233, 273, 2365, 4533, 4534,
+            //        4535, 4536, 4821, 5456, 5467, 5468, 5469, 5470 };
 
-                foreach (int remove in hellstoneid) // hellstone are breakable from bombs on hm
-                {
-                    if (!getillegalitems.ContainsKey(remove))
-                    {
-                        getillegalitems.Remove(remove);
-                    }
-                }
-            }
-            else
-            {
-                if (!getillegalitems.ContainsKey(86))
-                {
-                    getillegalitems.Add(86, "Evil Boss");
-                }
-                if (!getillegalitems.ContainsKey(1329))
-                {
-                    getillegalitems.Add(1329, "Evil Boss");
-                }
-            }
+            //    //meteorite can be obtain from chest pre boss | 116, 117, 123, 124, 125, 197, 198, 199, 200, 201, 202, 203, 204,
+
+            //    foreach (int remove in hellstoneid) // hellstone are breakable from bombs on hm
+            //    {
+            //        if (!getillegalitems.ContainsKey(remove))
+            //        {
+            //            getillegalitems.Remove(remove);
+            //        }
+            //    }
+            //}
+            //else
+            //{
+            //    if (!getillegalitems.ContainsKey(86))
+            //    {
+            //        getillegalitems.Add(86, "Evil Boss");
+            //    }
+            //    if (!getillegalitems.ContainsKey(1329))
+            //    {
+            //        getillegalitems.Add(1329, "Evil Boss");
+            //    }
+            //}
             //86
             #endregion
 
@@ -435,7 +437,7 @@ namespace MKLP.Modules
                     4818, 4927, 4993, 5672, 5673, 5577, 5630 };
 
                 int[] dungeonrushids = { 112, 113, 155, 156, 157, 163, 164, 218, 220, 273,
-                    274, 328, 329, 1613, 3019, 3317, 5010, 5126, 5465, 5504, 5669 };
+                    274, 328, 329, 1613, 3019, 3317, 5010, 5126, 5465, 5669 };
 
                 int[] vanity_dungeonrush_ids = { 5515 };
 
@@ -1057,7 +1059,7 @@ namespace MKLP.Modules
                     1858, 1864, 1866, 1871, 1914, 1916, 1928, 1929, 1930, 1931, 1946, 1947,
                     1958, 1959, 1960, 1961, 1962, 2028, 2043, 2064, 2071, 2081, 2091, 2103, 2109,
                     2176, 2189, 2383, 2393, 2409, 2605, 2620, 2650, 2770, 2791, 2794, 2847, 3018,
-                    3021, 3098, 3105, 3106, 3107, 3108, 3249, 3261, 3291, 3292, 3328, 3336, 3997,
+                    3021, 3098, 3105, 3106, 3107, 3108, 3249, 3261, 3292, 3328, 3336, 3997,
                     3998, 4005, 4013, 4116, 4409, 4444, 4445, 4446, 4447, 4448, 4449, 4457, 4458,
                     4459, 4607, 4679, 4680, 4701, 4731, 4789, 4793, 4794, 4806, 4812, 4813, 4814,
                     4934, 4941, 4942, 4943, 4944, 4945, 4961, 4964, 4985, 5065, 5227, 5237, 5288,
@@ -1204,7 +1206,7 @@ namespace MKLP.Modules
             if (!NPC.downedFishron && currentbossdefeated != BossDType.DukeFishron)
             {
                 int[] addin = { 2588, 2589, 2609, 2611, 2621, 2622, 2623, 2624, 3330, 3367,
-                    4808, 4936, 5478, 5526 };
+                    4808, 4936, 5478, 5526, 3291 };
                 foreach (int add in addin)
                 {
                     if (!getillegalitems.ContainsKey(add))
@@ -1711,23 +1713,25 @@ namespace MKLP.Modules
 
             #region ( Evil Boss Enabled )
 
-            if ((bool)MKLP.Config.BossManager.AllowEaterOfWorlds || (bool)MKLP.Config.BossManager.AllowBrainOfCthulhu)
-            { //     true if its eow/boc enabled    |    false if its not enabled
-                short[] hellstoneid = { 19, 36, 41, 154, 375, 376, 734, 972, 973, 978, 1022,
-                    1037 };
+            //1.4.5.7: obsidian crate
 
-                foreach (short remove in hellstoneid) // hellstone are breakable from bombs on hm
-                {
-                    if (!getillegalprojectile.ContainsKey(remove))
-                    {
-                        getillegalprojectile.Remove(remove);
-                    }
-                }
-            }
-            else
-            {
+            //if ((bool)MKLP.Config.BossManager.AllowEaterOfWorlds || (bool)MKLP.Config.BossManager.AllowBrainOfCthulhu)
+            //{ //     true if its eow/boc enabled    |    false if its not enabled
+            //    short[] hellstoneid = { 19, 36, 41, 154, 375, 376, 734, 972, 973, 978, 1022,
+            //        1037 };
 
-            }
+            //    foreach (short remove in hellstoneid) // hellstone are breakable from bombs on hm
+            //    {
+            //        if (!getillegalprojectile.ContainsKey(remove))
+            //        {
+            //            getillegalprojectile.Remove(remove);
+            //        }
+            //    }
+            //}
+            //else
+            //{
+
+            //}
             //86
             #endregion
 
@@ -2944,22 +2948,24 @@ namespace MKLP.Modules
 
             #region ( Evil Boss Enabled )
 
-            if ((bool)MKLP.Config.BossManager.AllowEaterOfWorlds || (bool)MKLP.Config.BossManager.AllowBrainOfCthulhu)
-            { //     true if its eow/boc enabled    |    false if its not enabled
-                MKLP_Tile[] hellstoneid = { new(58, 0), new(77, 0), new(239, 10), new(491, 0), new(696, 0, true) };
+            //1.4.5.7: obsidian crate
 
-                foreach (MKLP_Tile remove in hellstoneid) // hellstone are breakable from bombs on hm
-                {
-                    if (!getillegaltile.ContainsKey(remove))
-                    {
-                        getillegaltile.Remove(remove);
-                    }
-                }
-            }
-            else
-            {
+            //if ((bool)MKLP.Config.BossManager.AllowEaterOfWorlds || (bool)MKLP.Config.BossManager.AllowBrainOfCthulhu)
+            //{ //     true if its eow/boc enabled    |    false if its not enabled
+            //    MKLP_Tile[] hellstoneid = { new(58, 0), new(77, 0), new(239, 10), new(491, 0), new(696, 0, true) };
 
-            }
+            //    foreach (MKLP_Tile remove in hellstoneid) // hellstone are breakable from bombs on hm
+            //    {
+            //        if (!getillegaltile.ContainsKey(remove))
+            //        {
+            //            getillegaltile.Remove(remove);
+            //        }
+            //    }
+            //}
+            //else
+            //{
+
+            //}
             //86
             #endregion
 
@@ -3145,7 +3151,7 @@ namespace MKLP.Modules
                     new(89, 26), new(89, 36), new(90, 12), new(90, 33), new(93, 3), new(93, 12), new(93, 33), new(100, 3),
                     new(100, 5), new(100, 33), new(101, 8), new(101, 34), new(104, 5), new(104, 15), new(104, 34), new(172, 5),
                     new(172, 18), new(172, 34), new(198, 0), new(217, 0), new(239, 18), new(240, 62), new(240, 81), new(272, 0),
-                    new(301, 0), new(307, 0), new(419, 0, true), new(420, 0, true), new(421, 0), new(422, 0), new(441, 43),
+                    new(301, 0), new(307, 0), new(419, 0, true), new(420, 0, true), new(441, 43),
                     new(467, 3), new(468, 3), new(469, 2), new(497, 6), new(497, 18), new(497, 30), new(499, 0), new(642, 0),
                     new(702, 0), new(735, 0) };
 

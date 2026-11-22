@@ -190,6 +190,7 @@ namespace MKLP
             public bool? AllowEmptyWhiteSpaceName = false;
             public string[] Ban_NameContains = { "fuck", "卍" };
             public string[] IllegalNames = { "ServerConsole", "Server" };
+            public bool? MySQLString_Protection = true;
             public bool? Allow_PlayerName_On_BannedWords = false;
             public bool? Allow_PlayerName_Symbols = true;
             public char[] WhiteList_PlayerName_Symbols = { '[', ':', ']' };
@@ -210,6 +211,7 @@ namespace MKLP
             public bool? Replace_Mute_TShockCommand = false;
             public bool? Replace_Who_TShockCommand = true;
             public bool? Replace_AccountInfo_TShockCommand = true;
+            public string Default_BanDuration_Unmentioned = "Permanent";
             public string S_3 = "▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬";
             public bool? Simplified_DefeatedBossEventList = true;
             public string S_4 = "▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬";
@@ -292,6 +294,7 @@ namespace MKLP
                 if (Replace_Mute_TShockCommand == null) Replace_Mute_TShockCommand = getdefault.Replace_Mute_TShockCommand;
                 if (Replace_Who_TShockCommand == null) Replace_Who_TShockCommand = getdefault.Replace_Who_TShockCommand;
                 if (Replace_AccountInfo_TShockCommand == null) Replace_AccountInfo_TShockCommand = getdefault.Replace_AccountInfo_TShockCommand;
+                if (Default_BanDuration_Unmentioned == null) Default_BanDuration_Unmentioned = getdefault.Default_BanDuration_Unmentioned;
 
 
                 if (Simplified_DefeatedBossEventList == null) Simplified_DefeatedBossEventList = getdefault.Simplified_DefeatedBossEventList;

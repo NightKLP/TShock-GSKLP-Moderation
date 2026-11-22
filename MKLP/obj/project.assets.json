@@ -650,7 +650,7 @@
           }
         }
       },
-      "OTAPI.Upcoming/3.3.11": {
+      "OTAPI.Upcoming/3.3.14": {
         "type": "package",
         "dependencies": {
           "ModFramework": "1.1.15",
@@ -2648,17 +2648,17 @@
         "nuget.versioning.nuspec"
       ]
     },
-    "OTAPI.Upcoming/3.3.11": {
-      "sha512": "+wz1MAUCC/vGJQcXeLXxL5j2k6aHU5nJ6SgK26TaIysCNUGeM65BeSVYsUWg6423lMUmStJH/e/1IxLiUik+1g==",
+    "OTAPI.Upcoming/3.3.14": {
+      "sha512": "77lcG/91AT2rMrFGGiK4EqvRl6eXwOmh0MTYFZFeH8TB01zEU64dZXYv4aLkd4ZbClrcZ5B0kh6TM2AxJpgjPQ==",
       "type": "package",
-      "path": "otapi.upcoming/3.3.11",
+      "path": "otapi.upcoming/3.3.14",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
         "COPYING.txt",
         "lib/net9.0/OTAPI.Runtime.dll",
         "lib/net9.0/OTAPI.dll",
-        "otapi.upcoming.3.3.11.nupkg.sha512",
+        "otapi.upcoming.3.3.14.nupkg.sha512",
         "otapi.upcoming.nuspec"
       ]
     },
@@ -5220,7 +5220,7 @@
   "projectFileDependencyGroups": {
     "net9.0": [
       "Discord.Net >= 3.16.0",
-      "OTAPI.Upcoming >= 3.3.11",
+      "OTAPI.Upcoming >= 3.3.14",
       "TSAPI >= 6.1.0",
       "TShock >= 6.1.0"
     ]
@@ -5278,7 +5278,7 @@
           },
           "OTAPI.Upcoming": {
             "target": "Package",
-            "version": "[3.3.11, )"
+            "version": "[3.3.14, )"
           },
           "TSAPI": {
             "target": "Package",

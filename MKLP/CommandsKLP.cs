@@ -905,7 +905,7 @@ namespace MKLP
             {
                 if (Main.item[i].value < MKLP.Config.Main.Ignore_Value_ClearLag && Main.item[i].active)
                 {
-                    Main.item[i].TurnToAir(true);
+                    Main.item[i].TurnToAir();
                     TSPlayer.All.SendData(PacketTypes.ItemDrop, "", i);
                     ClearedItems++;
                 }
@@ -2981,6 +2981,10 @@ namespace MKLP
                 }
             }
 
+            if (string.IsNullOrEmpty(duration))
+            {
+                duration = MKLP.Config.Main.Default_BanDuration_Unmentioned;
+            }
             if (TShock.Utils.TryParseTime(duration, out ulong seconds))
             {
                 expiration = DateTime.UtcNow.AddSeconds(seconds);

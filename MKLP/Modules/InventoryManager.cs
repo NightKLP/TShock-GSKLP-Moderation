@@ -42,7 +42,6 @@ namespace MKLP.Modules
                     $"\n====> {args.CurrentItem.type} {args.CurrentItem.stack}");
             }
 
-
             //prevent same accessory stack
             if (!(bool)MKLP.Config.Main.Allow_Players_StackSameAccessory)
             {
@@ -57,7 +56,7 @@ namespace MKLP.Modules
                         {
 
                             args.Player.GiveItem(args.Player.TPlayer.armor[armori].type, args.Player.TPlayer.armor[armori].stack, args.Player.TPlayer.armor[armori].prefix);
-                            args.Player.TPlayer.armor[armori].TurnToAir(true);
+                            args.Player.TPlayer.armor[armori].TurnToAir();
                             NetMessage.SendData((int)PacketTypes.PlayerSlot, -1, -1, Terraria.Localization.NetworkText.Empty, args.Player.Index, NetItem.InventorySlots + armori, 0f, 0f, 0);
 
                         }
@@ -136,7 +135,15 @@ namespace MKLP.Modules
                     MKLP.SendStaffMessage($"[MKLP] Player [c/8911f1:{player.Account.Name}]  has suspicious activity for Dupe [i/s{prev.stack}:{prev.type}] to [i/s{now.stack}:{now.type}]" +
                         $"\nPlease Check this player if they are duping", Microsoft.Xna.Framework.Color.MediumPurple);
 
-                } else if (now.stack == 1000 && prev.stack <= 950 && prev.type == now.type && !prev.IsAir()
+                } else if (now.stack == 999 && prev.stack <= 950 && prev.type == now.type && !prev.IsAir()
+                    && confirmedREV())
+                {
+                    MKLP.PunishPlayer(MKLP_CodeType.Dupe, 0, player, "Duplicating", $"Player **{player.Account.Name}** has suspicious activity for **Dupe** `( {prev.stack} ) {prev.Name()}` to `( {now.stack} ) {now.Name()}` `ActiveChest: {player.ActiveChest}`" +
+                        $"\n- Please Check this player if they are duping", true, true);
+                    MKLP.SendStaffMessage($"[MKLP] Player [c/8911f1:{player.Account.Name}]  has suspicious activity for Dupe [i/s{prev.stack}:{prev.type}] to [i/s{now.stack}:{now.type}]" +
+                        $"\nPlease Check this player if they are duping", Microsoft.Xna.Framework.Color.MediumPurple);
+
+                }  else if (now.stack == 1000 && prev.stack <= 950 && prev.type == now.type && !prev.IsAir()
                     && confirmedREV())
                 {
                     MKLP.PunishPlayer(MKLP_CodeType.Dupe, 0, player, "Duplicating", $"Player **{player.Account.Name}** has suspicious activity for **Dupe** `( {prev.stack} ) {prev.Name()}` to `( {now.stack} ) {now.Name()}` `ActiveChest: {player.ActiveChest}`" +

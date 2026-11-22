@@ -86,6 +86,11 @@ namespace MKLP
 
         public static Dictionary<ushort, string> IllegalWallProgression = new();
 
+
+        public static List<int> WhiteList_Projectile_Identity = new();
+
+        public static bool[] WhiteList_Projectile_Owner = new bool[Main.player.Length];
+
         public static bool HasBanGuardPlugin = File.Exists(Path.Combine("ServerPlugins", "BanGuard.dll"));
         #endregion
 
@@ -105,6 +110,8 @@ namespace MKLP
         static System.Version staticversion = new System.Version(999, 0);
         public override void Initialize()
         {
+            Array.Fill(WhiteList_Projectile_Owner, false);
+
             staticversion = Version;
 
             InitializeSince = DateTime.UtcNow;

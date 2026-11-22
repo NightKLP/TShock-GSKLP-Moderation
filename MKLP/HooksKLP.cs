@@ -24,6 +24,7 @@ namespace MKLP
     {
         internal static void Initialize(TerrariaPlugin plg)
         {
+            Sync_acceptedsqlstring();
 
             //=====================Player===================
             #region { Player }
@@ -562,14 +563,14 @@ namespace MKLP
                         if (MKLP.IllegalItemProgression.ContainsKey(Main.item[i].type) &&
                             (bool)MKLP.Config.Main.DisableNode.Using_Survival_Code1 && (bool)MKLP.Config.Main.DisableNode.AutoClear_IllegalItemDrops_SurvivalCode1 && Main.item[i].active)
                         {
-                            Main.item[i].TurnToAir(true);
+                            Main.item[i].TurnToAir();
                             TSPlayer.All.SendData(PacketTypes.ItemDrop, "", i);
                         }
                         if ((Main.item[i].value * Main.item[i].stack) / 5000000 >= maxvalue &&
                             Main.item[i].type != 74
                             && (bool)MKLP.Config.Main.DisableNode.Using_Main_Code1 && (bool)MKLP.Config.Main.DisableNode.AutoClear_IllegalItemDrops_MainCode1 && Main.item[i].active)
                         {
-                            Main.item[i].TurnToAir(true);
+                            Main.item[i].TurnToAir();
                             TSPlayer.All.SendData(PacketTypes.ItemDrop, "", i);
                         }
                     }
@@ -728,6 +729,24 @@ namespace MKLP
 
         static DateTime playerjoin_temp1_Since = DateTime.MinValue;
         static Dictionary<string, List<string>> playerjoin_temp1 = new();
+
+        static List<string> acceptedsqlstring = new();
+
+        static List<string> rejectedsqlstring = new();
+
+        static void Sync_acceptedsqlstring()
+        {
+            using var reader = MKLP.DBManager._db.QueryReader("SELECT * FROM MKLP_TestSQLString");
+
+            List<string> result = new();
+
+            while (reader.Read())
+            {
+                result.Add(reader.Get<string>("texttest"));
+            }
+            acceptedsqlstring = result;
+        }
+
         private static async void OnPlayerJoin(JoinEventArgs args)
         {
             #region code
@@ -759,14 +778,23 @@ namespace MKLP
             {
                 if (!(bool)MKLP.Config.Main.AllowEmptyWhiteSpaceName)
                 { 
-                    if (player.Name == null)
+                    if (string.IsNullOrEmpty(player.Name))
                     {
                         player.Disconnect("you cannot join with empty null name");
                         return;
                     }
-                    if (string.IsNullOrEmpty(player.Name.Trim()))
+                    if (string.IsNullOrWhiteSpace(player.Name))
                     {
-                        player.Disconnect("you cannot join with empty null name");
+                        player.Disconnect("you cannot join with empty whitespace name");
+                        return;
+                    }
+                }
+
+                if ((bool)MKLP.Config.Main.MySQLString_Protection)
+                { 
+                    if (!CanSqlAcceptStringSafe(player.Name))
+                    {
+                        player.Disconnect("you cannot join with this name!");
                         return;
                     }
                 }
@@ -1002,6 +1030,27 @@ namespace MKLP
                     Name.Replace($"{remove}", "");
                 }
                 return Regex.IsMatch(Name, @"^[A-Za-z0-9\s@]*$");
+            }
+
+            bool CanSqlAcceptStringSafe(string value)
+            {
+
+                if (acceptedsqlstring.Contains(value)) { return true; }
+
+                if (rejectedsqlstring.Contains(value)) { return false; }
+
+                try
+                {
+                    MKLP.DBManager._db.Query($"INSERT INTO MKLP_TestSQLString (texttest) VALUES (@0)", value);
+
+                    acceptedsqlstring.Add(value);
+                    return true;
+                }
+                catch (Exception)
+                {
+                    rejectedsqlstring.Add(value);
+                    return false;
+                }
             }
             #endregion
         }
@@ -2069,7 +2118,6 @@ namespace MKLP
             #endregion
         }
 
-        public static List<int> WhiteList_Projectile_Identity = new();
         private static void OnNewProjectile(object sender, GetDataHandlers.NewProjectileEventArgs args)
         {
             #region code
@@ -2085,11 +2133,20 @@ namespace MKLP
                 //int index = args.Index;
                 //float[] ai = args.Ai;
 
-                if (WhiteList_Projectile_Identity.Contains(ident))
+
+                if (MKLP.WhiteList_Projectile_Owner[owner])
                 {
-                    WhiteList_Projectile_Identity.Remove(ident);
+                    MKLP.WhiteList_Projectile_Owner[owner] = false;
                     return;
                 }
+                if (MKLP.WhiteList_Projectile_Identity.Contains(ident))
+                {
+                    MKLP.WhiteList_Projectile_Identity.Remove(ident);
+                    return;
+                }
+
+                if (Main.projectile[args.Identity].hostile) { return; }
+
                 if (ProjectileThreshold()) return;
 
                 Dictionary<short, string> GetIllegalProj = SurvivalManager.GetIllegalProjectile();
@@ -2215,7 +2272,7 @@ namespace MKLP
                 {
                     foreach (var get in Main.projectile)
                     {
-                        if (get.identity == ident) continue;
+                        if (get.key.Index == ident) continue;
                         if (get.owner != owner) continue;
                         if (!get.active) continue;
                         if (get.bobber)
@@ -2280,7 +2337,7 @@ namespace MKLP
                         int spaz_sum = 0;
                         foreach (var get in Main.projectile)
                         {
-                            if (get.identity == ident) continue;
+                            if (get.key.Index == ident) continue;
                             if (get.owner != owner) continue;
                             if (!get.active) continue;
                             if (SummonProjectiles.Contains((short)get.type))
@@ -2359,7 +2416,7 @@ namespace MKLP
                             {
                                 foreach (var get in Main.projectile)
                                 {
-                                    if (get.identity == ident) continue;
+                                    if (get.key.Index == ident) continue;
                                     if (get.owner != owner) continue;
                                     if (!get.active) continue;
                                     if (type == ProjectileID.StormTigerTier1 ||
@@ -2375,7 +2432,7 @@ namespace MKLP
                             {
                                 foreach (var get in Main.projectile)
                                 {
-                                    if (get.identity == ident) continue;
+                                    if (get.key.Index == ident) continue;
                                     if (get.owner != owner) continue;
                                     if (!get.active) continue;
                                     if (type == ProjectileID.AbigailMinion)
@@ -2436,7 +2493,7 @@ namespace MKLP
                         int numberofsentry = 0;
                         foreach (var get in Main.projectile)
                         {
-                            if (get.identity == ident) continue;
+                            if (get.key.Index == ident) continue;
                             if (get.owner != owner) continue;
                             if (!get.active) continue;
                             if (SentryProjectiles.Contains((short)get.type))

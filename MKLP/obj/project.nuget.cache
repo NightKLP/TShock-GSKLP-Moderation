@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "DdLrplhkRMs=",
+  "dgSpecHash": "hmYFGr+KXeg=",
   "success": true,
   "projectFilePath": "D:\\Nightklp_KLP\\my_Terraria_Plugins\\GSKLP\\MKLP\\MKLP\\MKLP.csproj",
   "expectedPackageFiles": [
@@ -42,7 +42,7 @@
     "C:\\Users\\xrayr\\.nuget\\packages\\nuget.packaging\\6.13.2\\nuget.packaging.6.13.2.nupkg.sha512",
     "C:\\Users\\xrayr\\.nuget\\packages\\nuget.protocol\\6.13.2\\nuget.protocol.6.13.2.nupkg.sha512",
     "C:\\Users\\xrayr\\.nuget\\packages\\nuget.versioning\\6.13.2\\nuget.versioning.6.13.2.nupkg.sha512",
-    "C:\\Users\\xrayr\\.nuget\\packages\\otapi.upcoming\\3.3.11\\otapi.upcoming.3.3.11.nupkg.sha512",
+    "C:\\Users\\xrayr\\.nuget\\packages\\otapi.upcoming\\3.3.14\\otapi.upcoming.3.3.14.nupkg.sha512",
     "C:\\Users\\xrayr\\.nuget\\packages\\sqlitepclraw.bundle_e_sqlite3\\2.1.10\\sqlitepclraw.bundle_e_sqlite3.2.1.10.nupkg.sha512",
     "C:\\Users\\xrayr\\.nuget\\packages\\sqlitepclraw.core\\2.1.10\\sqlitepclraw.core.2.1.10.nupkg.sha512",
     "C:\\Users\\xrayr\\.nuget\\packages\\sqlitepclraw.lib.e_sqlite3\\2.1.10\\sqlitepclraw.lib.e_sqlite3.2.1.10.nupkg.sha512",

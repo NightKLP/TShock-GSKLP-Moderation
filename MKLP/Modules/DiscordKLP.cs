@@ -575,7 +575,7 @@ namespace MKLP.Modules
                                                     .WithTitle($"{MKLP.GetText("Banning")} [ {message.Data.CustomId.Split(S_)[4]} ]")
                                                     .WithCustomId("MKLP_InGame_PlayerAction_Ban_".Replace('_', S_) + message.Data.CustomId.Split(S_)[4])
                                                     .AddTextInput(MKLP.GetText("Reason"), "Ban_reason".Replace('_', S_), TextInputStyle.Paragraph, MKLP.GetText("Cheating"), value: message.Data.CustomId.Split(S_)[5])
-                                                    .AddTextInput(MKLP.GetText("Duration"), "Ban_duration".Replace('_', S_), TextInputStyle.Short, "0d 0h 0m 0s", maxLength: 15, value: "Permanent");
+                                                    .AddTextInput(MKLP.GetText("Duration"), "Ban_duration".Replace('_', S_), TextInputStyle.Short, "0d 0h 0m 0s", maxLength: 15, value: MKLP.Config.Main.Default_BanDuration_Unmentioned);
 
                                                 if ((bool)MKLP.Config.Main.UsingBanGuardPlugin)
                                                 {

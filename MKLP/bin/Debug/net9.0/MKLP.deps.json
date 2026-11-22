@@ -9,7 +9,7 @@
       "MKLP/1.0.0": {
         "dependencies": {
           "Discord.Net": "3.16.0",
-          "OTAPI.Upcoming": "3.3.11",
+          "OTAPI.Upcoming": "3.3.14",
           "TSAPI": "6.1.0",
           "TShock": "6.1.0",
           "BanGuard": "0.2.0.0"
@@ -440,7 +440,7 @@
           }
         }
       },
-      "OTAPI.Upcoming/3.3.11": {
+      "OTAPI.Upcoming/3.3.14": {
         "dependencies": {
           "ModFramework": "1.1.15",
           "MonoMod": "22.7.31.1",
@@ -455,8 +455,8 @@
             "fileVersion": "0.0.0.0"
           },
           "lib/net9.0/OTAPI.dll": {
-            "assemblyVersion": "1.4.5.6",
-            "fileVersion": "1.4.5.6"
+            "assemblyVersion": "1.4.5.8",
+            "fileVersion": "1.4.5.8"
           }
         }
       },
@@ -791,7 +791,7 @@
       "TSAPI/6.1.0": {
         "dependencies": {
           "Newtonsoft.Json": "13.0.3",
-          "OTAPI.Upcoming": "3.3.11",
+          "OTAPI.Upcoming": "3.3.14",
           "System.Diagnostics.PerformanceCounter": "9.0.0"
         },
         "runtime": {
@@ -1093,12 +1093,12 @@
       "path": "nuget.versioning/6.13.2",
       "hashPath": "nuget.versioning.6.13.2.nupkg.sha512"
     },
-    "OTAPI.Upcoming/3.3.11": {
+    "OTAPI.Upcoming/3.3.14": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-+wz1MAUCC/vGJQcXeLXxL5j2k6aHU5nJ6SgK26TaIysCNUGeM65BeSVYsUWg6423lMUmStJH/e/1IxLiUik+1g==",
-      "path": "otapi.upcoming/3.3.11",
-      "hashPath": "otapi.upcoming.3.3.11.nupkg.sha512"
+      "sha512": "sha512-77lcG/91AT2rMrFGGiK4EqvRl6eXwOmh0MTYFZFeH8TB01zEU64dZXYv4aLkd4ZbClrcZ5B0kh6TM2AxJpgjPQ==",
+      "path": "otapi.upcoming/3.3.14",
+      "hashPath": "otapi.upcoming.3.3.14.nupkg.sha512"
     },
     "SQLitePCLRaw.bundle_e_sqlite3/2.1.10": {
       "type": "package",
